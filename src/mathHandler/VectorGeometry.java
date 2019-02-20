@@ -8,7 +8,6 @@ public class VectorGeometry {
 
     public Vec3d vectorSub(Vec3d v1, Vec3d v2)
     {
-
         return new Vec3d( v1.x - v2.x, v1.y - v2.y, v1.z - v2.z );
     }
 
@@ -70,19 +69,7 @@ public class VectorGeometry {
         return v;
     }
 
-    Vec3d Vector_IntersectPlane(Vec3d plane_p, Vec3d plane_n, Vec3d lineStart, Vec3d lineEnd)
-    {
-        plane_n = normaliseVector(plane_n);
-        float plane_d = -dotProduct(plane_n, plane_p);
-        float ad = dotProduct(lineStart, plane_n);
-        float bd =dotProduct(lineEnd, plane_n);
-        float t = (-plane_d - ad) / (bd - ad);
-        Vec3d lineStartToEnd = vectorSub(lineEnd, lineStart);
-        Vec3d lineToIntersect = vectorMul(lineStartToEnd, t);
-        return vectorAdd(lineStart, lineToIntersect);
-    }
-
-    public Vec3d multiplyVector(Mat4x4 m, Vec3d i)
+    public Vec3d multiplyMatrixAndVector(Mat4x4 m, Vec3d i)
     {
         Vec3d v = new Vec3d();
         v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];

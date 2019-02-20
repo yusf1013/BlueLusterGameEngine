@@ -3,7 +3,7 @@ package main;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import threeDItems.Mat4x4;
-import threeDItems.VectorGeometry;
+import mathHandler.VectorGeometry;
 
 import java.nio.DoubleBuffer;
 

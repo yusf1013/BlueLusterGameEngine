@@ -1,6 +1,7 @@
 package main;
 
 import javafx.scene.paint.Color;
+import mathHandler.VectorGeometry;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import threeDItems.*;
 
@@ -13,7 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 
-public class DisplayDriverGL extends VectorGeometry{
+public class DisplayDriverGL extends VectorGeometry {
 
     Mesh meshCube = new Mesh(), meshCube2;
     Mat4x4 matProj = new Mat4x4(), matRotZ=new Mat4x4(), matRotX=new Mat4x4();
@@ -31,7 +32,7 @@ public class DisplayDriverGL extends VectorGeometry{
         //Load model from file
         ModelLoader dd = new ModelLoader();
         //meshCube2=dd.meshLoader("cube2.obj", meshCube);
-        meshCube=dd.meshLoader("bugatti.obj", meshCube);
+        meshCube=dd.meshLoader("bmw.obj", meshCube);
         //Projection matrix
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
         glfwSetKeyCallback(window, keyCallback = new KeyboardHandler(window));
@@ -88,7 +89,7 @@ public class DisplayDriverGL extends VectorGeometry{
         // Create "Point At" Matrix for camera
         vUp = new Vec3d(0,1,0);
         Vec3d vTarget= new Vec3d(0,0.0f,1.0f);
-        vLookDir=multiplyVector(makeYRotationMatrix(yaw), vTarget);
+        vLookDir=multiplyMatrixAndVector(makeYRotationMatrix(yaw), vTarget);
         vTarget=vectorAdd(vLookDir, vCamera);
         Mat4x4 matCamera = pointAtMatrix(vCamera, vTarget, vUp);
 
@@ -97,9 +98,9 @@ public class DisplayDriverGL extends VectorGeometry{
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triProjected=new Triangle(), triTranslated=new Triangle(), triViewed = new Triangle();
-            triTranslated.p[0] = multiplyVector(matWorld, meshCube.tris.elementAt(i).p[0]);
-            triTranslated.p[1] = multiplyVector(matWorld, meshCube.tris.elementAt(i).p[1]);
-            triTranslated.p[2] = multiplyVector(matWorld, meshCube.tris.elementAt(i).p[2]);
+            triTranslated.p[0] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[0]);
+            triTranslated.p[1] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[1]);
+            triTranslated.p[2] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[2]);
 
             Vec3d normal = new Vec3d(), line1= new Vec3d(), line2= new Vec3d();
             line1=vectorSub(triTranslated.p[1], triTranslated.p[0]);
@@ -111,12 +112,12 @@ public class DisplayDriverGL extends VectorGeometry{
             // Get Ray from triangle to camera
             Vec3d vCameraRay = vectorSub(triTranslated.p[0], vCamera);
 
-            //if (dotProduct(normal, vCameraRay) < 0.0f)
-            //{
+            if (dotProduct(normal, vCameraRay) < 0.0f)
+            {
                 Triangle arr[] = null;
-                triTranslated.p[0]=multiplyVector(matView, triTranslated.p[0]);
-                triTranslated.p[1]=multiplyVector(matView, triTranslated.p[1]);
-                triTranslated.p[2]=multiplyVector(matView, triTranslated.p[2]);
+                triTranslated.p[0]=multiplyMatrixAndVector(matView, triTranslated.p[0]);
+                triTranslated.p[1]=multiplyMatrixAndVector(matView, triTranslated.p[1]);
+                triTranslated.p[2]=multiplyMatrixAndVector(matView, triTranslated.p[2]);
 
                 if(triTranslated.p[0].z<0.1 || triTranslated.p[1].z<0.1 || triTranslated.p[2].z<0.1)
                 {
@@ -133,9 +134,9 @@ public class DisplayDriverGL extends VectorGeometry{
                 for(int mor=0; mor<arr.length; mor++)
                 {
                     triTranslated=arr[mor];
-                    triProjected.p[0] = multiplyVector(matProj, triTranslated.p[0]);
-                    triProjected.p[1] = multiplyVector(matProj, triTranslated.p[1]);
-                    triProjected.p[2] = multiplyVector(matProj, triTranslated.p[2]);
+                    triProjected.p[0] = multiplyMatrixAndVector(matProj, triTranslated.p[0]);
+                    triProjected.p[1] = multiplyMatrixAndVector(matProj, triTranslated.p[1]);
+                    triProjected.p[2] = multiplyMatrixAndVector(matProj, triTranslated.p[2]);
 
                     triProjected.p[0] = vectorDiv(triProjected.p[0], triProjected.p[0].w);
                     triProjected.p[1] = vectorDiv(triProjected.p[1], triProjected.p[1].w);
@@ -150,7 +151,7 @@ public class DisplayDriverGL extends VectorGeometry{
                     triToRaster.add(new Triangle(triProjected.p[0], triProjected.p[1], triProjected.p[2], triProjected.getColor()));
 
                 }
-            //}
+            }
         }
         triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
 
