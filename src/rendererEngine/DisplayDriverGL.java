@@ -1,13 +1,14 @@
 package rendererEngine;
 
 import dataHandler.ModelLoader;
-import dataHandler.scriptClassLoader;
 import inputHandler.KeyboardHandler;
 import javafx.scene.paint.Color;
 import mathHandler.ThreeDObjectTransformations;
 import mathHandler.VectorGeometry;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import rendererEngine.itemBag.ItemBag;
+import rendererEngine.scriptManager.MasterScript;
 import threeDItems.Mat4x4;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
@@ -15,6 +16,7 @@ import threeDItems.Vec3d;
 
 import java.nio.DoubleBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -26,7 +28,7 @@ public class DisplayDriverGL extends VectorGeometry {
 
     //Mesh meshCube = new Mesh();
     //Vector<Mesh> meshVector = new Vector<>();
-    Vector<Mesh> meshVector;
+    //Vector<Mesh> meshVector;
     Mat4x4 matProj;
     float screenHeight=600, screenWidth=600, walkSpeed=20f;
     Camera camera = new Camera();
@@ -41,12 +43,12 @@ public class DisplayDriverGL extends VectorGeometry {
     public DisplayDriverGL(long window)
     {
         ModelLoader modelLoader = new ModelLoader();
-        meshVector=modelLoader.loadAll();
-        meshVector=modelLoader.loadAll();
-        ms=new MasterScript(meshVector);
+        //meshVector=modelLoader.loadAll();
+        ItemBag.addMesh(modelLoader.loadAll());
+        ms=new MasterScript();
 
 
-        //ms=(MasterScript)Class.forName("rendererEngine.MasterScript").newInstance();
+        //ms=(MasterScript)Class.forName("rendererEngine.scriptManager.MasterScript").newInstance();
 
         //meshCube=modelLoader.meshLoader("toNotDisplay\\axis.obj", true);
 
@@ -65,11 +67,16 @@ public class DisplayDriverGL extends VectorGeometry {
 
     boolean onUserUpdate(float fElapsedTime)
     {
-        int i=0;
-        for(Mesh meshCube: meshVector)
+        //int i=0;
+        /*for(Mesh meshCube: meshVector)
         {
             drawMesh(meshCube, fElapsedTime);
             i++;
+        }*/
+        for(Map.Entry e:ItemBag.getEntrySet())
+        {
+            drawMesh((Mesh)e.getValue(), fElapsedTime);
+            //i++;
         }
         draw();
         handleUserInputs(fElapsedTime);

@@ -390,7 +390,7 @@ public class Controller implements Initializable {
         runInReleaseMode.setOnAction(e->{
             for(Mesh m: meshArray)
             {
-                System.out.println("Is scripted vsl: " + m.isScripted);
+                System.out.println("Is ID vsl: " + m.id);
             }
             publish.publish(ml.fileNameVector, meshArray, hash);
             System.out.println("Confirmation recieved");
@@ -435,42 +435,22 @@ public class Controller implements Initializable {
         });
 
         createScript.setOnAction(e->{
+            System.out.println("Selected obj is: " + selectedObject);
+            System.out.println("ID is: " + meshArray.get(selectedObject).id);
             File file = new File("D:\\ideaIntellij\\olcge\\src\\Games\\scriptOfMesh"+meshArray.get(selectedObject).id+".java");
-            String scriptBody="package Games;\n" +
-                    "import rendererEngine.MasterScript;\n" +
-                    "import rendererEngine.Inheritable;\n" +
+            String scriptBody=
+                    "package Games;\n" +
+                    "import rendererEngine.scriptManager.Inheritable;\n" +
                     "import threeDItems.Mesh; \n" +
-                    "import java.util.Vector; \n" +
-                    "public class scriptOfMesh"+meshArray.get(selectedObject).id+ " extends Inheritable" +" {\n" +
-                    /*"\tpublic void run(Mesh thisMesh) {\n" +
-                    "\t\t//TODO: Add code here!\n" +
-                    "\t}\n"  +*/
-                    "//Mesh thisMesh = MasterScript.getMesh("+ meshArray.get(selectedObject).id +");\n" +
-                    "\tMasterScript ms;\n" +
-                    "\tint a=0;\n" +
-                    "\tpublic void create(MasterScript mas)\n" +
-                    "\t{\n" +
-                    "\t\tms=mas;\n" +
-                    "\t}\n" +
-                    "\tpublic String run(rendererEngine.Camera cam)\n" +
-                    "\t{\n" +
-                    "\t\tSystem.out.println(\"yo\");\n" +
-                    "//\t\tSystem.out.println(vec.get(0).getClass().getName());\n" +
-                    "\t\t//thisMesh.xTheta+=0.01f;\n" +
-                    "\t\t//thisMesh.yTheta+=0.01f;\n" +
-                    "\t\t//thisMesh.xTranslation+=0.01f;\n" +
-                    "\t\t//thisMesh.yTranslation+=0.01f;\n" +
-                    "\t\t//thisMesh.zTranslation+=0.01f;\n" +
-                    "\t\treturn \"\";\n" +
-                    "\t}\n"+
-                    "\tpublic boolean equalstozie()\n" +
-                    "\t{\n" +
-                    "\t\ta++;\n" +
-                    "\t\tSystem.out.println(\"In = \" + a);\n" +
-                    "//\t\tSystem.out.println(\"The funniest part: \" + ((MasterScript) o).test);\n" +
-                    "\t\treturn true;\n" +
-                    "\t}\n"+
-                    "}\n";
+                    "import java.util.*; \n" +
+                    "public class scriptOfMesh"+meshArray.get(selectedObject).id+" extends Inheritable {\n" +
+                        "\t//Mesh mesh = getMesh(0);\n" +
+                        "\t@Override\n" +
+                        "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
+                            "\t\tSystem.out.println(\"YO\");\n" +
+                            "\t\tmeshMap.get(0).xTheta+=0.01f;\n" +
+                        "\t}\n" +
+                    "}";
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                 writer.write(scriptBody);

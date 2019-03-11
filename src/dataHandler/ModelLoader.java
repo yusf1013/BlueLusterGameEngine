@@ -1,5 +1,7 @@
 package dataHandler;
 
+import rendererEngine.itemBag.ItemBag;
+import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
@@ -33,8 +35,12 @@ public class ModelLoader {
                 vec.lastElement().xScale=in.nextFloat(); vec.lastElement().yScale=in.nextFloat(); vec.lastElement().zScale=in.nextFloat();
                 String scripted = in.next();
                 vec.lastElement().id=in.nextInt();
-                if(scripted.equals("true"))
+                if(scripted.equals("true")) {
+                    System.out.println("THE ID IS: " + vec.lastElement().id);
                     vec.lastElement().isScripted=true;
+                    loadScript(vec.lastElement().id);
+
+                }
                 else
                     vec.lastElement().isScripted=false;
 
@@ -94,6 +100,29 @@ public class ModelLoader {
         }
         System.out.println("Triangle count: " + mesh.tris.size());
         return mesh;
+    }
+
+    public void loadScript(int id)
+    {
+        try {
+            System.out.println("Trying to oad class for: " + "Games.scriptOfMesh"+id);
+            ItemBag.addScript(id, (Inheritable) Class.forName("Games.scriptOfMesh"+id).newInstance());
+
+            /*Class cl = Class.forName("Games.scriptOfMesh"+id);
+            Constructor ctor = cl.getDeclaredConstructor(ItemBag.getMeshMap().getClass());
+            //ctor.setAccessible(true);
+            //EmailAliases email = (EmailAliases)ctor.newInstance(defaultAliases);
+            ItemBag.addScript(id, (Inheritable)ctor.newInstance(ItemBag.getMeshMap()));*/
+
+
+
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
