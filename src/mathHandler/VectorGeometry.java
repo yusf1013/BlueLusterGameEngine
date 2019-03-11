@@ -1,4 +1,7 @@
-package threeDItems;
+package mathHandler;
+
+import threeDItems.Mat4x4;
+import threeDItems.Vec3d;
 
 public class VectorGeometry {
     public Vec3d vectorAdd(Vec3d v1, Vec3d v2)
@@ -89,7 +92,17 @@ public class VectorGeometry {
         return matrix;
     }
 
-    public Mat4x4 makeXRotationMatrix(float fAngleRad)
+    public static Mat4x4 scale(float x, float y, float z)
+    {
+        Mat4x4 mat = new Mat4x4();
+        mat.m[0][0]=x;
+        mat.m[1][1]=y;
+        mat.m[2][2]=z;
+        mat.m[3][3]=1.0f;
+        return mat;
+    }
+
+    public static Mat4x4 makeXRotationMatrix(float fAngleRad)
     {
         Mat4x4 matrix = new Mat4x4();
         matrix.m[0][0] = 1.0f;
@@ -101,7 +114,7 @@ public class VectorGeometry {
         return matrix;
     }
 
-    public Mat4x4 makeYRotationMatrix(float fAngle)
+    public static Mat4x4 makeYRotationMatrix(float fAngle)
     {
         float fAngleRad = -fAngle;
         Mat4x4 matrix = new Mat4x4();
@@ -114,7 +127,7 @@ public class VectorGeometry {
         return matrix;
     }
 
-    public Mat4x4 makeZRotationMatrix(float fAngleRad)
+    public static Mat4x4 makeZRotationMatrix(float fAngleRad)
     {
         Mat4x4 matrix = new Mat4x4();
         matrix.m[0][0] = (float)Math.cos(fAngleRad);
@@ -126,7 +139,7 @@ public class VectorGeometry {
         return matrix;
     }
 
-    public Mat4x4 makeTranslation(float x, float y, float z)
+    public static Mat4x4 makeTranslation(float x, float y, float z)
     {
         Mat4x4 matrix = new Mat4x4();
         matrix.m[0][0] = 1.0f;
@@ -152,7 +165,7 @@ public class VectorGeometry {
         return matrix;
     }
 
-    public Mat4x4 multiplyMatrix(Mat4x4 m1, Mat4x4 m2)
+    public static Mat4x4 multiplyMatrix(Mat4x4 m1, Mat4x4 m2)
     {
         Mat4x4 matrix = new Mat4x4();
         for (int c = 0; c < 4; c++)

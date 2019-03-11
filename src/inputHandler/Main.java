@@ -1,4 +1,4 @@
-package main;
+package inputHandler;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;

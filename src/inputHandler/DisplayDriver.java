@@ -1,6 +1,6 @@
-package main;
+package inputHandler;
 
-import dataLoader.ModelLoader;
+import dataHandler.ModelLoader;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -30,7 +30,7 @@ public class DisplayDriver extends VectorGeometry {
     {
         //Load model from file
         ModelLoader dd = new ModelLoader();
-        meshCube=dd.meshLoader("cube.obj");
+        meshCube=dd.meshLoader("cube.obj", true);
         //Projection matrix
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
     }

@@ -1,14 +1,211 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="main.Gui"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<VBox prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+   <children>
+      <MenuBar VBox.vgrow="NEVER">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="New" />
+                  <MenuItem mnemonicParsing="false" text="Open…" />
+                  <Menu mnemonicParsing="false" text="Open Recent" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem mnemonicParsing="false" text="Save" />
+                  <MenuItem mnemonicParsing="false" text="Save As…" />
+                  <MenuItem mnemonicParsing="false" text="Revert" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Preferences…" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Quit" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Undo" />
+                  <MenuItem mnemonicParsing="false" text="Redo" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Cut" />
+                  <MenuItem mnemonicParsing="false" text="Copy" />
+                  <MenuItem mnemonicParsing="false" text="Paste" />
+                  <MenuItem mnemonicParsing="false" text="Delete" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                  <MenuItem mnemonicParsing="false" text="Select All" />
+                  <MenuItem mnemonicParsing="false" text="Unselect All" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="View">
+              <items>
+                <MenuItem fx:id="topView" mnemonicParsing="false" text="Top" />
+                  <MenuItem fx:id="bottomView" mnemonicParsing="false" text="Bottom" />
+                  <MenuItem fx:id="frontView" mnemonicParsing="false" text="Front" />
+                  <MenuItem fx:id="backView" mnemonicParsing="false" text="Back" />
+                  <MenuItem fx:id="rightView" mnemonicParsing="false" text="Right" />
+                  <MenuItem fx:id="leftView" mnemonicParsing="false" text="Left" />
+                  <MenuItem fx:id="freeView" mnemonicParsing="false" text="Free View" />
+              </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Run">
+              <items>
+                <MenuItem fx:id="runInReleaseMode" mnemonicParsing="false" text="Run in release mode" />
+              </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <SplitPane dividerPositions="0.21142284569138275, 0.7725450901803608" focusTraversable="true" VBox.vgrow="ALWAYS">
+         <items>
+            <AnchorPane prefHeight="551.0" prefWidth="107.0">
+               <children>
+                  <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" textAlignment="CENTER" wrapText="false">
+                     <font>
+                        <Font size="18.0" fx:id="x1" />
+                     </font>
+                     <textFill>
+                        <Color blue="0.624" green="0.624" red="0.624" fx:id="x2" />
+                     </textFill>
+                  </Label>
+                  <ScrollPane layoutY="56.0" prefHeight="495.0" prefWidth="208.0">
+                     <content>
+                        <FlowPane fx:id="fileListPane" prefHeight="433.0" prefWidth="210.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label alignment="CENTER" layoutX="6.0" layoutY="6.0" prefHeight="33.0" prefWidth="193.0" text="Available Objects">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Line endX="100.0" layoutX="104.0" layoutY="6.0" startX="-100.0" />
+                  <Line endX="100.0" layoutX="103.0" layoutY="41.0" startX="-100.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="anchor" prefHeight="551.0" prefWidth="368.0">
+               <children>
+                  <Group fx:id="gameStage" />
+               </children>
+            </AnchorPane>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="551.0" prefWidth="381.0">
+               <children>
+                  <Line endX="100.0" layoutX="105.0" layoutY="45.0" startX="-100.0" />
+                  <Line endX="100.0" layoutX="106.0" layoutY="10.0" startX="-100.0" />
+                  <Label alignment="CENTER" layoutX="9.0" layoutY="10.0" prefHeight="33.0" prefWidth="193.0" text="Added Objects">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <ScrollPane layoutX="6.0" layoutY="56.0" prefHeight="213.0" prefWidth="201.0">
+                     <content>
+                        <FlowPane fx:id="addedFileListPane" prefHeight="200.0" prefWidth="198.0" />
+                     </content>
+                  </ScrollPane>
+                  <Label alignment="CENTER" layoutX="10.0" layoutY="276.0" prefHeight="33.0" prefWidth="193.0" text="Transformations">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Line endX="100.0" layoutX="109.0" layoutY="276.0" startX="-100.0" />
+                  <Line endX="100.0" layoutX="108.0" layoutY="311.0" startX="-100.0" />
+                  <HBox layoutX="9.0" layoutY="321.0" prefHeight="147.0" prefWidth="201.0">
+                     <children>
+                        <VBox prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="48.0" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="38.0" prefWidth="64.0" style="-fx-background-color: grey;" text="Scale" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="41.0" prefHeight="38.0" prefWidth="64.0" style="-fx-background-color: grey;" text="Rot" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="79.0" prefHeight="41.0" prefWidth="48.0" style="-fx-background-color: grey;" text="Trans" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <VBox layoutX="10.0" layoutY="10.0" prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="X" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="scaleX" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="rotX" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="transX" prefHeight="38.0" prefWidth="64.0" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="76.0" layoutY="10.0" prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="Y" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="scaleY" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="rotY" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="transY" prefHeight="38.0" prefWidth="64.0" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="Z" textFill="WHITE">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="scaleZ" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="rotZ" prefHeight="38.0" prefWidth="64.0" />
+                              <TextField fx:id="transZ" prefHeight="38.0" prefWidth="64.0" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <Button fx:id="delButton" layoutX="10.0" layoutY="486.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="201.0" text="Delete Item" />
+                  <Button fx:id="createScript" layoutX="10.0" layoutY="519.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="98.0" text="Create Script" />
+                  <Button fx:id="editScript" layoutX="113.0" layoutY="519.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="98.0" text="Edit Script" />
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+      <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+         <children>
+            <Label maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="11.0" fx:id="x3" />
+               </font>
+               <textFill>
+                  <Color blue="0.625" green="0.625" red="0.625" fx:id="x4" />
+               </textFill>
+            </Label>
+            <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+            <Label font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
+         </children>
+         <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

@@ -1,23 +1,24 @@
-package main;
+package inputHandler;
 
+import mathHandler.VectorGeometry;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import threeDItems.Mat4x4;
-import mathHandler.VectorGeometry;
 
 import java.nio.DoubleBuffer;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
 //import threeDItems.Mat4x4;
 
 public class KeyboardHandler extends GLFWKeyCallback{
 
-    public static boolean[] keys = new boolean[65536];
-    private static float x=0, y=0, z=0, yTheta=0, xTheta=0, mouseSensitivity=1f, zTheta=0;
-    private static long window;
-    public static VectorGeometry v = new VectorGeometry();
-    private static double cursorX, cursorY, tempDif;
+    public  static boolean[] keys = new boolean[65536];
+    private  float x=0, y=0, z=0, yTheta=0, xTheta=0, mouseSensitivity=1f, zTheta=0;
+    private  long window;
+    public  VectorGeometry v = new VectorGeometry();
+    private  double cursorX, cursorY, tempDif;
 
     @Override
     public void invoke(long window, int key, int scancode, int action, int mods) {
@@ -35,7 +36,7 @@ public class KeyboardHandler extends GLFWKeyCallback{
         this.window = window;
         DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer yBuffer = BufferUtils.createDoubleBuffer(1);
-        glfwSetCursorPos(window, MainGL.WIDTH/2, MainGL.HEIGHT/2);
+        //glfwSetCursorPos(window, MainGL.WIDTH/2, MainGL.HEIGHT/2);
         glfwGetCursorPos(window, xBuffer, yBuffer);
         cursorX = xBuffer.get(0);
         cursorY = yBuffer.get(0);
@@ -43,7 +44,9 @@ public class KeyboardHandler extends GLFWKeyCallback{
 
     public static Mat4x4 inputHandler(Mat4x4 worldMat)
     {
-        if(isKeyDown(GLFW_KEY_ESCAPE))
+
+
+        /*if(isKeyDown(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window, true);
         if(isKeyDown(GLFW_KEY_W )&& !isKeyDown(GLFW_KEY_SPACE)) {
             z-=0.1f;
@@ -93,7 +96,7 @@ public class KeyboardHandler extends GLFWKeyCallback{
         {
             cursorY = newCursorY;
             cursorX=newCursorX;
-        }
+        }*/
         return worldMat;
     }
 
