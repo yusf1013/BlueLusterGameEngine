@@ -6,6 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 public class MainGUI extends Application {
 
     @Override
@@ -13,7 +17,7 @@ public class MainGUI extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("../guiComponents/gui.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
-        primaryStage.show();
+        primaryStage.show();//
         System.out.println("done");
     }
 

@@ -20,10 +20,12 @@ public class ModelLoader {
     {
         Vector<Mesh> vec = new Vector<>();
         try {
-            Scanner in = new Scanner(new File("D:\\ideaIntellij\\olcge\\src\\Games\\info.hma"));
+
+            Scanner in = new Scanner(new File("src\\Games\\info.hma"));
+            //Scanner in = new Scanner(new File("out\\artifacts\\olcge_jar\\olcge\\Games\\info.hma"));
             System.out.println("Trying to loadAll");
 
-            //File info = new File("D:\\ideaIntellij\\olcge\\src\\Games\\info.hma");
+            //File info = new File("src\\Games\\info.hma");
             while(in.hasNext())
             {
                 String meshName = in.next();
@@ -61,7 +63,7 @@ public class ModelLoader {
             mesh.id=id++;
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
-        File file = new File("D:\\ideaIntellij\\olcge\\src\\resources\\"+fileName);
+        File file = new File("src\\resources\\"+fileName);
         if(isGameObj)
             fileNameVector.add(fileName);
         try {
@@ -106,8 +108,7 @@ public class ModelLoader {
     {
         try {
             System.out.println("Trying to oad class for: " + "Games.scriptOfMesh"+id);
-            ItemBag.addScript(id, (Inheritable) Class.forName("Games.scriptOfMesh"+id).newInstance());
-
+            ItemBag.addScript(id, (Inheritable) Class.forName( "Games.scriptOfMesh"+id).newInstance());
             /*Class cl = Class.forName("Games.scriptOfMesh"+id);
             Constructor ctor = cl.getDeclaredConstructor(ItemBag.getMeshMap().getClass());
             //ctor.setAccessible(true);

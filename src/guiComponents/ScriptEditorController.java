@@ -20,7 +20,8 @@ public class ScriptEditorController implements Initializable {
     public void editScript(int id)
     {
         String s="";
-        File file = new File("D:\\ideaIntellij\\olcge\\src\\Games\\scriptOfMesh"+id+".java");
+        //File file = new File("src\\Games\\scriptOfMesh"+id+".java");
+        File file = new File("src\\Games\\scriptOfMesh"+id+".java");
         try {
             Scanner scan = new Scanner(file);
             scan.useDelimiter("\\Z");

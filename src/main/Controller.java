@@ -23,14 +23,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import rendererEngine.Cmd;
 import rendererEngine.MainGL;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.*;
 
@@ -75,7 +73,7 @@ public class Controller implements Initializable {
         vbox2.setSpacing(10);
         addedFileListPane.getChildren().add(vbox2);
 
-        File file = new File("D:\\ideaIntellij\\olcge\\src\\resources");
+        File file = new File("src\\resources");
         File [] arrOfFiles = file.listFiles();
         grid=ml.meshLoader("toNotDisplay\\grid2.obj", false);
         grid.zTranslation=3f;
@@ -392,10 +390,35 @@ public class Controller implements Initializable {
             {
                 System.out.println("Is ID vsl: " + m.id);
             }
-            publish.publish(ml.fileNameVector, meshArray, hash);
+            publish.publish(ml.fileNameVector, meshArray);
             System.out.println("Confirmation recieved");
             //Cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\out\\production\\olcge\\rendererEngine && java MainGL");
-            MainGL.main(new String[2]);
+
+            File file = new File("olcge\\src\\Games");
+            if(file.exists())
+            {
+                System.out.println("File exists");
+                File source = new File("src\\Games");
+                File sourcesArr[] = source.listFiles();
+                for(File f: sourcesArr)
+                    copyFile(f, file);
+
+                source = new File("out\\production\\olcge\\Games");
+                sourcesArr = source.listFiles();
+                for(File f: sourcesArr)
+                    copyFile(f, new File("olcge\\Games"));
+
+                Cmd.runCommand("pushd olcge && java rendererEngine.MainGL && exit");
+            }
+            else
+            {
+                Cmd.runCommand("java rendererEngine.MainGL && exit");
+            }
+
+
+
+
+            //MainGL.main(new String[2]);
         });
     }
 
@@ -419,7 +442,7 @@ public class Controller implements Initializable {
                 }
                 if(meshArray.get(temp).isScripted)
                 {
-                    File file = new File("D:\\ideaIntellij\\olcge\\src\\Games\\scriptOfMesh"+meshArray.get(temp).id+".java");
+                    File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(temp).id+".java");
                     file.delete();
                 }
                 meshArray.remove(temp);
@@ -437,7 +460,7 @@ public class Controller implements Initializable {
         createScript.setOnAction(e->{
             System.out.println("Selected obj is: " + selectedObject);
             System.out.println("ID is: " + meshArray.get(selectedObject).id);
-            File file = new File("D:\\ideaIntellij\\olcge\\src\\Games\\scriptOfMesh"+meshArray.get(selectedObject).id+".java");
+            File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(selectedObject).id+".java");
             String scriptBody=
                     "package Games;\n" +
                     "import rendererEngine.scriptManager.Inheritable;\n" +
@@ -485,6 +508,34 @@ public class Controller implements Initializable {
     public int indexFinder(int id)
     {
         return hash.get(id);
+    }
+
+    public void copyFile(File source,File dest) {
+
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+        File oFile = new File(dest.getPath()+"\\"+source.getName());
+        System.out.println("OFILE: " + dest.getPath()+"\\"+source.getName());
+        System.out.println(oFile.getPath());
+
+        try {
+            inputStream = new FileInputStream(source);
+            outputStream = new FileOutputStream(oFile);
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = inputStream.read(buffer)) > 0) {
+
+                outputStream.write(buffer, 0, length);
+            }
+
+            inputStream.close();
+            outputStream.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -9,7 +9,7 @@ import java.util.Vector;
 
 public class Publisher {
 
-    public void publish(Vector<String> fileVec, List<Mesh> meshList, Vector<Integer> hash)
+    public void publish(Vector<String> fileVec, List<Mesh> meshList)
     {
         deleteAllFilesFromGames();
 
@@ -18,8 +18,8 @@ public class Publisher {
 
         for(int i=0; i<fileVec.size(); i++)
         {
-            File source = new File("D:\\ideaIntellij\\olcge\\src\\resources\\"+fileVec.elementAt(i));
-            File dest = new File("D:\\ideaIntellij\\olcge\\src\\Games\\"+fileVec.elementAt(i));
+            File source = new File("src\\resources\\"+fileVec.elementAt(i));
+            File dest = new File("src\\Games\\"+fileVec.elementAt(i));
             if(dest.exists())
             {
                 System.out.println("It exists");
@@ -34,52 +34,28 @@ public class Publisher {
                 "public class MasterScript extends InheritableClass{ \n" +
                 "\tpublic void run(Vector<Mesh> meshVec) \n" +
                 "\t{\n";
-        //File masterScript = new File("D:\\ideaIntellij\\olcge\\src\\rendererEngine\\MasterScript.java");
-       /* try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(masterScript));
-            writer.write(scriptHeader);
-
-            for(Mesh m: meshList)
-            {
-                if(m.isScripted)
-                {
-                    writer.write("\t\tGames.scriptOfMesh"+m.id+".run(meshVec.get("+(hash.get(m.id))+"));\n");
-                }
-            }
-            writer.write("\t}\n}");
-            writer.close();*/
 
             Cmd cmd = new Cmd();
-            //cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src && more rendererEngine\\MasterScript.java ");
-            /*cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src && javac rendererEngine/MasterScript.java " +
-                    "&& move D:\\ideaIntellij\\olcge\\src\\rendererEngine\\MasterScript.class " +
-                    "D:\\ideaIntellij\\olcge\\out\\production\\olcge\\rendererEngine" +
-                    "&& exit");*/
+            File testFile = new File("out\\production\\olcge\\Games");
 
-            cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src &&" + "javac Games\\*.java" +
-                    " && exit");
+            if(testFile.exists())
+                cmd.runCommand("pushd src &&" + "javac Games\\*.java && exit");
+            else
+                cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && exit");
 
-            cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src\\Games &&" +
+            /*cmd.runCommand("pushd src\\Games &&" +
                     "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games" +
+                    "&& exit");*/
+            if(testFile.exists())
+                cmd.runCommand("pushd src\\Games &&" +
+                    "move *.class ..\\..\\out\\production\\olcge\\Games" +
                     "&& exit");
+            else
+                cmd.runCommand("pushd src\\Games &&" +
+                        "move *.class ..\\..\\Games" +
+                        "&& exit");
 
-
-        /*cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src &&" + "javac rendererEngine\\MasterScript.java" +
-                " && exit");
-
-        cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\src\\rendererEngine &&" +
-                "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\rendererEngine" +
-                "&& exit");*/
-
-
-
-        /*} catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-
-
-        File info = new File("D:\\ideaIntellij\\olcge\\src\\Games\\info.hma");
+        File info = new File("src\\Games\\info.hma");
         try {
             //Writer write = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(info)));
             BufferedWriter write = new BufferedWriter(new FileWriter(info));
@@ -107,7 +83,7 @@ public class Publisher {
 
     public void deleteAllFilesFromGames()
     {
-        File dir = new File("D:\\ideaIntellij\\olcge\\src\\Games");
+        File dir = new File("src\\Games");
         File arr[] = dir.listFiles();
         for(File f: arr)
         {
@@ -127,7 +103,6 @@ public class Publisher {
         OutputStream outputStream = null;
 
         try {
-
             inputStream = new FileInputStream(source);
             outputStream = new FileOutputStream(dest);
 

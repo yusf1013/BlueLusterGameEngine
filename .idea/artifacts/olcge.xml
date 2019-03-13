@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="olcge">
+    <output-path>$PROJECT_DIR$/out/artifacts/olcge</output-path>
+    <root id="root">
+      <element id="archive" name="olcge.jar">
+        <element id="module-output" name="olcge" />
+      </element>
+    </root>
+  </artifact>
+</component>

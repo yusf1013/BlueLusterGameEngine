@@ -4,6 +4,11 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -36,6 +41,25 @@ public class MainGL {
     }
 
     private void init() {
+
+        File f = new File("src\\Games\\deatto.txt");
+        System.out.println(f.getAbsolutePath());
+        if(f.exists())
+            System.out.println("EXISTS");
+        else
+        {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+                writer.write("Yo");
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            System.out.println("Written");
+        }
+
+
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -104,7 +128,6 @@ public class MainGL {
                 //System.out.println(frameCount*1/frameRatePrintRate);
                 frameCount=0;
             }
-
 
 
             glfwSwapBuffers(window); // swap the color buffers
