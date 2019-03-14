@@ -5,7 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import mathHandler.VectorGeometry;
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
@@ -19,8 +19,8 @@ import java.util.Vector;
 public class DisplayDriver extends VectorGeometry {
 
     Mesh meshCube = new Mesh();
-    Mat4x4 matProj = new Mat4x4(), matRotZ=new Mat4x4(), matRotX=new Mat4x4();
-    float fTheta=0, fNear, fFar, fFov, fAspectRatio, fFovRad, screenHeight=550, screenWidth=370;
+    Matrix4by4 matProj = new Matrix4by4(), matRotZ=new Matrix4by4(), matRotX=new Matrix4by4();
+    float fTheta=0, fNear, fFar, fFov, aspectRatio, fFovRad, screenHeight=550, screenWidth=370;
     Vec3d vCamera = new Vec3d(0,0,0), light_direction = new Vec3d(0,1,-1);
     double lightIntensity=1;
     List<Triangle> triToRaster = new Vector<>();
@@ -66,15 +66,15 @@ public class DisplayDriver extends VectorGeometry {
         //root.getChildren().clear();
         gc.clearRect(0,0,800,800);
         // Set up rotation matrices
-        Mat4x4 matRotZ, matRotX;
+        Matrix4by4 matRotZ, matRotX;
         fTheta += 1.0f * fElapsedTime;
         matRotZ = makeZRotationMatrix(fTheta * 0.5f );
         matRotX = makeXRotationMatrix(fTheta );
 
-        Mat4x4 matTrans;
+        Matrix4by4 matTrans;
         matTrans = makeTranslation(0.0f, 0.0f, 300.0f);
 
-        Mat4x4 matWorld;
+        Matrix4by4 matWorld;
         matWorld = makeIdentity();	// Form World Matrix
 
         /*matWorld = multiplyMatrix(matWorld, matTrans); // My version
@@ -160,7 +160,7 @@ public class DisplayDriver extends VectorGeometry {
         triToRaster.clear();
         return true;
     }
-    public Vec3d MultiplyMatrixVector(Vec3d i, Mat4x4 m)
+    public Vec3d MultiplyMatrixVector(Vec3d i, Matrix4by4 m)
     {
         Vec3d o = new Vec3d(0,0,0);
         o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];

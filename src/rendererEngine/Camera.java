@@ -1,6 +1,6 @@
 package rendererEngine;
 
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 import threeDItems.Vec3d;
 import mathHandler.VectorGeometry;
 
@@ -23,16 +23,16 @@ public class Camera {
         position  = new Vec3d(x,y,z);
     }
 
-    public Mat4x4 createViewMat()
+    public Matrix4by4 createViewMat()
     {
         Vec3d vTarget= new Vec3d(0,0.0f,1.0f);
         //vLookDir=calculator.multiplyMatrixAndVector(calculator.makeYRotationMatrix(yaw), vTarget);
-        Mat4x4 mat = calculator.multiplyMatrix(calculator.makeXRotationMatrix(pitch), calculator.makeYRotationMatrix(yaw));
+        Matrix4by4 mat = calculator.multiplyMatrix(calculator.makeXRotationMatrix(pitch), calculator.makeYRotationMatrix(yaw));
         vLookDir=calculator.multiplyMatrixAndVector(mat, vTarget);
         vTarget=calculator.vectorAdd(vLookDir, position);
-        Mat4x4 matCamera = calculator.pointAtMatrix(position, vTarget, vUp);
+        Matrix4by4 matCamera = calculator.pointAtMatrix(position, vTarget, vUp);
 
-        Mat4x4 matView = calculator.quickInverse(matCamera);
+        Matrix4by4 matView = calculator.quickInverse(matCamera);
         return  matView;
 
     }

@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import mathHandler.ThreeDObjectTransformations;
 import mathHandler.VectorGeometry;
 import rendererEngine.Camera;
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
@@ -18,7 +18,7 @@ import java.util.Vector;
 
 public class DisplayDriverGUI extends VectorGeometry {
 
-    Mat4x4 matProj, matRotZ=new Mat4x4(), matRotX=new Mat4x4();
+    Matrix4by4 matProj, matRotZ=new Matrix4by4(), matRotX=new Matrix4by4();
     float fTheta=0, screenHeight=550, screenWidth=550, walkSpeed=20f;
     Camera camera = new Camera(-3,5,-5);
     ThreeDObjectTransformations trans = new ThreeDObjectTransformations();
@@ -56,9 +56,9 @@ public class DisplayDriverGUI extends VectorGeometry {
 
     public boolean addMeshForDrawing(Mesh meshCube, float fElapsedTime)
     {
-        Mat4x4 matWorld = meshCube.getWorldMat();
+        Matrix4by4 matWorld = meshCube.getWorldMat();
 
-        Mat4x4 matView = camera.createViewMat();
+        Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triTranslated=new Triangle(), triProjected = new Triangle();
@@ -99,11 +99,8 @@ public class DisplayDriverGUI extends VectorGeometry {
             /*fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y,
                     triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y,
                     triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y,  triToRaster.get(i).getColor());*/
-            // Scale into view
-            // Scale into view
             Triangle triProjected = triToRaster.get(i);
             triProjected.p[0].y*=-1; triProjected.p[1].y*=-1; triProjected.p[2].y*=-1;
-            //Triangle triProjected = new Triangle(0f,0.0f,-1.0f, 0.0f, 1.0f, -1f, 1f,0f,-1f);
             triProjected.p[0].x += 1.0f; triProjected.p[0].y += 1.0f;
             triProjected.p[1].x += 1.0f; triProjected.p[1].y += 1.0f;
             triProjected.p[2].x += 1.0f; triProjected.p[2].y += 1.0f;

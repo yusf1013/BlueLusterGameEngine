@@ -3,14 +3,14 @@ package inputHandler;
 import mathHandler.VectorGeometry;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 
 import java.nio.DoubleBuffer;
 
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
-//import threeDItems.Mat4x4;
+//import threeDItems.Matrix4by4;
 
 public class KeyboardHandler extends GLFWKeyCallback{
 
@@ -42,7 +42,7 @@ public class KeyboardHandler extends GLFWKeyCallback{
         cursorY = yBuffer.get(0);
     }
 
-    public static Mat4x4 inputHandler(Mat4x4 worldMat)
+    public static Matrix4by4 inputHandler(Matrix4by4 worldMat)
     {
 
 
@@ -82,7 +82,7 @@ public class KeyboardHandler extends GLFWKeyCallback{
             zTheta+=0.005;
 
 
-        Mat4x4 matTrans = v.multiplyMatrix(v.makeYRotationMatrix(yTheta), v.makeXRotationMatrix(xTheta)); // Transform by rotation
+        Matrix4by4 matTrans = v.multiplyMatrix(v.makeYRotationMatrix(yTheta), v.makeXRotationMatrix(xTheta)); // Transform by rotation
         matTrans=v.multiplyMatrix(matTrans, v.makeZRotationMatrix(zTheta));
         worldMat = v.multiplyMatrix(worldMat, matTrans); // Transform by translation
         xTheta=0; yTheta=0; zTheta=0;

@@ -9,7 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.MasterScript;
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
@@ -29,7 +29,7 @@ public class DisplayDriverGL extends VectorGeometry {
     //Mesh meshCube = new Mesh();
     //Vector<Mesh> meshVector = new Vector<>();
     //Vector<Mesh> meshVector;
-    Mat4x4 matProj;
+    Matrix4by4 matProj;
     float screenHeight=600, screenWidth=600, walkSpeed=20f;
     Camera camera = new Camera();
     ThreeDObjectTransformations trans = new ThreeDObjectTransformations();
@@ -168,24 +168,24 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public boolean drawMesh(Mesh meshCube, float fElapsedTime)
     {
-        Mat4x4 matWorld = meshCube.getWorldMat();
+        Matrix4by4 matWorld = meshCube.getWorldMat();
 
         /*System.out.println(meshCube.tris.elementAt(0).toString());
         System.out.println("Done With it");*/
 
-        /*Mat4x4 matRotZ, matRotX;
+        /*Matrix4by4 matRotZ, matRotX;
         //fTheta += 1.0f * fElapsedTime;
         matRotZ = makeZRotationMatrix(fTheta * 0.5f );
         matRotX = makeXRotationMatrix(fTheta );
 
-        Mat4x4 matTrans;
+        Matrix4by4 matTrans;
         matTrans = makeTranslation(0.0f, 0.0f, 10.0f);
 
         matWorld = multiplyMatrix(matRotZ, matRotX);
         matWorld = multiplyMatrix(matWorld, matTrans);*/
         //matWorld = multiplyMatrix(matWorld, mul);
 
-        Mat4x4 matView = camera.createViewMat();
+        Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triTranslated=new Triangle(), triProjected = new Triangle();

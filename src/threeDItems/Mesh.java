@@ -34,19 +34,19 @@ public class Mesh {
 
     }
 
-    public Mat4x4 getWorldMat()
+    public Matrix4by4 getWorldMat()
     {
-        Mat4x4 matRotZ, matRotX, matRotY;
+        Matrix4by4 matRotZ, matRotX, matRotY;
         //fTheta += 1.0f * fElapsedTime;
         matRotZ = VectorGeometry.makeZRotationMatrix(zTheta);
         matRotX = VectorGeometry.makeXRotationMatrix(xTheta);
         matRotY = VectorGeometry.makeYRotationMatrix(yTheta);
 
-        Mat4x4 matTrans, scale;
+        Matrix4by4 matTrans, scale;
         matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
         scale = VectorGeometry.scale(xScale, yScale, zScale);
 
-        Mat4x4 matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
+        Matrix4by4 matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotY);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, scale);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);

@@ -1,10 +1,10 @@
 package mathHandler;
 
-import threeDItems.Mat4x4;
+import threeDItems.Matrix4by4;
 import threeDItems.Triangle;
 
 public class ThreeDObjectTransformations extends VectorGeometry{
-    public Triangle transform(Mat4x4 transformationMatrix, Triangle triTransformed)
+    public Triangle transform(Matrix4by4 transformationMatrix, Triangle triTransformed)
     {
         Triangle nTri = new Triangle();
         nTri.p[0]=multiplyMatrixAndVector(transformationMatrix, triTransformed.p[0]);
