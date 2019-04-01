@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="Content" fx:id="rhsPane" minHeight="0.0" minWidth="0.0" prefHeight="609.0" prefWidth="209.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="52.0" prefWidth="209.0">
+         <children>
+            <Line endX="100.0" startX="-100.0" strokeWidth="3.0">
+               <VBox.margin>
+                  <Insets top="4.0" />
+               </VBox.margin>
+            </Line>
+            <Label text="Physics">
+               <VBox.margin>
+                  <Insets top="4.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Line endX="100.0" layoutX="115.0" layoutY="16.0" startX="-100.0" strokeWidth="3.0">
+               <VBox.margin>
+                  <Insets top="4.0" />
+               </VBox.margin>
+            </Line>
+         </children>
+      </VBox>
+      <CheckBox layoutX="14.0" layoutY="68.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="176.0" text="  Rigid body">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </CheckBox>
+   </children>
+</AnchorPane>

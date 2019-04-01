@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="189.0" prefWidth="196.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox layoutX="2.0" layoutY="42.0" prefHeight="147.0" prefWidth="201.0">
+         <children>
+            <VBox prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="48.0" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="38.0" prefWidth="64.0" style="-fx-background-color: grey;" text="Scale" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="41.0" prefHeight="38.0" prefWidth="64.0" style="-fx-background-color: grey;" text="Rot" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="79.0" prefHeight="41.0" prefWidth="48.0" style="-fx-background-color: grey;" text="Trans" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <VBox layoutX="10.0" layoutY="10.0" prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="X" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="scaleX" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="rotX" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="transX" prefHeight="38.0" prefWidth="64.0" />
+               </children>
+            </VBox>
+            <VBox layoutX="76.0" layoutY="10.0" prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="Y" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="scaleY" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="rotY" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="transY" prefHeight="38.0" prefWidth="64.0" />
+               </children>
+            </VBox>
+            <VBox prefHeight="222.0" prefWidth="50.0" style="-fx-border-color: black;">
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="78.0" style="-fx-background-color: grey;" text="Z" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="scaleZ" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="rotZ" prefHeight="38.0" prefWidth="64.0" />
+                  <TextField fx:id="transZ" prefHeight="38.0" prefWidth="64.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <Line endX="100.0" layoutX="101.0" layoutY="38.0" startX="-100.0" />
+      <Line endX="100.0" layoutX="102.0" layoutY="3.0" startX="-100.0" />
+      <Label alignment="CENTER" layoutX="3.0" layoutY="3.0" prefHeight="33.0" prefWidth="193.0" text="Transformations">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
