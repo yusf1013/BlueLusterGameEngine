@@ -1,10 +1,8 @@
 package rendererEngine.itemBag;
 import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.Vector;
+
+import java.util.*;
 
 public class ItemBag {
     private static Integer currentID=0;
@@ -27,6 +25,16 @@ public class ItemBag {
         for(Mesh m: vec)
         {
             meshCollection.put(m.id, m);
+        }
+    }
+
+    public static void addMesh(List vec)
+    {
+        for(Object o: vec)
+        {
+            Mesh m = (Mesh) o;
+            meshCollection.put(m.id, m);
+            //System.out.println("fixie");
         }
     }
 

@@ -55,6 +55,7 @@ public class Main extends Application {
                     elapsedTime=0;
                     //System.out.println(timeLim);
                 }
+                //System.out.println("fixie");
             }
         }.start();
 

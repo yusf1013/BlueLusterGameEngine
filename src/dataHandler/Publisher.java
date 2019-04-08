@@ -5,13 +5,28 @@ import threeDItems.Mesh;
 
 import java.io.*;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Vector;
 
 public class Publisher {
 
+    Scanner scan = new Scanner(System.in);
+
     public void publish(Vector<String> fileVec, List<Mesh> meshList)
     {
         deleteAllFilesFromGames();
+        System.out.println("Deleted");
+
+        /*try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/Games/gameInfo.hlit"));
+            out.writeObject(meshList);
+            List  l = (List) new ObjectInputStream(new FileInputStream("src/Games/gameInfo.hlit")).readObject();
+            System.out.println("List loaded");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }*/
 
         if(fileVec.size()==0)
             return;
@@ -28,32 +43,21 @@ public class Publisher {
                 copyFile(source, dest);
         }
 
-        String scriptHeader = "package rendererEngine; \n" +
-                "import threeDItems.Mesh;\n" +
-                "import java.util.Vector;\n" +
-                "public class MasterScript extends InheritableClass{ \n" +
-                "\tpublic void run(Vector<Mesh> meshVec) \n" +
-                "\t{\n";
 
-            Cmd cmd = new Cmd();
-            File testFile = new File("out\\production\\olcge\\Games");
-
-            if(testFile.exists())
-                cmd.runCommand("pushd src &&" + "javac Games\\*.java && exit");
-            else
-                cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && exit");
-
-            /*cmd.runCommand("pushd src\\Games &&" +
-                    "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games" +
-                    "&& exit");*/
-            if(testFile.exists())
+            /*if(testFile.exists())
+            {
+                System.out.println("2nd shit maybe?");
                 cmd.runCommand("pushd src\\Games &&" +
-                    "move *.class ..\\..\\out\\production\\olcge\\Games" +
-                    "&& exit");
+                        "move *.class ..\\..\\out\\production\\olcge\\Games" +
+                        "&& exit");
+            }
             else
+            {
+                System.out.println("Not 2nd shit maybe?");
                 cmd.runCommand("pushd src\\Games &&" +
                         "move *.class ..\\..\\Games" +
                         "&& exit");
+            }*/
 
         File info = new File("src\\Games\\info.hma");
         try {
@@ -62,21 +66,48 @@ public class Publisher {
             System.out.println("Preparing to write");
             for(int i=0; i<fileVec.size(); i++)
             {
-                System.out.println("Writing");
+                System.out.println("Writing at : " + info.getAbsolutePath());
+                //write.write("Please kill me");
+                System.out.println("Please kill me");
                 write.write(fileVec.elementAt(i)+ " ");
                 write.write(meshList.get(i).xTheta+" "+ meshList.get(i).yTheta + " " + meshList.get(i).zTheta + " ");
                 write.write(meshList.get(i).xTranslation+" "+ meshList.get(i).yTranslation + " " + meshList.get(i).zTranslation+ " ");
-                write.write(meshList.get(i).xScale+" "+ meshList.get(i).yScale + " " + meshList.get(i).zScale);
-                write.write(" "+meshList.get(i).isScripted + " " + meshList.get(i).id);
+                write.write(meshList.get(i).xScale+" "+ meshList.get(i).yScale + " " + meshList.get(i).zScale + " ");
+                write.write(meshList.get(i).isScripted + " " + meshList.get(i).id + " " + meshList.get(i).isRigidBody + " ");
+                if(meshList.get(i).isRigidBody)
+                {
+                    write.write(meshList.get(i).obb.min.x + " " + meshList.get(i).obb.min.y + " " + meshList.get(i).obb.min.z + " ");
+                    write.write(meshList.get(i).obb.max.x + " " + meshList.get(i).obb.max.y + " " + meshList.get(i).obb.max.z + " ");
+                }
                 write.write("\n");
+                Scanner scan = new Scanner(System.in);
+                //scan.nextLine();
             }
             write.close();
+            System.out.println("writer closed");
+            //System.exit(0);
+
+            System.out.println("Worthless life");
+            Cmd cmd = new Cmd();
+            File testFile = new File("out\\production\\olcge\\Games");
+
+            if(testFile.exists())
+                cmd.runCommand("echo lieee && pushd src && cd && " + "javac Games\\*.java && exit");
+            else
+                cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && echo \"Test File DNE\"");
+
+            cmd.runCommand("echo \"Moving class\" && pushd src\\Games &&" +
+                    "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games");
+            cmd.runCommand("pushd src\\Games && copy .\\info.hma ..\\..\\olcge\\Games && exit");
+
+            //cmd.runCommand("");
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
 
     }
@@ -90,6 +121,7 @@ public class Publisher {
             if(f.getName().endsWith(".obj"))
                 f.delete();
         }
+        //System.out.println("fixie");
     }
 
     public File loadFile(String fileName)
@@ -120,6 +152,12 @@ public class Publisher {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 
 

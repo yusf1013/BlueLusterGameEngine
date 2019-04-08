@@ -32,8 +32,10 @@ public class KeyboardHandler extends GLFWKeyCallback{
     }
 
     public KeyboardHandler(long window)
+
     {
         this.window = window;
+        //System.out.println("fixie");
         DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer yBuffer = BufferUtils.createDoubleBuffer(1);
         //glfwSetCursorPos(window, MainGL.WIDTH/2, MainGL.HEIGHT/2);

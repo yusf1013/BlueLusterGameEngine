@@ -1,4 +1,4 @@
 package threeDItems;
 
-public class MeshChildren {
+public class MeshChildren extends Mesh {
 }

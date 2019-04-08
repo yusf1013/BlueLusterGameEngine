@@ -76,6 +76,12 @@ public class DisplayDriverGL extends VectorGeometry {
         for(Map.Entry e:ItemBag.getEntrySet())
         {
             drawMesh((Mesh)e.getValue(), fElapsedTime);
+            if(((Mesh) e.getValue()).isRigidBody) {
+                drawMesh(((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue())), fElapsedTime);
+                //System.out.println(((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue())));
+                //throw new IllegalArgumentException("");
+            }
+
             //i++;
         }
         draw();
@@ -189,7 +195,7 @@ public class DisplayDriverGL extends VectorGeometry {
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triTranslated=new Triangle(), triProjected = new Triangle();
-            triTranslated=trans.transform(matWorld, meshCube.tris.elementAt(i));
+            triTranslated=trans.transform(matWorld, meshCube.tris.get(i));
 
             Vec3d normal, line1, line2;
             line1=vectorSub(triTranslated.p[1], triTranslated.p[0]);
@@ -208,10 +214,16 @@ public class DisplayDriverGL extends VectorGeometry {
 
                 if(arr==null || arr.length==0)
                     continue;
+                /*arr=clip(arr);
+
+                if(arr==null || arr.length==0)
+                    continue;*/
+
                 for(int mor=0; mor<arr.length; mor++)
                 {
                     triToRaster.add(projectTriangle(arr[mor], normal));
                 }
+                //System.out.println("fixie");
             }
         }
         //triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
@@ -335,7 +347,7 @@ public class DisplayDriverGL extends VectorGeometry {
     public static void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color fill)
     {
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex2f(x1, y1);
         glVertex2f(x2, y2);
@@ -345,13 +357,56 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public static void fillTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill)
     {
+
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //if(fill==Color.TRANSPARENT)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(x1, y1, z1);
         glVertex3f(x2, y2, z2);
         glVertex3f(x3, y3, z3);
         glEnd();
     }
+
+/*    public Triangle[] clip(Triangle [] tri)
+    {
+        ArrayList<Triangle> al = new ArrayList<>(), al2 = new ArrayList<>();
+
+        for(Triangle t:tri){
+            al.add(t);
+        }
+
+        for(Triangle t:al) {
+
+            Triangle arr[] = zClip(swapXZ(t), 0);
+            if(arr!=null)
+            for(Triangle t2:arr) {
+                al2.add(swapXZ(t2));
+            }
+        }
+        al.addAll(al2);
+
+        //return (Triangle[]) al.toArray();
+        Triangle brr[] = new Triangle[al.size()];
+        int i=0;
+        for(Triangle t2: al){
+            brr[i]=t2;
+            i++;
+        }
+        return brr;
+
+    }
+
+    public Triangle swapXZ(Triangle tri)
+    {
+        for(int i=0; i<3; i++)
+        {
+            float f=tri.p[i].z;
+            tri.p[i].z=tri.p[i].x;
+            tri.p[i].x=f;
+        }
+
+        return tri;
+    }*/
 
 }

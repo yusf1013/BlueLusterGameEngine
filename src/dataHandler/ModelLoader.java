@@ -1,13 +1,15 @@
 package dataHandler;
 
+import physicsEngine.CollisionModule.Obb;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh;
+import threeDItems.ObbMesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
 
@@ -16,12 +18,23 @@ public class ModelLoader {
     public int id=0;
 
 
+    public List loadAll(boolean bool)
+    {
+        //System.out.println("fixie");
+        try {
+            return ((List)(new ObjectInputStream(new FileInputStream("Games/gameInfo.hlit"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public Vector<Mesh> loadAll()
     {
         Vector<Mesh> vec = new Vector<>();
         try {
 
-            Scanner in = new Scanner(new File("src\\Games\\info.hma"));
+            //Scanner in = new Scanner(new File("src\\Games\\info.hma"));
+            Scanner in = new Scanner(new File("Games\\info.hma"));
             //Scanner in = new Scanner(new File("out\\artifacts\\olcge_jar\\olcge\\Games\\info.hma"));
             System.out.println("Trying to loadAll");
 
@@ -29,22 +42,39 @@ public class ModelLoader {
             while(in.hasNext())
             {
                 String meshName = in.next();
-                System.out.println("Mesh name is: " + meshName);
-                vec.add(meshLoader(meshName, false));
-
+                System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
+                vec.add(meshLoader("Games\\", meshName, false));
+                System.out.println("Load done");
                 vec.lastElement().xTheta=in.nextFloat(); vec.lastElement().yTheta=in.nextFloat(); vec.lastElement().zTheta=in.nextFloat();
                 vec.lastElement().xTranslation=in.nextFloat(); vec.lastElement().yTranslation=in.nextFloat(); vec.lastElement().zTranslation=in.nextFloat();
                 vec.lastElement().xScale=in.nextFloat(); vec.lastElement().yScale=in.nextFloat(); vec.lastElement().zScale=in.nextFloat();
                 String scripted = in.next();
                 vec.lastElement().id=in.nextInt();
+                String rb = in.next();
+
                 if(scripted.equals("true")) {
-                    System.out.println("THE ID IS: " + vec.lastElement().id);
+                    System.out.println("Is scripted and THE ID IS: " + vec.lastElement().id);
                     vec.lastElement().isScripted=true;
                     loadScript(vec.lastElement().id);
 
                 }
                 else
+                {
+                    System.out.println("Is not scripted");
                     vec.lastElement().isScripted=false;
+                }
+
+
+                System.out.println("SHIIIT");
+                System.out.println("RB is : " + rb);
+                if(rb.equals("true")){
+                    System.out.println("Is rigid body in model loader");
+                    vec.lastElement().isRigidBody=true;
+                    vec.lastElement().obb = new Obb(new Vec3d(in.nextFloat(), in.nextFloat(), in.nextFloat()), new Vec3d(in.nextFloat(), in.nextFloat(), in.nextFloat()), vec.lastElement().id);
+                }
+
+                else
+                    vec.lastElement().isRigidBody=false;
 
                 System.out.println("Here, yTrans is: " + vec.lastElement().yTranslation);
             }
@@ -56,17 +86,17 @@ public class ModelLoader {
         return  vec;
     }
 
-    public Mesh meshLoader(String fileName, boolean isGameObj)
-    {
+    public Mesh meshLoader(String directory, String fileName, boolean isGameObj) throws FileNotFoundException {
         Mesh mesh = new Mesh();
         if(isGameObj)
             mesh.id=id++;
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
-        File file = new File("src\\resources\\"+fileName);
+        File file = new File(directory+fileName);
+        System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         if(isGameObj)
             fileNameVector.add(fileName);
-        try {
+        /*try {*/
             Scanner jin = new Scanner(file);
             while(jin.hasNext())
             {
@@ -95,11 +125,52 @@ public class ModelLoader {
 
                 }
             }
+            System.out.println("End mesh laoder");
+        System.out.println("Triangle count: " + mesh.tris.size());
+        return mesh;
+    }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
+    public ObbMesh obbMeshLoader(String directory, String fileName, boolean isGameObj) throws FileNotFoundException {
+        //Mesh mesh = new Mesh();
+        ObbMesh mesh = new ObbMesh();
+        if(isGameObj)
+            mesh.id=id++;
+        Vector<Vec3d> pointBuffer = new Vector<>();
+        //Vector<Vec3d> normalBuffer = new Vector<>();
+        File file = new File(directory+fileName);
+        System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
+        if(isGameObj)
+            fileNameVector.add(fileName);
+        /*try {*/
+        Scanner jin = new Scanner(file);
+        while(jin.hasNext())
+        {
+            String s, s1, s2, s3;
+            s= jin.next();
+            if(s.startsWith("v") && s.length()==1)
+            {
+                s1=jin.next();
+                s2=jin.next();
+                s3=jin.next();
+                pointBuffer.add(new Vec3d(Float.parseFloat(s1), Float.parseFloat(s2), Float.parseFloat(s3)));
+            }
+
+            else if (s.startsWith("f") && s.length()==1)
+            {
+                s1=jin.next();
+                s2=jin.next();
+                s3=jin.next();
+                String temp1[] = s1.split("/");
+                String temp2[] = s2.split("/");
+                String temp3[] = s3.split("/");
+
+                Triangle newtri = new Triangle(pointBuffer.elementAt(Integer.parseInt(temp1[0])-1), pointBuffer.elementAt(Integer.parseInt(temp2[0])-1), pointBuffer.elementAt(Integer.parseInt(temp3[0])-1));
+
+                mesh.addTri(newtri);
+
+            }
         }
+        System.out.println("End mesh laoder");
         System.out.println("Triangle count: " + mesh.tris.size());
         return mesh;
     }
@@ -124,6 +195,12 @@ public class ModelLoader {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 
 

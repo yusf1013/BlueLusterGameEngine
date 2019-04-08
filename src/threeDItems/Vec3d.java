@@ -1,6 +1,8 @@
 package threeDItems;
 
-public class Vec3d {
+import java.io.Serializable;
+
+public class Vec3d implements Serializable {
     public float x,y,z;
     public float w=1.0f;
 
@@ -16,6 +18,7 @@ public class Vec3d {
         this.y = y;
         this.z = z;
         this.w = 1.0f;
+        //System.out.println("fixie");
     }
 
     public Vec3d()

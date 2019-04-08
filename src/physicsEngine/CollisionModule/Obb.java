@@ -2,20 +2,19 @@ package physicsEngine.CollisionModule;
 
 import dataHandler.ModelLoader;
 import javafx.scene.paint.Color;
-import mathHandler.ThreeDObjectTransformations;
 import mathHandler.VectorGeometry;
 import threeDItems.*;
 
 import java.io.FileNotFoundException;
-import java.util.Vector;
+import java.util.ArrayList;
 
-public class Aabb extends Collider{
+public class Obb extends Collider{
     public Vec3d min= new Vec3d();
     public Vec3d max = new Vec3d();
     ObbMesh cube = new ObbMesh();
     int id;
 
-    public Aabb (Vec3d min, Vec3d max, int id)
+    public Obb(Vec3d min, Vec3d max, int id)
     {
         this.min=min;
         this.max=max;
@@ -31,7 +30,7 @@ public class Aabb extends Collider{
         }
     }
 
-    public Aabb(Triangle tri)
+    public Obb(Triangle tri)
     {
         min.x=findMin(tri.p[0].x, tri.p[1].x, tri.p[2].x);
         min.y=findMin(tri.p[0].y, tri.p[1].y, tri.p[2].y);
@@ -42,14 +41,12 @@ public class Aabb extends Collider{
         max.z=findMax(tri.p[0].z, tri.p[1].z, tri.p[2].z);
     }
 
-    public Aabb(Mesh mesh)
+    public Obb(Mesh mesh)
     {
         this(mesh.tris.get(0));
-        Vector<Triangle> vec = mesh.tris;
+        ArrayList<Triangle> vec = mesh.tris;
         this.id = mesh.id;
         System.out.println("In big constructor");
-
-        //cube = new ModelLoader().meshLoader("cube.obj", false);
 
         try{
             cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj", false);
@@ -174,6 +171,17 @@ public class Aabb extends Collider{
         cube.initTransZ=0;
         cube.initTransY=0;
         cube.initTransZ=0;
+    }
+
+}
+
+class ObbDataOnly{
+    public Vec3d min;
+    public Vec3d max;
+
+    public ObbDataOnly(Vec3d min, Vec3d max) {
+        this.min = min;
+        this.max = max;
     }
 
 }

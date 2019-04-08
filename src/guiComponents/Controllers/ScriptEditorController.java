@@ -1,4 +1,4 @@
-package guiComponents;
+package guiComponents.Controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -43,6 +43,12 @@ public class ScriptEditorController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //System.out.println("fixie");
+    }
 
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 }

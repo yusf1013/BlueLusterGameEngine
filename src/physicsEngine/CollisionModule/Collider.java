@@ -1,4 +1,6 @@
 package physicsEngine.CollisionModule;
 
-public class Collider {
+public abstract class Collider {
+
+
 }

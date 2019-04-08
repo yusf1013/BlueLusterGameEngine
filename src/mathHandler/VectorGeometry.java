@@ -211,4 +211,18 @@ public class VectorGeometry {
 
         return matrix;
     }
+
+    public static Matrix4by4 makeRotation(float x, float y, float z)
+    {
+        Matrix4by4 temp=multiplyMatrix(makeZRotationMatrix(z), makeXRotationMatrix(x));
+        //System.out.println("fixie");
+        return multiplyMatrix(temp , makeYRotationMatrix(y));
+
+    }
+    public void useless()
+    {
+        int i=0;
+        i++;
+    }
+
 }

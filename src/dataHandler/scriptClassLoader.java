@@ -51,6 +51,13 @@ public class scriptClassLoader extends ClassLoader {
         DataInputStream dis = new DataInputStream(fis);
         dis.readFully(buff);
         dis.close();
+        //System.out.println("fixie");
         return buff;
+    }
+
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 }

@@ -2,7 +2,8 @@ package main;
 
 import dataHandler.ModelLoader;
 import dataHandler.Publisher;
-import guiComponents.ScriptEditorController;
+import guiComponents.Controllers.ColliderController;
+import guiComponents.Controllers.ScriptEditorController;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,18 +14,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import physicsEngine.CollisionModule.ObjectSliceAndMerge;
 import rendererEngine.Cmd;
-import rendererEngine.MainGL;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
 
@@ -39,19 +38,27 @@ public class Controller implements Initializable {
     @FXML
     Group gameStage;
     @FXML
-    AnchorPane anchor;
+    AnchorPane anchor, transPane, rhsPane, physicsPane;
     @FXML
     TextField scaleX, scaleY, scaleZ, rotX, rotY, rotZ, transX, transY, transZ;
     @FXML
     MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView, runInReleaseMode;
     @FXML
-    Button delButton, editScript, createScript;
+    MenuItem transMenuItem;
+    @FXML
+    Button delButton, editScript, createScript, createColliderButton;
+    @FXML
+    SplitPane split;
+    @FXML
+    CheckBox rigidBodyCB;
+    @FXML
+    Label isColliderSet, meshId;
 
 
     ModelLoader ml = new ModelLoader();
     final DisplayDriverGUI ddgui = new DisplayDriverGUI();
-    double width=550, height=550;
-    Canvas canvas = new Canvas( 550, 550 );
+    double width=550, height=600;
+    Canvas canvas = new Canvas( width, height );
     GraphicsContext gc = canvas.getGraphicsContext2D();
     List <Mesh> meshArray= new ArrayList<Mesh>();
     Mesh grid;
@@ -62,10 +69,12 @@ public class Controller implements Initializable {
     Publisher publish = new Publisher();
     Scanner scan = new Scanner(System.in);
     public Vector<Integer> hash = new Vector<>();
+    FXMLLoader loader;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //anchor.setOnMouseClicked(e-> System.out.println("dies"));
         VBox vbox = new VBox();
         vbox.setSpacing(10);
         fileListPane.getChildren().add(vbox);
@@ -75,7 +84,11 @@ public class Controller implements Initializable {
 
         File file = new File("src\\resources");
         File [] arrOfFiles = file.listFiles();
-        grid=ml.meshLoader("toNotDisplay\\grid2.obj", false);
+        try {
+            grid=ml.meshLoader("src\\resources\\","toNotDisplay\\grid2.obj", false);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         grid.zTranslation=3f;
         ddgui.drawMesh(grid, 0f, gc);
 
@@ -99,6 +112,9 @@ public class Controller implements Initializable {
             j++;
         }
 
+        /*gc.setFill(Color.BLUE);
+        gc.fillRoundRect(100, 10, 50, 50, 10, 10);*/
+
 
         gameStage.getChildren().add(canvas);
 
@@ -106,48 +122,101 @@ public class Controller implements Initializable {
         initializeMenuItems();
         initializePublisherMenuItems();
         initializeButtons();
+        rigidBodyCB.setOnAction(e->{
+            meshArray.get(selectedObject).isRigidBody=rigidBodyCB.isSelected();
+            if(meshArray.get(selectedObject).isRigidBody)
+            {
+                if(meshArray.get(selectedObject).obb !=null)
+                {
+                    isColliderSet.setText("Collider is set");
+                    createColliderButton.setText("View Collider");
+                    createColliderButton.setDisable(true);
+                }
+                else
+                {
+                    isColliderSet.setText("No collider set");
+                    createColliderButton.setText("Create Collider");
+                    createColliderButton.setDisable(false);
+                }
+            }
+            else
+            {
+                isColliderSet.setText("Collider N/A");
+                meshArray.get(selectedObject).obb =null;
+                createColliderButton.setDisable(true);
+            }
+            System.out.println(meshArray.get(selectedObject).isRigidBody);
+            //createColliderButton.setDisable(false);
+        });
+        //System.out.println("fixie");
+        //rhsPane.getChildren().clear();
+        //initializeControls();
+    }
 
+    public void tro()
+    {
+        System.out.println("dsfdss");
+        int i=0;
     }
 
     public void addMeshToList(String name)
     {
         //System.out.println("Loading first shit: " + ml.id);
-        meshArray.add(ml.meshLoader(name, true));
-        if(hash.size()>0)
-            hash.add(hash.lastElement()+1);
-        else
-            hash.add(0);
-        counter++;
-        Label label = new Label();
-        labelVec.add(label);
-        label.setPadding(new Insets(3,5,3,5));
-        label.setText("  " + (counter) + ". " + name + "  ");
-        //label.setText(name + "  ");
-        int temp=Integer.parseInt(label.getText().substring(2,3))-1;
-        label.setOnMouseClicked(e -> {
-            if(isObjectSelected)
-            {
-                int earlierSelection=selectedObject;
-                System.out.println(labelVec.size() + "  " + selectedObject);
-                labelVec.get(selectedObject).setStyle("-fx-border-color: black;");
-                deSelectObject();
-                if(temp!=earlierSelection)
-                {
-                    selectObject(label.getText().substring(2,3));
-                    label.setStyle("-fx-border-color: red;");
-                }
-            }
+        ArrayList<Mesh> al=null;
+        try {
+                Mesh toAdd = ml.meshLoader("src\\resources\\",name, true);
+            System.out.println("After loading: " + toAdd.max);
+            ObjectSliceAndMerge obj = new ObjectSliceAndMerge(toAdd);
+            obj.createTree();
+            al = obj.getMeshList();
+            meshArray.addAll(al);
+            System.out.println("Big moment: " + al.size());
+            //meshArray.add(toAdd);
+
+            //obj.divideWRTX(meshArray.get(meshArray.size()-1), 0.1f);
+            //System.out.println("After division: " + meshArray.get(meshArray.size()-1));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        for(int i=0; i<al.size(); i++) {
+            //to restore to previous version, take this shit out of the loop.
+            if (hash.size() > 0)
+                hash.add(hash.lastElement() + 1);
             else
-            {
-                selectObject(label.getText().substring(2,3));
-                label.setStyle("-fx-border-color: red;");
-                System.out.println("else: "+selectedObject);
-            }
-        });
-        label.setOnKeyPressed(e -> System.out.println("sfdfsefsd"));
-        label.setStyle("-fx-border-color: black;");
-        label.setPrefWidth(200d);
-        //vbox2.getChildren().add(label);
+                hash.add(0);
+            counter++;
+            Label label = new Label();
+            labelVec.add(label);
+            label.setPadding(new Insets(3, 5, 3, 5));
+            label.setText("  " + (counter) + ". " + name + "  ");
+            //label.setText(name + "  ");
+            int temp = Integer.parseInt(label.getText().substring(2, 3)) - 1;
+            label.setOnMouseClicked(e -> {
+                if (isObjectSelected) {
+                    int earlierSelection = selectedObject;
+                    System.out.println(labelVec.size() + "  " + selectedObject);
+                    labelVec.get(selectedObject).setStyle("-fx-border-color: black;");
+                    deSelectObject();
+                    if (temp != earlierSelection) {
+                        //selectObject(label.getText().substring(2,3));
+                        selectObject(splitString(label.getText(), ".", true));
+                        label.setStyle("-fx-border-color: red;");
+                    }
+                } else {
+                    //selectObject(label.getText().substring(2,3));
+                    System.out.println("Before special op: " + splitString(label.getText(), ".", true));
+                    selectObject(splitString(label.getText(), ".", true));
+
+                    label.setStyle("-fx-border-color: red;");
+                    System.out.println("else: " + selectedObject);
+                }
+            });
+            label.setOnKeyPressed(e -> System.out.println("sfdfsefsd"));
+            label.setStyle("-fx-border-color: black;");
+            label.setPrefWidth(200d);
+            //vbox2.getChildren().add(label);
+        }
     }
 
     public void selectObject(String s)
@@ -169,6 +238,34 @@ public class Controller implements Initializable {
             createScript.setDisable(false);
             editScript.setDisable(true);
         }
+        rigidBodyCB.setSelected(meshArray.get(selectedObject).isRigidBody);
+
+        meshId.setText("Mesh Id: "+ meshArray.get(selectedObject).id);
+        if(meshArray.get(selectedObject).isRigidBody)
+        {
+            if(meshArray.get(selectedObject).obb !=null)
+            {
+                isColliderSet.setText("Collider is set");
+                createColliderButton.setText("View Collider");
+                //createColliderButton.setDisable(true);
+            }
+            else
+            {
+                isColliderSet.setText("No collider set");
+                createColliderButton.setText("Create Collider");
+                createColliderButton.setDisable(false);
+            }
+        }
+        else
+        {
+            isColliderSet.setText("Collider N/A");
+            createColliderButton.setDisable(true);
+        }
+        /*if(selectedObject!=-1)
+        {*/
+
+
+        /*}*/
         //System.out.println(s + " has been selected and its index is: " + hash.get(meshArray.get(selectedObject).id));
         //System.out.println("But its ID is: " + meshArray.get(selectedObject).id);
     }
@@ -185,11 +282,12 @@ public class Controller implements Initializable {
             vbox2.getChildren().add(label);
             i++;
         }
+
     }
 
     public String splitString(String s, String regex, boolean first)
     {
-        String s1=null;
+        String s1="";
         for(int i=0; i<s.length(); i++)
         {
             if(s.charAt(i)==regex.charAt(0))
@@ -217,15 +315,27 @@ public class Controller implements Initializable {
         delButton.setDisable(true);
         editScript.setDisable(true);
         createScript.setDisable(true);
+        rigidBodyCB.setSelected(false);
+        physicsPane.setDisable(true);
+        isColliderSet.setText("Collider info");
+        meshId.setText("Mesh Id");
     }
 
     public void update()
     {
         System.out.println("Mesh Array ize is: " + meshArray.size());
+        /*if(meshArray.size()==4)
+        {
+            System.out.println(meshArray.get(1));
+            meshArray.remove(1);
+        }*/
         updateSelectedObj();
         gc.clearRect(0,0, width, height);
         ddgui.drawMesh(grid, 0f, gc);
-        ddgui.onUserUpdate(0f, gc, meshArray);
+        if(meshArray.size()>0)
+            ddgui.onUserUpdate(0f, gc, meshArray);
+
+
     }
 
     public void disableAllTableItems(boolean disable)
@@ -233,6 +343,7 @@ public class Controller implements Initializable {
         scaleX.setDisable(disable); rotX.setDisable(disable); transX.setDisable(disable);
         scaleY.setDisable(disable); rotY.setDisable(disable); transY.setDisable(disable);
         scaleZ.setDisable(disable); rotZ.setDisable(disable); transZ.setDisable(disable);
+        physicsPane.setDisable(disable);
     }
 
     public void loadAllTableItems()
@@ -318,11 +429,53 @@ public class Controller implements Initializable {
                 }
             }
         });
+
+        rotX.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                {
+                    meshArray.get(selectedObject).xTheta=Float.parseFloat(rotX.getText())*-3.14159f/180f;
+                    update();
+                }
+            }
+        });
+
+        rotY.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                {
+                    meshArray.get(selectedObject).yTheta=Float.parseFloat(rotY.getText())*-3.14159f/180f;
+                    update();
+                }
+            }
+        });
+
+        rotZ.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                {
+                    meshArray.get(selectedObject).zTheta=Float.parseFloat(rotZ.getText())*-3.14159f/180f;
+                    update();
+                }
+            }
+        });
     }
 
     public void initializeMenuItems()
     {
         initializeViewMenu();
+        initializeEditMenu();
+    }
+
+    public void initializeEditMenu()
+    {
+        transMenuItem.setOnAction(e->{
+            rhsPane.getChildren().clear();
+            rhsPane.getChildren().add(transPane);
+        });
     }
 
     public void initializeViewMenu()
@@ -380,6 +533,7 @@ public class Controller implements Initializable {
             System.out.println("View");
             update();
         });
+
     }
 
     public void initializePublisherMenuItems()
@@ -394,11 +548,14 @@ public class Controller implements Initializable {
             System.out.println("Confirmation recieved");
             //Cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\out\\production\\olcge\\rendererEngine && java MainGL");
 
-            File file = new File("olcge\\src\\Games");
+            File file = new File("src\\Games");
             if(file.exists())
             {
-                System.out.println("File exists");
-                File source = new File("src\\Games");
+                System.out.println("File exists: " + "src\\Games");
+
+                Cmd.runCommand("xcopy /s out\\production\\olcge\\*.class .\\olcge\\ /Y && echo copy done && exit");
+
+                /*File source = new File("src\\Games");
                 File sourcesArr[] = source.listFiles();
                 for(File f: sourcesArr)
                     copyFile(f, file);
@@ -406,13 +563,14 @@ public class Controller implements Initializable {
                 source = new File("out\\production\\olcge\\Games");
                 sourcesArr = source.listFiles();
                 for(File f: sourcesArr)
-                    copyFile(f, new File("olcge\\Games"));
+                    copyFile(f, new File("olcge\\Games"));*/
 
-                Cmd.runCommand("pushd olcge && java rendererEngine.MainGL && exit");
+                Cmd.runCommand("pushd olcge && java rendererEngine.MainGL");
             }
             else
             {
-                Cmd.runCommand("java rendererEngine.MainGL && exit");
+                throw new IllegalStateException("In else  in controller");
+                //Cmd.runCommand("java rendererEngine.MainGL && exit");
             }
 
 
@@ -491,7 +649,7 @@ public class Controller implements Initializable {
             Stage primaryStage= new Stage();
             Parent root;
             //root = FXMLLoader.load(getClass().getResource("../guiComponents/scriptEditor.fxml"));
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("../guiComponents/scriptEditor.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../guiComponents/fxml/scriptEditor.fxml"));
             try {
                 root = loader.load();
                 primaryStage.setTitle("Hello World");
@@ -503,6 +661,30 @@ public class Controller implements Initializable {
                 e1.printStackTrace();
             }
         });
+
+        createColliderButton.setOnAction(e ->{
+            loader= new FXMLLoader(getClass().getResource("../guiComponents/fxml/colliderPane.fxml"));
+            try {
+                Parent root = loader.load();
+                //Parent root = FXMLLoader.load(getClass().getResource("gui.fxml"));
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.show();
+
+                ColliderController c= loader.getController();
+                c.setObb(meshArray.get(selectedObject));
+
+                /*c.setThisMesh(meshArray.get(selectedObject));
+                c.update(false);*/
+
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+        });
+
     }
 
     public int indexFinder(int id)
@@ -536,6 +718,18 @@ public class Controller implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void handleInputs(KeyEvent event)
+    {
+        System.out.println("dsds");
+    }
+
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 
 }

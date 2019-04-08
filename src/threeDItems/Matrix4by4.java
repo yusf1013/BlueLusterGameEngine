@@ -11,13 +11,14 @@ public class Matrix4by4 {
 
     public String toString()
     {
-        String s="";
+        String s="",ho;
         for(int i=0; i<4; i++)
         {
             for(int j=0; j<4; j++)
                 s+=m[i][j] + "\t";
             s+="\n";
         }
+        //System.out.println("fixie");
         return s;
     }
 }

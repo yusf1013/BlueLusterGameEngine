@@ -20,7 +20,7 @@ public class DisplayDriverGUI extends VectorGeometry {
 
     Matrix4by4 matProj, matRotZ=new Matrix4by4(), matRotX=new Matrix4by4();
     float fTheta=0, screenHeight=550, screenWidth=550, walkSpeed=20f;
-    Camera camera = new Camera(-3,5,-5);
+    public Camera camera = new Camera(-3,5,-5);
     ThreeDObjectTransformations trans = new ThreeDObjectTransformations();
     Vec3d light_direction = new Vec3d(-3,5,-5);
     List<Triangle> triToRaster = new Vector<>();
@@ -37,12 +37,13 @@ public class DisplayDriverGUI extends VectorGeometry {
 
     public void drawMesh (Mesh m, float fElapsedTime, GraphicsContext gc)
     {
+
         addMeshForDrawing(m, fElapsedTime);
         drawQueuedTriangles(gc);
     }
 
 
-    boolean onUserUpdate(float fElapsedTime, GraphicsContext gc, List<Mesh> meshList)
+    public boolean onUserUpdate(float fElapsedTime, GraphicsContext gc, List<Mesh> meshList)
     {
         for(Mesh m:meshList)
         {
@@ -57,12 +58,11 @@ public class DisplayDriverGUI extends VectorGeometry {
     public boolean addMeshForDrawing(Mesh meshCube, float fElapsedTime)
     {
         Matrix4by4 matWorld = meshCube.getWorldMat();
-
         Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triTranslated=new Triangle(), triProjected = new Triangle();
-            triTranslated=trans.transform(matWorld, meshCube.tris.elementAt(i));
+            triTranslated=trans.transform(matWorld, meshCube.tris.get(i));
 
             Vec3d normal, line1, line2;
             line1=vectorSub(triTranslated.p[1], triTranslated.p[0]);
@@ -92,8 +92,8 @@ public class DisplayDriverGUI extends VectorGeometry {
 
     public boolean drawQueuedTriangles(GraphicsContext gc)
     {
-        triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
 
+        triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
         for(int i=0; i<triToRaster.size(); i++)
         {
             /*fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y,
@@ -132,7 +132,8 @@ public class DisplayDriverGUI extends VectorGeometry {
         light_direction = normaliseVector(light_direction);
         float dp = Math.max(0.1f, (float) Math.abs((double) dotProduct(light_direction, normal)));
         //float dp=1.0f;
-        triProjected.setColor(new Color(color.getRed() * dp, color.getGreen() * dp, color.getBlue() * dp, color.getOpacity() * 1));
+        if(triTranslated.getColor()!=Color.TRANSPARENT)
+            triProjected.setColor(new Color(color.getRed() * dp, color.getGreen() * dp, color.getBlue() * dp, color.getOpacity() * 1));
         return triProjected;
     }
 
@@ -225,22 +226,29 @@ public class DisplayDriverGUI extends VectorGeometry {
         return (((xoy1-xoy3)*(0.1f-z3)/(z1-z3))+xoy3);
     }
 
-    public static void fillTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)
+    public void fillTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)
     {
         gc.setStroke(Color.BLACK);
         gc.setFill(fill);
         gc.setLineWidth(1);
         gc.fillPolygon(new double[]{x1, x2, x3},
                 new double[]{y1,y2,y3}, 3);
-        /*gc.fillPolygon(new double[]{0, width/2.0, width},
-                new double[]{height/2.0,height,height/2.0}, 3);*/
+        //System.out.println(x1 + " " + x2 + " " + x3 + "\n" + y1 + " " + y2 + " " + y3 + " " + "\n");
+    }
 
-        /*glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
-        glBegin(GL_TRIANGLE_STRIP);
-        glVertex3f(x1, y1, z1);
-        glVertex3f(x2, y2, z2);
-        glVertex3f(x3, y3, z3);
-        glEnd();*/
+    /*public static void drawTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)
+    {
+        gc.setStroke(Color.BLACK);
+        gc.setFill(Color.TRANSPARENT);
+        gc.setLineWidth(1);
+        gc.fillPolygon(new double[]{x1, x2, x3},
+                new double[]{y1,y2,y3}, 3);
+    }*/
+
+    public void useless()
+    {
+        int i=0;
+        i++;
     }
 
 }

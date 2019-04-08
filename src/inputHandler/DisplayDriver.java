@@ -10,6 +10,7 @@ import threeDItems.Mesh;
 import threeDItems.Triangle;
 import threeDItems.Vec3d;
 
+import java.io.FileNotFoundException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
@@ -30,7 +31,12 @@ public class DisplayDriver extends VectorGeometry {
     {
         //Load model from file
         ModelLoader dd = new ModelLoader();
-        meshCube=dd.meshLoader("cube.obj", true);
+        //System.out.println("fixie");
+        try {
+            meshCube=dd.meshLoader("src\\resources\\","cube.obj", true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         //Projection matrix
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
     }
@@ -89,9 +95,9 @@ public class DisplayDriver extends VectorGeometry {
         for (int i=0; i<meshCube.tris.size(); i++)
         {
             Triangle triProjected=new Triangle(), triTranslated=new Triangle();
-            triTranslated.p[0] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[0]);
-            triTranslated.p[1] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[1]);
-            triTranslated.p[2] = multiplyMatrixAndVector(matWorld, meshCube.tris.elementAt(i).p[2]);
+            triTranslated.p[0] = multiplyMatrixAndVector(matWorld, meshCube.tris.get(i).p[0]);
+            triTranslated.p[1] = multiplyMatrixAndVector(matWorld, meshCube.tris.get(i).p[1]);
+            triTranslated.p[2] = multiplyMatrixAndVector(matWorld, meshCube.tris.get(i).p[2]);
 
             // Use Cross-Product to get surface normal
             Vec3d normal = new Vec3d(), line1= new Vec3d(), line2= new Vec3d();

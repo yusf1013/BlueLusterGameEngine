@@ -1,43 +1,56 @@
 package threeDItems;
 
+import javafx.scene.paint.Color;
 import mathHandler.VectorGeometry;
+import physicsEngine.CollisionModule.Obb;
 
-import java.util.Vector;
+import java.io.Serializable;
+import java.util.ArrayList;
 
-public class Mesh {
-    public Vector<Triangle> tris= new Vector<Triangle>();
+public class Mesh implements Serializable {
+    public ArrayList<Triangle> tris= new ArrayList<Triangle>();
     public float xTheta=0, yTheta=0, zTheta=0, xTranslation=0, yTranslation=0, zTranslation=0, xScale=1, yScale=1, zScale=1;
-    public float x=0,y=0,z=0;
-    public boolean isScripted=false;
+    public boolean isScripted=false, isRigidBody=false;
     public int id;
+    public Obb obb;
+    public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000);
 
-    public void addTri(Triangle t)
+    public void addTri(Triangle tri)
     {
-        x=(x+(t.p[0].x+ t.p[1].x+ t.p[2].x)/3f)/2f;
-        y=(y+(t.p[0].y+ t.p[1].y+ t.p[2].y)/3f)/2f;
-        z=(z+(t.p[0].z+ t.p[1].z+ t.p[2].z)/3f)/2f;
-        tris.add(t);
+        Vec3d tMin = new Vec3d(), tMax = new Vec3d();
+        tMin.x=findMin(tri.p[0].x, tri.p[1].x, tri.p[2].x);
+        tMin.y=findMin(tri.p[0].y, tri.p[1].y, tri.p[2].y);
+        tMin.z=findMin(tri.p[0].z, tri.p[1].z, tri.p[2].z);
+
+        tMax.x=findMax(tri.p[0].x, tri.p[1].x, tri.p[2].x);
+        tMax.y=findMax(tri.p[0].y, tri.p[1].y, tri.p[2].y);
+        tMax.z=findMax(tri.p[0].z, tri.p[1].z, tri.p[2].z);
+
+        min.x=Math.min(min.x, tMin.x);
+        min.y=Math.min(min.y, tMin.y);
+        min.z=Math.min(min.z, tMin.z);
+
+        max.x=Math.max(max.x, tMax.x);
+        max.y=Math.max(max.y, tMax.y);
+        max.z=Math.max(max.z, tMax.z);
+        tris.add(tri);
     }
 
-    @Override
-    public String toString() {
-        String ts = "Mesh-\n";
-        for(int i=0; i<tris.size(); i++)
+    public void setTris(ArrayList<Triangle> list)
+    {
+        tris=new ArrayList<>();
+        min=new Vec3d(1000000, 1000000,1000000);
+        max=new Vec3d(-1000000, -1000000,-1000000);
+
+        for(Triangle tri:list)
         {
-            ts+= tris.elementAt(i).toString();
+            addTri(tri);
         }
-        return  ts;
-    }
-
-    public void runScript()
-    {
-
     }
 
     public Matrix4by4 getWorldMat()
     {
         Matrix4by4 matRotZ, matRotX, matRotY;
-        //fTheta += 1.0f * fElapsedTime;
         matRotZ = VectorGeometry.makeZRotationMatrix(zTheta);
         matRotX = VectorGeometry.makeXRotationMatrix(xTheta);
         matRotY = VectorGeometry.makeYRotationMatrix(yTheta);
@@ -53,5 +66,49 @@ public class Mesh {
 
         return matWorld;
     }
+
+    public void setColor(Color color)
+    {
+        for(Triangle  tri: tris)
+        {
+            tri.setColor(color);
+        }
+    }
+
+    public void printColor()
+    {
+        System.out.println(tris.get(0).getColor());
+    }
+
+    public float findMin(float f1, float f2, float f3)
+    {
+        float  temp=Math.min(f1, f2);
+        temp = Math.min(f3, temp);
+        return temp;
+    }
+
+    public float findMax(float f1, float f2, float f3)
+    {
+        float  temp=Math.max(f1, f2);
+        temp = Math.max(f3, temp);
+        return temp;
+    }
+
+    @Override
+    public String toString() {
+        String ts = "Mesh-\n";
+        for(int i=0; i<tris.size(); i++)
+        {
+            ts+= tris.get(i).toString();
+        }
+        //System.out.println("fixie");
+        return  ts;
+    }
+
+    public Obb getObb()
+    {
+        return new Obb(min, max, id);
+    }
+
 
 }

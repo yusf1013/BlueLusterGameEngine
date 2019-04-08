@@ -42,7 +42,7 @@ public class MainGL {
 
     private void init() {
 
-        File f = new File("src\\Games\\deatto.txt");
+        /*File f = new File("src\\Games\\deatto.txt");
         System.out.println(f.getAbsolutePath());
         if(f.exists())
             System.out.println("EXISTS");
@@ -57,7 +57,7 @@ public class MainGL {
             }
 
             System.out.println("Written");
-        }
+        }*/
 
 
         GLFWErrorCallback.createPrint(System.err).set();
@@ -107,6 +107,7 @@ public class MainGL {
         int frameCount=0;
         DisplayDriverGL ddgl = new DisplayDriverGL(window);
         glEnable(GL_DEPTH_TEST);
+        //System.out.println("fixie");
 
 
 
