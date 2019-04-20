@@ -20,10 +20,10 @@ public class Obb extends Collider{
         this.max=max;
         this.id=id;
         try{
-            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj", false);
+            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj");
         } catch (FileNotFoundException e) {
             try {
-                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj", false);
+                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj");
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             }
@@ -49,10 +49,10 @@ public class Obb extends Collider{
         System.out.println("In big constructor");
 
         try{
-            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj", false);
+            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj");
         } catch (FileNotFoundException e) {
             try {
-                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj", false);
+                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj");
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             }
@@ -96,9 +96,18 @@ public class Obb extends Collider{
     public Mesh getMesh(Mesh mesh)
     {
         if(mesh.id != this.id)
-            throw new IllegalArgumentException("Different mesh is being used");
+        {
+            System.out.println("Different mesh is being used");
+            //throw new IllegalArgumentException("Different mesh is being used");
+        }
         //System.out.println("In get mesh: " + min + "\n" + max);
         return fitMesh(mesh, cube, max, min);
+
+    }
+
+    public Mesh getMesh()
+    {
+        return fitMesh(new Mesh(), cube, max, min);
 
     }
 

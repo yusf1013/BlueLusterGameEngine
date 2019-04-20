@@ -7,6 +7,7 @@ import mathHandler.ThreeDObjectTransformations;
 import mathHandler.VectorGeometry;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import physicsEngine.CollisionModule.Collider;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.MasterScript;
 import threeDItems.Matrix4by4;
@@ -39,6 +40,7 @@ public class DisplayDriverGL extends VectorGeometry {
     private GLFWKeyCallback keyCallback;
     double cursorX, cursorY, mouseSensitivity=0.5f;
     MasterScript ms;
+    Collider collider = new Collider();
 
     public DisplayDriverGL(long window)
     {
@@ -46,7 +48,8 @@ public class DisplayDriverGL extends VectorGeometry {
         //meshVector=modelLoader.loadAll();
         ItemBag.addMesh(modelLoader.loadAll());
         ms=new MasterScript();
-
+        System.out.println("1. " + ItemBag.getMapSize());
+        System.out.println("Get mesh \n" + ItemBag.getMesh(0));
 
         //ms=(MasterScript)Class.forName("rendererEngine.scriptManager.MasterScript").newInstance();
 
@@ -67,23 +70,28 @@ public class DisplayDriverGL extends VectorGeometry {
 
     boolean onUserUpdate(float fElapsedTime)
     {
-        //int i=0;
-        /*for(Mesh meshCube: meshVector)
+
+        Mesh m1= ItemBag.getMesh(0), m2=ItemBag.getMesh(1);
+        if(collider.detectCollision(m1, m2))
         {
-            drawMesh(meshCube, fElapsedTime);
-            i++;
-        }*/
+            System.out.println("Collision detected");
+            return false;
+        }
+
+        System.out.println("1. " + ItemBag.getMapSize());
         for(Map.Entry e:ItemBag.getEntrySet())
         {
             drawMesh((Mesh)e.getValue(), fElapsedTime);
             if(((Mesh) e.getValue()).isRigidBody) {
                 drawMesh(((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue())), fElapsedTime);
-                //System.out.println(((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue())));
-                //throw new IllegalArgumentException("");
             }
 
-            //i++;
+            System.out.println("Real size: " + ((Mesh) e.getValue()).tris.size());
         }
+        /*for(Triangle tri: triToRaster)
+        {
+            System.out.println(tri);
+        }*/
         draw();
         handleUserInputs(fElapsedTime);
         ms.run();
@@ -174,23 +182,8 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public boolean drawMesh(Mesh meshCube, float fElapsedTime)
     {
+        //System.out.println("In draw mesh " + meshCube.getStats());
         Matrix4by4 matWorld = meshCube.getWorldMat();
-
-        /*System.out.println(meshCube.tris.elementAt(0).toString());
-        System.out.println("Done With it");*/
-
-        /*Matrix4by4 matRotZ, matRotX;
-        //fTheta += 1.0f * fElapsedTime;
-        matRotZ = makeZRotationMatrix(fTheta * 0.5f );
-        matRotX = makeXRotationMatrix(fTheta );
-
-        Matrix4by4 matTrans;
-        matTrans = makeTranslation(0.0f, 0.0f, 10.0f);
-
-        matWorld = multiplyMatrix(matRotZ, matRotX);
-        matWorld = multiplyMatrix(matWorld, matTrans);*/
-        //matWorld = multiplyMatrix(matWorld, mul);
-
         Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
         {
@@ -360,6 +353,7 @@ public class DisplayDriverGL extends VectorGeometry {
 
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
         //if(fill==Color.TRANSPARENT)
+        //glColor3d(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue());
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(x1, y1, z1);

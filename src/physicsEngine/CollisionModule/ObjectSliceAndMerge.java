@@ -5,6 +5,7 @@ import threeDItems.Triangle;
 import threeDItems.Vec3d;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import threeDItems.ObbMesh;
@@ -13,7 +14,6 @@ import threeDItems.ObbMesh;
 class Node{
     Mesh node;
     ArrayList<Node> children = new ArrayList<>();
-    ObbDataOnly obbDataOnly;
 
     public Node(Mesh node)
     {
@@ -31,7 +31,8 @@ class Node{
 public class ObjectSliceAndMerge {
 
     Node tree;
-    int wantedDivisionDepth=1;
+    int wantedDivisionDepth=4;
+    float eps=0.001f;
 
     public ObjectSliceAndMerge(Mesh mesh)
     {
@@ -47,11 +48,8 @@ public class ObjectSliceAndMerge {
     {
         if(depth>=wantedDivisionDepth)
         {
-            System.out.println("Returning");
             return;
         }
-        else
-            System.out.println("Proceeding");
 
         if(node.children.size()==0)
         {
@@ -70,28 +68,6 @@ public class ObjectSliceAndMerge {
         {
             createTreeStarts(n, depth+1);
         }
-
-
-
-        /*node.node=mesh;
-        tree.children.add(new Node(mesh));
-        createChildren(tree, 0.0f, "x");*/
-
-        /*createChildrenX(tree, new float[] {-0.25f, 0.25f});
-        createChildrenX(tree, new float[] {-0.375f, -0.125f, 0.125f, 0.375f});*/
-
-        /*pointer=tree.children.get(1);
-        pointer.duplicateParent();
-        pointer.node=null;
-        createChildrenX(pointer, new float[] {-0.25f});
-
-        pointer=tree.children.get(0);
-        pointer.duplicateParent();
-        pointer.node=null;
-        createChildrenX(pointer, new float[] {+0.25f});
-
-        pointer.children.add(new Node(pointer.node));
-        pointer.node=null;*/
     }
 
     public void createChildren(Node tree, float criticalValue, String axis)
@@ -111,53 +87,6 @@ public class ObjectSliceAndMerge {
             System.out.println("Ending\n\n");
         }
     }
-
-    /*public void createChildren(Node tree, float []criticalValues, int index)
-    {
-        if(index>3)
-            return;
-
-        if(tree.children.size()==0)
-        {
-            tree.duplicateParent();
-            tree.children.addAll(divideWRT(tree.children.get(0), criticalValues[i], "x"));
-            tree.children.addAll(divideWRT(tree.children.get(0), criticalValues[i], "y"));
-            tree.children.addAll(divideWRT(tree.children.get(0), criticalValues[i], "z"));
-            tree.node=null;
-        }
-
-        for(int i=0; i<1; i++)
-        {
-            System.out.println("In createChildrenX for");
-            for(Node n: tree.children)
-                System.out.println(n.node);
-            System.out.println("Ending\n\n");
-            tree.children.addAll(divideWRT(tree.children.get(0), criticalValues[i], "x"));
-            tree.children.remove(0);
-            System.out.println("At the end");
-            for(Node n: tree.children)
-                System.out.println(n.node);
-            System.out.println("Ending\n\n");
-        }
-    }*/
-
-    /*public void createChildren(Node tree, float []criticalValues)
-    {
-        int size=tree.children.size();
-        for(int i=0; i<size; i++)
-        {
-            System.out.println("In createChildrenX for");
-            for(Node n: tree.children)
-                System.out.println(n.node);
-            System.out.println("Ending\n\n");
-            tree.children.addAll(divideWRT(tree.children.get(0), criticalValues[i]));
-            tree.children.remove(0);
-            System.out.println("At the end");
-            for(Node n: tree.children)
-                System.out.println(n.node);
-            System.out.println("Ending\n\n");
-        }
-    }*/
 
 
     public ArrayList<Node> divideWRT(Node node, float criticalValue, String axis)
@@ -465,24 +394,19 @@ public class ObjectSliceAndMerge {
         ArrayList<Mesh> meshList = new ArrayList<>();
         if(pointer == null)
         {
-            System.out.println("Pointer is null");
             return meshList;
         }
         if(pointer.node!=null)
         {
-            System.out.println("Pointer.node list will be added");
             meshList.add(pointer.node);
-            System.out.println("In prepareMesh. pointer.node!=null and mesh size: " + meshList.size());
         }
 
         for(Node n: pointer.children)
         {
             //System.out.println("In for");
             meshList.addAll(prepareMeshList(n));
-            System.out.println("In prepareMesh. In for and mesh size: " + meshList.size());
         }
 
-        System.out.println("Ending here");
         return meshList;
 
     }
@@ -503,19 +427,17 @@ public class ObjectSliceAndMerge {
         }
         if(pointer.node!=null)
         {
-            System.out.println("Pointer.node list will be added");
-            meshList.add(new Obb(pointer.node).getMesh(pointer.node));
-            System.out.println("In prepareMesh. pointer.node!=null and mesh size: " + meshList.size());
+            //meshList.add(new Obb(pointer.node).getMesh(pointer.node));
+            Mesh tempMesh = pointer.node.getObb().getMesh(pointer.node);
+            meshList.add(tempMesh);
         }
 
         for(Node n: pointer.children)
         {
             //System.out.println("In for");
             meshList.addAll(prepareObbList(n));
-            System.out.println("In prepareMesh. In for and mesh size: " + meshList.size());
         }
 
-        System.out.println("Ending here");
         return meshList;
 
     }
@@ -523,337 +445,255 @@ public class ObjectSliceAndMerge {
     public Vec3d calcCriticalValue(Vec3d min, Vec3d max)
     {
         return new Vec3d((min.x+max.x)/2.0f, (min.y+max.y)/2.0f, (min.z+max.z)/2.0f);
+        //return new Vec3d((float)Math.random()*(max.x-min.x)+min.x, (float)Math.random()*(max.y-min.y)+min.y, (float)Math.random()*(max.z-min.z)+min.z);
+    }
+
+    public List clusterize()
+    {
+        System.out.println("STArts");
+        LinkedList list = new LinkedList();
+        list.addAll(getObbList());
+        System.out.println("SHIT st: " + list.size());
+        LinkedList <LinkedList<Float>> table = new LinkedList<>();
+
+        int counter=0, stop=50000;
+        boolean restart=false;
+        for(int i=0; i<list.size(); i++)
+        {
+            //System.out.println("COUNTER" + " " + counter);
+            counter++;
+            if(counter>stop)
+                break;
+            table.add(new LinkedList<>());
+            //float vol = calcVol((ObbMesh)list.get(i));
+
+            /*System.out.println("DONT RUN YET");
+            System.out.println(((ObbMesh) list.get(i)).getStats());*/
+
+
+
+            for(int j=0; j<i; j++)
+            {
+                //System.out.println("COUNTer" + " " + counter);
+                /*counter++;
+                if(counter>stop)
+                    break;*/
+                float mergeVol=-calcVol((ObbMesh)list.get(i))-calcVol((ObbMesh)list.get(j))+calcMergeVol((ObbMesh)list.get(i), (ObbMesh)list.get(j));
+                table.get(i).add(mergeVol);
+                /*System.out.println("New shit added. I: " + i);
+                printTable(table);*/
+                if((mergeVol)<=eps)
+                {
+                    //System.out.println("Change");
+                    merge(list, i, j);
+                    updatePartialTable(list, table, i, j);
+                    i=table.size()-2;
+                    break;
+                }
+            }
+            /*if(table.get(i).isEmpty())
+                table.get(i).add(vol);*/
+            /*System.out.println("End major loop table. I: " + i);
+            printTable(table);
+            printTableSize(table);*/
+        }
+
+        //printTable(table);
+
+        return list;
     }
 
 
-
-
-
-    /*public ArrayList<Triangle> zClip(Triangle tri, float criticalValue)
+    public void merge(LinkedList<Mesh> list, int indexI, int indexJ)
     {
-        Vector <Vec3d> vec = new Vector<>();
-        vec.add(tri.p[0]);
-        vec.add(tri.p[1]);
-        vec.add(tri.p[2]);
-
-        int count=0;
-
-        if(tri.p[0].z<criticalValue)
-            count++;
-        if(tri.p[1].z<criticalValue)
-            count++;
-        if(tri.p[2].z<criticalValue)
-            count++;
-        if(count==3)
-            return null;
-
-        if(count==1)
-        {
-            int lowestOne;
-            if(tri.p[0].z<tri.p[1].z)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].z>tri.p[2].z)
-                lowestOne=2;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-            float newX=zcalc(vec.elementAt(0).x, vec.elementAt(0).z, tempV.x, tempV.z, criticalValue);
-            float newY=zcalc(vec.elementAt(0).y, vec.elementAt(0).z, tempV.y, tempV.z, criticalValue);
-            Vec3d new2 = new Vec3d(newX, newY, criticalValue);
-            newX=zcalc(vec.elementAt(1).x, vec.elementAt(1).z, tempV.x, tempV.z, criticalValue);
-            newY=zcalc(vec.elementAt(1).y, vec.elementAt(1).z, tempV.y, tempV.z, criticalValue);
-            Vec3d new3 = new Vec3d(newX, newY, criticalValue);
-            vec.add(new2);
-            vec.add(new3);
-            ArrayList<Triangle> al = new ArrayList<>();
-            al.add(new Triangle(vec.elementAt(0), vec.elementAt(1), vec.elementAt(2)));
-            al.get(0).setColor(tri.getColor());
-            al.add(new Triangle(vec.elementAt(1), vec.elementAt(2), vec.elementAt(3)));
-            al.get(1).setColor(tri.getColor());
-            return al;
-            *//*Triangle triArr[] = new Triangle[2];
-            triArr[0]=new Triangle(vec.elementAt(0), vec.elementAt(1), vec.elementAt(2));
-            triArr[0].setColor(tri.getColor());
-            triArr[1]=new Triangle(vec.elementAt(1), vec.elementAt(2), vec.elementAt(3));
-            triArr[1].setColor(tri.getColor());
-            return  triArr;*//*
-        }
-        else if(count==2)
-        {
-            tri.p[0].z*=-1; tri.p[1].z*=-1; tri.p[2].z*=-1;
-            int lowestOne;
-            if(tri.p[0].z<tri.p[1].z)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].z>tri.p[2].z)
-                lowestOne=2;
-            tri.p[0].z*=-1; tri.p[1].z*=-1; tri.p[2].z*=-1;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-            float newX=zcalc(vec.elementAt(0).x, vec.elementAt(0).z, tempV.x, tempV.z, criticalValue);
-            float newY=zcalc(vec.elementAt(0).y, vec.elementAt(0).z, tempV.y, tempV.z, criticalValue);
-            Vec3d new2 = new Vec3d(newX, newY, criticalValue);
-            newX=zcalc(vec.elementAt(1).x, vec.elementAt(1).z, tempV.x, tempV.z, criticalValue);
-            newY=zcalc(vec.elementAt(1).y, vec.elementAt(1).z, tempV.y, tempV.z, criticalValue);
-            Vec3d new3 = new Vec3d(newX, newY, criticalValue);
-            vec.add(lowestOne, new3);
-            vec.add(lowestOne, new2);
-
-            Vector<Vec3d> vec2= new Vector<>();
-            vec2.add(new2);
-            vec2.add(new3);
-            vec2.add(lowestOne, tempV);
-
-            ArrayList<Triangle> al = new ArrayList<>();
-            al.add(new Triangle(vec.elementAt(0), vec.elementAt(1), vec.elementAt(2)));
-            al.get(0).setColor(tri.getColor());
-            *//*al.add(new Triangle(vec.elementAt(1), vec.elementAt(2), vec.elementAt(3)));
-            al.get(1).setColor(tri.getColor());*//*
-            return al;
-
-            *//*Triangle triArr[] = new Triangle[1];
-            triArr[0]= new Triangle(vec2.elementAt(0), vec2.elementAt(1), vec2.elementAt(2));
-            triArr[0].setColor(tri.getColor());
-            return  triArr;*//*
-        }
-        ArrayList<Triangle> al = new ArrayList<>();
-        al.add(tri);
-        return al;
-        *//*Triangle arr[] = new Triangle[1];
-        arr[0]=tri;
-        return  arr;*//*
+        ObbMesh mesh = new ObbMesh();
+        ArrayList <Triangle> al = new ArrayList<>();
+        mesh.tris.clear();
+        al.addAll(list.get(indexI).tris);
+        al.addAll(list.get(indexJ).tris);
+        mesh.setTris(al);
+        ObbMesh mesh1=(ObbMesh)list.get(indexI);
+        ObbMesh mesh2 = (ObbMesh)list.get(indexJ);
+        list.remove(indexI);
+        if(indexI<indexJ)
+            indexJ--;
+        list.remove(indexJ);
+        Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
+        Vec3d m1max= new Vec3d(mesh1.max.x*mesh1.initScaleX+mesh1.initTransX, mesh1.max.y*mesh1.initScaleY+mesh1.initTransY, mesh1.max.z*mesh1.initScaleZ+mesh1.initTransZ);
+        Vec3d m2min= new Vec3d(mesh2.min.x*mesh2.initScaleX+mesh2.initTransX, mesh2.min.y*mesh2.initScaleY+mesh2.initTransY, mesh2.min.z*mesh2.initScaleZ+mesh2.initTransZ);
+        Vec3d m2max= new Vec3d(mesh2.max.x*mesh2.initScaleX+mesh2.initTransX, mesh2.max.y*mesh2.initScaleY+mesh2.initTransY, mesh2.max.z*mesh2.initScaleZ+mesh2.initTransZ);
+        Vec3d newMin = new Vec3d(Math.min(m1min.x, m2min.x),Math.min(m1min.y, m2min.y),Math.min(m1min.z, m2min.z));
+        Vec3d newMax = new Vec3d(Math.max(m1max.x, m2max.x),Math.max(m1max.y, m2max.y),Math.max(m1max.z, m2max.z));
+        list.add(new Obb(newMin, newMax, 0).getMesh());
     }
 
-    public ArrayList<Triangle> yClip(Triangle tri, float criticalValue)
+    public void updatePartialTable(List<Mesh> list, LinkedList <LinkedList<Float>> table, int minI, int minJ)
     {
-        Vector <Vec3d> vec = new Vector<>();
-        vec.add(tri.p[0]);
-        vec.add(tri.p[1]);
-        vec.add(tri.p[2]);
-
-        int count=0;
-
-        if(tri.p[0].y<criticalValue)
-            count++;
-        if(tri.p[1].y<criticalValue)
-            count++;
-        if(tri.p[2].y<criticalValue)
-            count++;
-        System.out.println(tri.p[0]+"\n"+tri.p[1]+"\n"+tri.p[2]);
-        if(count==3)
+        //System.out.println("In update: " + minI + " " + minJ);
+        table.remove(minI);
+        if(!table.isEmpty())
         {
-            System.out.println("Count is: 3");
-            return null;
+            table.remove(minJ);
+            if(table.isEmpty())
+                table.add(new LinkedList<>());
+        }
+
+        for(List l:table)
+        {
+            int temp=minI;
+            if(minJ<l.size())
+            {
+                l.remove(minJ);
+                if(minJ<minI)
+                    temp--;
+            }
+
+            if(temp<l.size())
+                l.remove(temp);
+        }
+    }
+
+    public void updateTable(List<Mesh> list, LinkedList <LinkedList<Float>> table, int minI, int minJ)
+    {
+        table.remove(minI);
+        for(List l:table)
+        {
+            l.remove(minJ);
+            int temp=minI;
+            if(minJ<minI)
+                temp--;
+            if(!l.isEmpty())
+                l.remove(temp);
+        }
+        table.add(new LinkedList<>());
+
+        float vol = calcVol((ObbMesh)list.get(list.size()-1)), minVol=500000f;
+        System.out.println("Size: "+list.size());
+        for(int j=0; j<list.size()-1; j++)
+        {
+            System.out.println("RUN");
+            float mergeVol=calcMergeVol((ObbMesh)list.get(list.size()-1), (ObbMesh)list.get(j));
+            table.get(list.size()).add(mergeVol);
+            if(mergeVol<minVol)
+            {
+                minVol=mergeVol;
+                minI=list.size()-1;
+                minJ=j;
+            }
+        }
+        table.get(list.size()).add(vol);
+    }
+
+    public void printTable(LinkedList<LinkedList<Float>> table)
+    {
+        System.out.println("Printing table: ");
+        for(List l: table)
+        {
+            for(Object o:l)
+            {
+                System.out.print(o+"\t\t");
+            }
+            System.out.println(" -");
+        }
+    }
+
+    public void printTableSize(LinkedList<LinkedList<Float>> table)
+    {
+        if(table!=null)
+        {
+            System.out.println("Sizes comping up:");
+            for(List l:table)
+                System.out.println(l.size());
         }
         else
-            System.out.println("Count is: " + count);
-
-
-        if(count==1)
-        {
-            int lowestOne;
-            if(tri.p[0].y<tri.p[1].y)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].y>tri.p[2].y)
-                lowestOne=2;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-            float newX=zcalc(vec.elementAt(0).x, vec.elementAt(0).y, tempV.x, tempV.y, criticalValue);
-            float newZ=zcalc(vec.elementAt(0).z, vec.elementAt(0).y, tempV.z, tempV.y, criticalValue);
-            Vec3d new2 = new Vec3d(newX, criticalValue, newZ );
-            newX=zcalc(vec.elementAt(1).x, vec.elementAt(1).y, tempV.x, tempV.y, criticalValue);
-            newZ=zcalc(vec.elementAt(1).z, vec.elementAt(1).y, tempV.z, tempV.y, criticalValue);
-            Vec3d new3 = new Vec3d(newX, criticalValue, newZ);
-            vec.add(new2);
-            vec.add(new3);
-            Triangle triArr[] = new Triangle[2];
-            triArr[0]=new Triangle(vec.elementAt(0), vec.elementAt(1), vec.elementAt(2));
-            triArr[0].setColor(tri.getColor());
-            triArr[1]=new Triangle(vec.elementAt(1), vec.elementAt(2), vec.elementAt(3));
-            triArr[1].setColor(tri.getColor());
-            return  triArr;
-        }
-        else if(count==2)
-        {
-            tri.p[0].y*=-1; tri.p[1].y*=-1; tri.p[2].y*=-1;
-            int lowestOne;
-            if(tri.p[0].y<tri.p[1].y)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].y>tri.p[2].y)
-                lowestOne=2;
-            tri.p[0].y*=-1; tri.p[1].y*=-1; tri.p[2].y*=-1;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-
-            float newX=zcalc(vec.elementAt(0).x, vec.elementAt(0).y, tempV.x, tempV.y, criticalValue);
-            float newZ=zcalc(vec.elementAt(0).z, vec.elementAt(0).y, tempV.z, tempV.y, criticalValue);
-            Vec3d new2 = new Vec3d(newX, criticalValue, newZ );
-            newX=zcalc(vec.elementAt(1).x, vec.elementAt(1).y, tempV.x, tempV.y, criticalValue);
-            newZ=zcalc(vec.elementAt(1).z, vec.elementAt(1).y, tempV.z, tempV.y, criticalValue);
-            Vec3d new3 = new Vec3d(newX, criticalValue, newZ);
-
-            System.out.println("New shits: " + new2 + "\n" + new3);
-            vec.add(lowestOne, new3);
-            vec.add(lowestOne, new2);
-
-            Vector<Vec3d> vec2= new Vector<>();
-            vec2.add(new2);
-            vec2.add(new3);
-            vec2.add(lowestOne, tempV);
-
-            Triangle triArr[] = new Triangle[1];
-            triArr[0]= new Triangle(vec2.elementAt(0), vec2.elementAt(1), vec2.elementAt(2));
-            triArr[0].setColor(tri.getColor());
-            System.out.println("Before return: " + triArr[0]);
-            return  triArr;
-        }
-        Triangle arr[] = new Triangle[1];
-        arr[0]=tri;
-        return  arr;
-    }*/
-
-
-
-    /*public void swap(Triangle tri, String field)
-    {
-        if(field.equals("z"))
-        {
-            float temp=tri.p[0].x;
-            tri.p[0].x=tri.p[0].z;
-            tri.p[0].z=temp;
-
-            temp=tri.p[1].x;
-            tri.p[1].x=tri.p[1].z;
-            tri.p[1].z=temp;
-
-            temp=tri.p[2].x;
-            tri.p[2].x=tri.p[2].z;
-            tri.p[2].z=temp;
-        }
+            System.out.println("table is null");
     }
 
-    public Vec3d getNewVec(float criticalValue, float newY, float newZ, String field)
+    public float calcVol(ObbMesh mesh)
     {
-        if(field.equals("z"))
-        {
-            float temp=criticalValue;
-            criticalValue=newZ;
-            newZ=temp;
-        }
-
-        return new Vec3d(criticalValue, newY, newZ);
+        Vec3d temp = new Vec3d(mesh.max.x-mesh.min.x, mesh.max.y-mesh.min.y, mesh.max.z-mesh.min.z);
+        float f =temp.x*temp.y*temp.z*(mesh.xScale*mesh.yScale*mesh.zScale)*(mesh.initScaleX*mesh.initScaleY*mesh.initScaleZ);
+        return Math.abs(f);
     }
 
-
-    public Triangle[] zClip2(Triangle tri, float criticalValue, String field)
+    public float calcMergeVol(ObbMesh mesh1, ObbMesh mesh2)
     {
-        swap(tri, field);
-        System.out.println("After swapping: " + tri);
-        System.out.println(criticalValue);
-        Vector<Vec3d> vec = new Vector<>();
-        vec.add(tri.p[0]);
-        vec.add(tri.p[1]);
-        vec.add(tri.p[2]);
+        Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
+        Vec3d m1max= new Vec3d(mesh1.max.x*mesh1.initScaleX+mesh1.initTransX, mesh1.max.y*mesh1.initScaleY+mesh1.initTransY, mesh1.max.z*mesh1.initScaleZ+mesh1.initTransZ);
+        Vec3d m2min= new Vec3d(mesh2.min.x*mesh2.initScaleX+mesh2.initTransX, mesh2.min.y*mesh2.initScaleY+mesh2.initTransY, mesh2.min.z*mesh2.initScaleZ+mesh2.initTransZ);
+        Vec3d m2max= new Vec3d(mesh2.max.x*mesh2.initScaleX+mesh2.initTransX, mesh2.max.y*mesh2.initScaleY+mesh2.initTransY, mesh2.max.z*mesh2.initScaleZ+mesh2.initTransZ);
+        Vec3d newMin = new Vec3d(Math.min(m1min.x, m2min.x),Math.min(m1min.y, m2min.y),Math.min(m1min.z, m2min.z));
+        Vec3d newMax = new Vec3d(Math.max(m1max.x, m2max.x),Math.max(m1max.y, m2max.y),Math.max(m1max.z, m2max.z));
+        Vec3d temp = new Vec3d(newMax.x-newMin.x, newMax.y-newMin.y, newMax.z-newMin.z);
 
-        int count=0;
-        if(tri.p[0].x<criticalValue)
+        /*Vec3d temp1=new Vec3d(mesh1.initScaleX+mesh1.initTransX, mesh1.initScaleY+mesh1.initTransY, mesh1.initScaleZ+mesh1.initTransZ);
+        Vec3d temp2=new Vec3d(mesh2.initScaleX+mesh2.initTransX, mesh2.initScaleY+mesh2.initTransY, mesh2.initScaleZ+mesh2.initTransZ);
+        Vec3d temp = new Vec3d(temp2.x-temp1.x, temp2.y-temp1.y, temp2.z-temp1.z);*/
+        return Math.abs(temp.x*temp.y*temp.z);
+    }
+
+    public List clusterizeOld()
+    {
+        LinkedList list = new LinkedList();
+        list.addAll(getObbList());
+        LinkedList <LinkedList<Float>> table = new LinkedList<>();
+
+        int minI=-1, minJ=-1;
+        float minVol=500000f;
+
+        for(int i=0; i<list.size(); i++)
         {
-            //System.out.println("This is strange: " + tri.p[0].x + ", " + criticalValue);
-            count++;
+            table.add(new LinkedList<Float>());
+            float vol = calcVol((ObbMesh)list.get(i));
+
+
+            System.out.println(((ObbMesh) list.get(i)).getStats());
+
+            for(int j=0; j<i; j++)
+            {
+                float mergeVol=calcMergeVol((ObbMesh)list.get(i), (ObbMesh)list.get(j));
+                table.get(i).add(mergeVol);
+                if(mergeVol<minVol)
+                {
+                    minVol=mergeVol;
+                    minI=i;
+                    minJ=j;
+                }
+            }
+            table.get(i).add(vol);
+           /* if(minI>-1 && minJ>-1)
+            {
+                merge(list, minI, minJ);
+                i--;
+            }*/
         }
-        if(tri.p[1].x<criticalValue)
-            count++;
-        if(tri.p[2].x<criticalValue)
-            count++;
-        if(count==3)
+
+        printTable(table);
+
+        System.out.println(minVol + " " + minI + " " + minJ);
+
+        merge(list, minI, minJ);
+
+        updateTable(list, table, minI, minJ);
+
+        printTable(table);
+
+        /*for(int i=1; i<2; i++)
         {
-            System.out.println("Count is 3");
-            return null;
-        }
+            for(int j=0; j<i; j++)
+            {
+                float mergeVol=table.get(i).get(j);
+                if(mergeVol<minVol)
+                {
+                    minVol=mergeVol;
+                    minI=i;
+                    minJ=j;
+                }
+            }
+        }*/
 
-        if(count==1)
-        {
-            System.out.println("ShitCount 1");
-            int lowestOne;
-            if(tri.p[0].x<tri.p[1].x)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].x>tri.p[2].x)
-                lowestOne=2;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-            float newZ=zcalc(vec.elementAt(0).z, vec.elementAt(0).x, tempV.z, tempV.x, criticalValue);
-            float newY=zcalc(vec.elementAt(0).y, vec.elementAt(0).x, tempV.y, tempV.x, criticalValue);
-            //Vec3d new2 = new Vec3d(criticalValue, newY, newZ);
-            Vec3d new2= getNewVec(criticalValue, newY, newZ, field);
-            newZ=zcalc(vec.elementAt(1).z, vec.elementAt(1).x, tempV.z, tempV.x, criticalValue);
-            newY=zcalc(vec.elementAt(1).y, vec.elementAt(1).x, tempV.y, tempV.x, criticalValue);
-            //Vec3d new3 = new Vec3d(criticalValue, newY, newZ);
-            Vec3d new3= getNewVec(criticalValue, newY, newZ, field);
-            vec.add(new2);
-            vec.add(new3);
-            Triangle triArr[] = new Triangle[2];
-            triArr[0]=new Triangle(vec.elementAt(0), vec.elementAt(1), vec.elementAt(2));
-            swap(triArr[0], field);
-            triArr[0].setColor(tri.getColor());
-            triArr[1]=new Triangle(vec.elementAt(1), vec.elementAt(2), vec.elementAt(3));
-            swap(triArr[1], field);
-            triArr[1].setColor(tri.getColor());
-            return  triArr;
-        }
-        else if(count==2)
-        {
-            System.out.println("ShitCount 2");
-            tri.p[0].x*=-1; tri.p[1].x*=-1; tri.p[2].x*=-1;
-            int lowestOne;
-            if(tri.p[0].x<tri.p[1].x)
-                lowestOne=0;
-            else
-                lowestOne=1;
-            if(tri.p[lowestOne].x>tri.p[2].x)
-                lowestOne=2;
-
-            System.out.println(tri.p[0] + " " + tri.p[1] + " " + tri.p[2] + " ");
-            System.out.println(lowestOne);
-
-            tri.p[0].x*=-1; tri.p[1].x*=-1; tri.p[2].x*=-1;
-            Vec3d tempV=tri.p[lowestOne];
-            vec.remove(lowestOne);
-            //System.out.println();
-            float newZ=zcalc(vec.elementAt(0).z, vec.elementAt(0).x, tempV.z, tempV.x, criticalValue);
-            float newY=zcalc(vec.elementAt(0).y, vec.elementAt(0).x, tempV.y, tempV.x, criticalValue);
-            //Vec3d new2 = new Vec3d(criticalValue, newY, newZ);
-            Vec3d new2= getNewVec(criticalValue, newY, newZ, field);
-            newZ=zcalc(vec.elementAt(1).z, vec.elementAt(1).x, tempV.z, tempV.x, criticalValue);
-            newY=zcalc(vec.elementAt(1).y, vec.elementAt(1).x, tempV.y, tempV.x, criticalValue);
-            //Vec3d new3 = new Vec3d(criticalValue, newY, newZ);
-            Vec3d new3= getNewVec(criticalValue, newY, newZ, field);
-            vec.add(lowestOne, new3);
-            vec.add(lowestOne, new2);
-
-            Vector<Vec3d> vec2= new Vector<>();
-            vec2.add(new2);
-            vec2.add(new3);
-            vec2.add(lowestOne, tempV);
-
-            Triangle triArr[] = new Triangle[1];
-            triArr[0]= new Triangle(vec2.elementAt(0), vec2.elementAt(1), vec2.elementAt(2));
-            swap(triArr[0], field);
-            triArr[0].setColor(tri.getColor());
-            return  triArr;
-        }
-        Triangle arr[] = new Triangle[1];
-        arr[0]=tri;
-        swap(arr[0], field);
-        return  arr;
-    }*/
+        return list;
+    }
 
 
 }

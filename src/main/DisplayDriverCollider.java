@@ -28,9 +28,4 @@ public class DisplayDriverCollider extends DisplayDriverGUI {
         }*/
     }
 
-    public void useless()
-    {
-        int i=0;
-        i++;
-    }
 }

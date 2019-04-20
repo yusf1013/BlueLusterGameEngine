@@ -114,8 +114,12 @@ public class MainGL {
 
         while (!glfwWindowShouldClose(window)) {
 
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            if(ddgl.onUserUpdate(0))
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
+            /*
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             currentTime=System.nanoTime();
             elapsedTime=(currentTime -prevTime)/10000f/100000f;
             prevTime= currentTime;
@@ -129,7 +133,7 @@ public class MainGL {
                 //System.out.println(frameCount*1/frameRatePrintRate);
                 frameCount=0;
             }
-
+*/
 
             glfwSwapBuffers(window); // swap the color buffers
 

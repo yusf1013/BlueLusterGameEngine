@@ -3,12 +3,10 @@ package threeDItems;
 import javafx.scene.paint.Color;
 import mathHandler.VectorGeometry;
 import physicsEngine.CollisionModule.Obb;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Mesh implements Serializable {
-    public ArrayList<Triangle> tris= new ArrayList<Triangle>();
+public class Mesh {
+    public ArrayList<Triangle> tris= null;
     public float xTheta=0, yTheta=0, zTheta=0, xTranslation=0, yTranslation=0, zTranslation=0, xScale=1, yScale=1, zScale=1;
     public boolean isScripted=false, isRigidBody=false;
     public int id;
@@ -38,7 +36,7 @@ public class Mesh implements Serializable {
 
     public void setTris(ArrayList<Triangle> list)
     {
-        tris=new ArrayList<>();
+        //tris=new ArrayList<>();
         min=new Vec3d(1000000, 1000000,1000000);
         max=new Vec3d(-1000000, -1000000,-1000000);
 
@@ -110,5 +108,22 @@ public class Mesh implements Serializable {
         return new Obb(min, max, id);
     }
 
-
+    public String getStats() {
+        return "Mesh{" +
+                "xTheta=" + xTheta +
+                ", yTheta=" + yTheta +
+                ", zTheta=" + zTheta +
+                ", xTranslation=" + xTranslation +
+                ", yTranslation=" + yTranslation +
+                ", zTranslation=" + zTranslation +
+                ", xScale=" + xScale +
+                ", yScale=" + yScale +
+                ", zScale=" + zScale +
+                ", isScripted=" + isScripted +
+                ", isRigidBody=" + isRigidBody +
+                ", id=" + id +
+                ", min=" + min +
+                ", max=" + max +
+                '}';
+    }
 }

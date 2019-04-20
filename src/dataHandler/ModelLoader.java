@@ -3,12 +3,10 @@ package dataHandler;
 import physicsEngine.CollisionModule.Obb;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.Inheritable;
-import threeDItems.Mesh;
-import threeDItems.ObbMesh;
-import threeDItems.Triangle;
-import threeDItems.Vec3d;
+import threeDItems.*;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Vector;
@@ -76,7 +74,7 @@ public class ModelLoader {
                 else
                     vec.lastElement().isRigidBody=false;
 
-                System.out.println("Here, yTrans is: " + vec.lastElement().yTranslation);
+                System.out.println("Here, vecSize is: " + vec.size());
             }
 
         } catch (FileNotFoundException e) {
@@ -90,12 +88,29 @@ public class ModelLoader {
         Mesh mesh = new Mesh();
         if(isGameObj)
             mesh.id=id++;
+        if(isGameObj)
+            fileNameVector.add(fileName);
+
+        ArrayList<Triangle> al = MeshData.getDataPointReference(fileName);
+        if(al!=null)
+        {
+            mesh.tris=al;
+            System.out.println("\n\nReturning\n\n");
+            return mesh;
+        }
+        mesh.tris=new ArrayList<Triangle>();
+        MeshData.insertDataArray(fileName, mesh.tris);
+
+        /*if(ItemBag.loadedMesh.get(fileName)!=null)
+        {
+            mesh.setTris(ItemBag.loadedMesh.get(fileName).tris);
+            return mesh;
+        }
+        System.out.println("PASSING THE DANGER GUARD");*/
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
         File file = new File(directory+fileName);
-        System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
-        if(isGameObj)
-            fileNameVector.add(fileName);
+        //System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         /*try {*/
             Scanner jin = new Scanner(file);
             while(jin.hasNext())
@@ -125,22 +140,19 @@ public class ModelLoader {
 
                 }
             }
-            System.out.println("End mesh laoder");
-        System.out.println("Triangle count: " + mesh.tris.size());
-        return mesh;
+            /*Mesh temp = new Mesh();
+            temp.setTris(mesh.tris);
+            ItemBag.loadedMesh.put(fileName, temp);*/
+            return mesh;
     }
 
-    public ObbMesh obbMeshLoader(String directory, String fileName, boolean isGameObj) throws FileNotFoundException {
+    public ObbMesh obbMeshLoader(String directory, String fileName) throws FileNotFoundException {
         //Mesh mesh = new Mesh();
         ObbMesh mesh = new ObbMesh();
-        if(isGameObj)
-            mesh.id=id++;
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
         File file = new File(directory+fileName);
-        System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
-        if(isGameObj)
-            fileNameVector.add(fileName);
+        //System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         /*try {*/
         Scanner jin = new Scanner(file);
         while(jin.hasNext())
@@ -170,8 +182,6 @@ public class ModelLoader {
 
             }
         }
-        System.out.println("End mesh laoder");
-        System.out.println("Triangle count: " + mesh.tris.size());
         return mesh;
     }
 

@@ -44,6 +44,11 @@ public class ItemBag {
         scriptCollection.put(id, inheritable);
     }
 
+    public static String getMapSize()
+    {
+        return "ItemBag map size is: " + meshCollection.size();
+    }
+
     public static Inheritable getScript(int id)
     {
         return scriptCollection.get(id);
@@ -51,6 +56,7 @@ public class ItemBag {
 
     public static Set<Map.Entry<Integer, Mesh>> getEntrySet()
     {
+        //System.out.println("Ghost: " + meshCollection.size());
         return meshCollection.entrySet();
     }
 

@@ -56,4 +56,16 @@ public class ObbMesh extends Mesh{
         //matWorld = VectorGeometry.multiplyMatrix(matWorld, initTrans);
         return matWorld;
     }
+
+    @Override
+    public String getStats() {
+        return super.getStats()+"ObbMesh{" +
+                "initTransX=" + initTransX +
+                ", initTransY=" + initTransY +
+                ", initTransZ=" + initTransZ +
+                ", initScaleX=" + initScaleX +
+                ", initScaleY=" + initScaleY +
+                ", initScaleZ=" + initScaleZ +
+                '}';
+    }
 }

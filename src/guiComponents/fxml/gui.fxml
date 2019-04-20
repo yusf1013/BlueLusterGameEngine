@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="658.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+<VBox prefHeight="658.0" prefWidth="1001.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
    <children>
       <MenuBar VBox.vgrow="NEVER">
          <menus>
@@ -192,6 +192,7 @@
                   </AnchorPane>
                   <AnchorPane id="Content" fx:id="physicsPane" layoutX="8.0" layoutY="218.0" minHeight="0.0" minWidth="0.0" prefHeight="390.0" prefWidth="209.0">
                      <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" layoutX="-4.0" layoutY="165.0" stroke="BLACK" strokeType="INSIDE" style="-fx-fill: transparent;" width="102.0" />
                         <VBox alignment="TOP_CENTER" prefHeight="52.0" prefWidth="209.0">
                            <children>
                               <Line endX="100.0" startX="-100.0" strokeWidth="3.0">
@@ -214,12 +215,21 @@
                               </Line>
                            </children>
                         </VBox>
-                        <CheckBox fx:id="rigidBodyCB" layoutX="14.0" layoutY="68.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="176.0" text="  Rigid body">
+                        <CheckBox fx:id="rigidBodyCB" layoutX="102.0" layoutY="68.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="  Rigid body">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </CheckBox>
-                        <Button fx:id="createColliderButton" layoutX="14.0" layoutY="105.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="176.0" text="Create Collider" />
+                        <Button fx:id="createColliderButton" layoutX="98.0" layoutY="165.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="102.0" text="Create Collider" />
+                        <Label layoutX="34.0" layoutY="105.0" text="Collider Information">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                        </Label>
+                        <Line endX="100.0" layoutX="104.0" layoutY="138.0" startX="-100.0" strokeWidth="3.0" />
+                        <Label fx:id="isColliderSet" layoutX="6.0" layoutY="166.0" prefHeight="25.0" prefWidth="82.0" text="No Collider set" />
+                        <Label fx:id="meshId" alignment="CENTER" layoutX="6.0" layoutY="69.0" prefHeight="25.0" prefWidth="82.0" text="Mesh Id" />
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="25.0" layoutX="-4.0" layoutY="68.0" stroke="BLACK" strokeType="INSIDE" style="-fx-fill: transparent;" width="102.0" />
                      </children>
                   </AnchorPane>
                </children>

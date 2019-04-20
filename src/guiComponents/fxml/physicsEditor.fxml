@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="Content" fx:id="rhsPane" minHeight="0.0" minWidth="0.0" prefHeight="609.0" prefWidth="209.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="Content" fx:id="rhsPane" minHeight="0.0" minWidth="0.0" prefHeight="610.0" prefWidth="209.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" prefHeight="52.0" prefWidth="209.0">
          <children>

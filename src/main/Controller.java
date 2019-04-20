@@ -162,15 +162,23 @@ public class Controller implements Initializable {
     public void addMeshToList(String name)
     {
         //System.out.println("Loading first shit: " + ml.id);
-        ArrayList<Mesh> al=null;
+        ArrayList<Mesh> al=null, al2=new ArrayList<>();
         try {
                 Mesh toAdd = ml.meshLoader("src\\resources\\",name, true);
-            System.out.println("After loading: " + toAdd.max);
+            /*System.out.println("After loading: " + toAdd.max);
             ObjectSliceAndMerge obj = new ObjectSliceAndMerge(toAdd);
             obj.createTree();
-            al = obj.getMeshList();
-            meshArray.addAll(al);
-            System.out.println("Big moment: " + al.size());
+            al=new ArrayList<>();
+            al.addAll(obj.clusterize());*/
+            //al = obj.getObbList();
+            //meshArray.addAll(al);
+            meshArray.add(toAdd);
+
+            //meshArray.add(toAdd);
+            /*System.out.println("S ing out: " + al.get(0));
+            System.out.println("S ing out again: " + al.get(1));*/
+            //System.out.println("Big moment: " + al.size());
+
             //meshArray.add(toAdd);
 
             //obj.divideWRTX(meshArray.get(meshArray.size()-1), 0.1f);
@@ -179,7 +187,7 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
 
-        for(int i=0; i<al.size(); i++) {
+        for(int i=0; i<1; i++) {
             //to restore to previous version, take this shit out of the loop.
             if (hash.size() > 0)
                 hash.add(hash.lastElement() + 1);
@@ -323,7 +331,6 @@ public class Controller implements Initializable {
 
     public void update()
     {
-        System.out.println("Mesh Array ize is: " + meshArray.size());
         /*if(meshArray.size()==4)
         {
             System.out.println(meshArray.get(1));

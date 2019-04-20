@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="510.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="guiComponents.Controllers.ColliderController">
+<VBox prefHeight="510.0" prefWidth="641.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="guiComponents.Controllers.ColliderController">
    <children>
       <MenuBar VBox.vgrow="NEVER">
          <menus>
@@ -46,6 +46,17 @@
                   <MenuItem mnemonicParsing="false" text="About MyHelloApp" />
                </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="View">
+               <items>
+                  <MenuItem fx:id="topView" mnemonicParsing="false" text="Top" />
+                  <MenuItem fx:id="bottomView" mnemonicParsing="false" text="Bottom" />
+                  <MenuItem fx:id="frontView" mnemonicParsing="false" text="Front" />
+                  <MenuItem fx:id="backView" mnemonicParsing="false" text="Back" />
+                  <MenuItem fx:id="rightView" mnemonicParsing="false" text="Right" />
+                  <MenuItem fx:id="leftView" mnemonicParsing="false" text="Left" />
+                  <MenuItem fx:id="freeView" mnemonicParsing="false" text="Free View" />
+               </items>
+            </Menu>
          </menus>
       </MenuBar>
       <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -53,7 +64,7 @@
             <AnchorPane fx:id="optionPane" layoutX="472.0" layoutY="2.0" prefHeight="368.0" prefWidth="166.0" style="-fx-background-color: D3D3D3;" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <TextField fx:id="nOfBoxesTF" layoutX="9.0" layoutY="25.0" promptText="Number of boxes" />
-                  <Button layoutX="6.0" layoutY="60.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="149.0" text="Set">
+                  <Button fx:id="setButton" layoutX="6.0" layoutY="60.0" mnemonicParsing="false" onAction="#setButtonAction" prefHeight="25.0" prefWidth="149.0" text="Set">
                      <font>
                         <Font size="14.0" />
                      </font>
