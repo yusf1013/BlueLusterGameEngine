@@ -14,7 +14,7 @@ public class MasterScript extends Object{
 				ItemBag.getScript(temp.id).run(ItemBag.getMeshMap());
 			}
 		}
-		//System.out.println("fixie");
+		//ystem.out.println("fixie");
 	}
 
 }

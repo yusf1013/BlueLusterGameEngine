@@ -24,7 +24,7 @@ public class MainGL {
 
 
     public void run() {
-        //System.out.println("\n\nHello LWJGL " + Version.getVersion() + "!");
+        //ystem.out.println("\n\nHello LWJGL " + Version.getVersion() + "!");
 
         try {
             init();
@@ -43,9 +43,9 @@ public class MainGL {
     private void init() {
 
         /*File f = new File("src\\Games\\deatto.txt");
-        System.out.println(f.getAbsolutePath());
+       System.out.println(f.getAbsolutePath());
         if(f.exists())
-            System.out.println("EXISTS");
+           System.out.println("EXISTS");
         else
         {
             try {
@@ -56,7 +56,7 @@ public class MainGL {
                 e.printStackTrace();
             }
 
-            System.out.println("Written");
+           System.out.println("Written");
         }*/
 
 
@@ -107,18 +107,16 @@ public class MainGL {
         int frameCount=0;
         DisplayDriverGL ddgl = new DisplayDriverGL(window);
         glEnable(GL_DEPTH_TEST);
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
 
 
-
-
+        float f=0;
         while (!glfwWindowShouldClose(window)) {
 
-            if(ddgl.onUserUpdate(0))
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+            /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            ddgl.onUserUpdate(0);*/
 
-            /*
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
             currentTime=System.nanoTime();
             elapsedTime=(currentTime -prevTime)/10000f/100000f;
@@ -130,10 +128,9 @@ public class MainGL {
             if(timedif>frameRatePrintRate)
             {
                 timedif=0;
-                //System.out.println(frameCount*1/frameRatePrintRate);
+                //ystem.out.println(frameCount*1/frameRatePrintRate);
                 frameCount=0;
             }
-*/
 
             glfwSwapBuffers(window); // swap the color buffers
 

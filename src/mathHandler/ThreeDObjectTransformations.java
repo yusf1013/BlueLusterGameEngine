@@ -1,8 +1,10 @@
 package mathHandler;
 
+import javafx.scene.paint.Color;
 import threeDItems.Matrix4by4;
 import threeDItems.Mesh;
 import threeDItems.Triangle;
+import threeDItems.Vec3d;
 
 public class ThreeDObjectTransformations extends VectorGeometry{
     public Triangle transform(Matrix4by4 transformationMatrix, Triangle triTransformed)
@@ -20,7 +22,7 @@ public class ThreeDObjectTransformations extends VectorGeometry{
         triProjected.p[0] = vectorMul(triProjected.p[0], w);
         triProjected.p[1] = vectorMul(triProjected.p[1], w);
         triProjected.p[2] = vectorMul(triProjected.p[2], w);
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         return triProjected;
     }
 
@@ -32,10 +34,13 @@ public class ThreeDObjectTransformations extends VectorGeometry{
         }
     }
 
-    public void useless()
+    public static Triangle projectTriangle(Triangle triTranslated, Matrix4by4 matProj)
     {
-        int i=0;
-        i++;
+        Triangle triangle = new Triangle();
+        triangle.p[0]=VectorGeometry.multiplyMatrixAndVector(matProj, triTranslated.p[0]);
+        triangle.p[1]=VectorGeometry.multiplyMatrixAndVector(matProj, triTranslated.p[1]);
+        triangle.p[2]=VectorGeometry.multiplyMatrixAndVector(matProj, triTranslated.p[2]);
+        return triangle;
     }
 
 

@@ -25,7 +25,7 @@ public class Camera {
 
     public Matrix4by4 createViewMat()
     {
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         Vec3d vTarget= new Vec3d(0,0.0f,1.0f);
         //vLookDir=calculator.multiplyMatrixAndVector(calculator.makeYRotationMatrix(yaw), vTarget);
         Matrix4by4 mat = calculator.multiplyMatrix(calculator.makeXRotationMatrix(pitch), calculator.makeYRotationMatrix(yaw));

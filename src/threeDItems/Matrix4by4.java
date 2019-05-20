@@ -18,7 +18,7 @@ public class Matrix4by4 {
                 s+=m[i][j] + "\t";
             s+="\n";
         }
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         return s;
     }
 }

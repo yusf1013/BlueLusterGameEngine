@@ -1,6 +1,7 @@
 package rendererEngine.itemBag;
 import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh;
+import threeDItems.Vec3d;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class ItemBag {
         {
             Mesh m = (Mesh) o;
             meshCollection.put(m.id, m);
-            //System.out.println("fixie");
+            //ystem.out.println("fixie");
         }
     }
 
@@ -56,7 +57,7 @@ public class ItemBag {
 
     public static Set<Map.Entry<Integer, Mesh>> getEntrySet()
     {
-        //System.out.println("Ghost: " + meshCollection.size());
+        //ystem.out.println("Ghost: " + meshCollection.size());
         return meshCollection.entrySet();
     }
 

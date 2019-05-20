@@ -10,10 +10,7 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import physicsEngine.CollisionModule.Collider;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.MasterScript;
-import threeDItems.Matrix4by4;
-import threeDItems.Mesh;
-import threeDItems.Triangle;
-import threeDItems.Vec3d;
+import threeDItems.*;
 
 import java.nio.DoubleBuffer;
 import java.util.List;
@@ -47,17 +44,21 @@ public class DisplayDriverGL extends VectorGeometry {
         ModelLoader modelLoader = new ModelLoader();
         //meshVector=modelLoader.loadAll();
         ItemBag.addMesh(modelLoader.loadAll());
-        ms=new MasterScript();
-        System.out.println("1. " + ItemBag.getMapSize());
-        System.out.println("Get mesh \n" + ItemBag.getMesh(0));
 
+       System.out.println("Null test\n\n\n");
+        for(Map.Entry e: ItemBag.getEntrySet()) {
+            if(((Mesh)e.getValue()).obb==null)
+               System.out.println("Is null after loadingn\n\n\n");
+        }
+
+        ms=new MasterScript();
         //ms=(MasterScript)Class.forName("rendererEngine.scriptManager.MasterScript").newInstance();
 
         //meshCube=modelLoader.meshLoader("toNotDisplay\\axis.obj", true);
 
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
         glfwSetKeyCallback(window, keyCallback = new KeyboardHandler(window));
-        System.out.println("Object has been loaded successfully");
+       System.out.println("Object has been loaded successfully");
         this.window=window;
 
         DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
@@ -71,29 +72,54 @@ public class DisplayDriverGL extends VectorGeometry {
     boolean onUserUpdate(float fElapsedTime)
     {
 
-        Mesh m1= ItemBag.getMesh(0), m2=ItemBag.getMesh(1);
-        if(collider.detectCollision(m1, m2))
-        {
-            System.out.println("Collision detected");
-            return false;
-        }
+        Mesh m1= null, m2=null;
 
-        System.out.println("1. " + ItemBag.getMapSize());
         for(Map.Entry e:ItemBag.getEntrySet())
         {
-            drawMesh((Mesh)e.getValue(), fElapsedTime);
-            if(((Mesh) e.getValue()).isRigidBody) {
-                drawMesh(((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue())), fElapsedTime);
+            if(m1==null)
+            {
+                //ystem.out.println("m1 filled");
+                m1=((Mesh) e.getValue());
+            }
+            else if(m2==null)
+            {
+                //ystem.out.println("m2 filled");
+                m2=((Mesh) e.getValue());
             }
 
-            System.out.println("Real size: " + ((Mesh) e.getValue()).tris.size());
+            drawMesh((Mesh)e.getValue(), fElapsedTime);
+            if(((Mesh) e.getValue()).isRigidBody) {
+                ((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue()));
+                //drawMesh(temp, fElapsedTime);
+                /*for(ObbMesh m: ((Mesh) e.getValue()).obbList)
+                {
+                    drawMesh(m, fElapsedTime);
+                }*/
+            }
+
         }
+
         /*for(Triangle tri: triToRaster)
         {
-            System.out.println(tri);
+           System.out.println(tri);
         }*/
         draw();
         handleUserInputs(fElapsedTime);
+
+        /*for(Vec3d v: m1.obb.cube.vec)
+           System.out.println(v);
+       System.out.println("THe other mesh");
+        for(Vec3d v: m1.obb.cube.vec)
+           System.out.println(v);*/
+
+        if(collider.detectCollision(m1, m2))
+        {
+            //ystem.out.println("Collision detected");
+            return false;
+        }
+        else
+            //ystem.out.println("No collision");
+
         ms.run();
         return true;
     }
@@ -182,7 +208,7 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public boolean drawMesh(Mesh meshCube, float fElapsedTime)
     {
-        //System.out.println("In draw mesh " + meshCube.getStats());
+        //ystem.out.println("In draw mesh " + meshCube.getStats());
         Matrix4by4 matWorld = meshCube.getWorldMat();
         Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
@@ -216,7 +242,7 @@ public class DisplayDriverGL extends VectorGeometry {
                 {
                     triToRaster.add(projectTriangle(arr[mor], normal));
                 }
-                //System.out.println("fixie");
+                //ystem.out.println("fixie");
             }
         }
         //triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
@@ -332,13 +358,14 @@ public class DisplayDriverGL extends VectorGeometry {
     public float zcalc(float xoy1, float z1, float xoy3, float z3)
     {
         if(z1==z3) {
-            System.out.println("You died");
+           System.out.println("You died");
         }
         return (((xoy1-xoy3)*(0.1f-z3)/(z1-z3))+xoy3);
     }
 
     public static void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color fill)
     {
+        fill=Color.BLACK;
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);

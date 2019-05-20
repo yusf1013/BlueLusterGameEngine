@@ -2,8 +2,12 @@ package threeDItems;
 
 import javafx.scene.paint.Color;
 import mathHandler.VectorGeometry;
+import physicsEngine.CollisionModule.BoundingVolume;
 import physicsEngine.CollisionModule.Obb;
+import physicsEngine.CollisionModule.ObjectSliceAndMerge;
+
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class Mesh {
     public ArrayList<Triangle> tris= null;
@@ -11,7 +15,18 @@ public class Mesh {
     public boolean isScripted=false, isRigidBody=false;
     public int id;
     public Obb obb;
+    //public ObjectSliceAndMerge obj=null;
+    public ArrayList<ObbMesh> obbList = new ArrayList<>();
     public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000);
+
+    public Mesh()
+    {
+
+    }
+    public Mesh(boolean bool)
+    {
+        tris=new ArrayList<>();
+    }
 
     public void addTri(Triangle tri)
     {
@@ -48,6 +63,7 @@ public class Mesh {
 
     public Matrix4by4 getWorldMat()
     {
+        updateObbList();
         Matrix4by4 matRotZ, matRotX, matRotY;
         matRotZ = VectorGeometry.makeZRotationMatrix(zTheta);
         matRotX = VectorGeometry.makeXRotationMatrix(xTheta);
@@ -57,12 +73,35 @@ public class Mesh {
         matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
         scale = VectorGeometry.scale(xScale, yScale, zScale);
 
-        Matrix4by4 matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
+        /*Matrix4by4 matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotY);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, scale);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);*/
+
+        Matrix4by4 matWorld = VectorGeometry.makeIdentity();
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotZ);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotX);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotY);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, scale);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);
 
         return matWorld;
+    }
+
+    public void updateObbList()
+    {
+        for(ObbMesh m: obbList)
+        {
+            m.xTheta=xTheta;
+            m.yTheta=yTheta;
+            m.zTheta=xTheta;
+            m.xTranslation=xTranslation;
+            m.yTranslation=yTranslation;
+            m.zTranslation=zTranslation;
+            m.xScale=xScale;
+            m.yScale=yScale;
+            m.zScale=zScale;
+        }
     }
 
     public void setColor(Color color)
@@ -75,7 +114,7 @@ public class Mesh {
 
     public void printColor()
     {
-        System.out.println(tris.get(0).getColor());
+       System.out.println(tris.get(0).getColor());
     }
 
     public float findMin(float f1, float f2, float f3)
@@ -99,7 +138,7 @@ public class Mesh {
         {
             ts+= tris.get(i).toString();
         }
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         return  ts;
     }
 

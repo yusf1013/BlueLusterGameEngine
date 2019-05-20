@@ -31,7 +31,7 @@ public class DisplayDriver extends VectorGeometry {
     {
         //Load model from file
         ModelLoader dd = new ModelLoader();
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         try {
             meshCube=dd.meshLoader("src\\resources\\","cube.obj", true);
         } catch (FileNotFoundException e) {
@@ -137,9 +137,9 @@ public class DisplayDriver extends VectorGeometry {
 
                 if(dp==0.1f )
                 {
-                    System.out.println("Tri: " + i + " dp= " +(dotProduct(normal, normaliseVector(light_direction))));
-                    System.out.println(triTranslated);
-                    System.out.println("Normal: " + normal);
+                   System.out.println("Tri: " + i + " dp= " +(dotProduct(normal, normaliseVector(light_direction))));
+                   System.out.println(triTranslated);
+                   System.out.println("Normal: " + normal);
                     continue;
                 }*/
 
@@ -194,8 +194,8 @@ public class DisplayDriver extends VectorGeometry {
         tri.setStroke(stroke);
         //gc.fillPolygon(x, y, 3);
         gc.strokePolygon(x, y, 3);
-        System.out.println(x[0] + " " + x[1] + " " + x[2]);
-        System.out.println(y[0] + " " + y[1] + " " + y[2]);
+       System.out.println(x[0] + " " + x[1] + " " + x[2]);
+       System.out.println(y[0] + " " + y[1] + " " + y[2]);
         /*gc.strokePolygon(new double[]{60, 90, 60, 90},
                 new double[]{210, 210, 240, 240}, 4);*/
     }

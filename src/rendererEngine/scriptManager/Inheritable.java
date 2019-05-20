@@ -10,7 +10,7 @@ public abstract class Inheritable {
     public void addAllMeshes(Map<Integer, Mesh> meshCollection)
     {
         this.meshCollection=meshCollection;
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
     }
 
     public Mesh getMesh(int id)

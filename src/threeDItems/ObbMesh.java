@@ -2,10 +2,41 @@ package threeDItems;
 
 import mathHandler.VectorGeometry;
 
+import java.util.ArrayList;
+import java.util.Vector;
+
 public class ObbMesh extends Mesh{
 
     public float initTransX, initTransY, initTransZ;
     public float initScaleX=1, initScaleY=1, initScaleZ=1;
+    public Vector<Vec3d> p = new Vector<>(), vecXY, vecXZ, vecYZ;
+
+    public ObbMesh(boolean bool)
+    {
+        this();
+        tris=new ArrayList<>();
+    }
+    public ObbMesh()
+    {
+        super();
+        vecXY= new Vector<>();
+        vecXY.add(new Vec3d(-0.5f, -0.5f, 0.0f));
+        vecXY.add(new Vec3d(-0.5f, 0.5f, 0.0f));
+        vecXY.add(new Vec3d(0.5f, 0.5f, 0.0f));
+        vecXY.add(new Vec3d(0.5f, -0.5f, 0.0f));
+
+        vecXZ= new Vector<>();
+        vecXZ.add(new Vec3d(-0.5f, 0.0f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, 0.0f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, 0.0f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, 0.0f, -0.5f));
+
+        vecYZ= new Vector<>();
+        vecYZ.add(new Vec3d(0.0f, -0.5f, -0.5f));
+        vecYZ.add(new Vec3d(0.0f, -0.5f, 0.5f));
+        vecYZ.add(new Vec3d(0.0f, 0.5f, 0.5f));
+        vecYZ.add(new Vec3d(0.0f, 0.5f, -0.5f));
+    }
 
     public Matrix4by4 getWorldMat()
     {
@@ -20,16 +51,6 @@ public class ObbMesh extends Mesh{
         initScale = VectorGeometry.scale(initScaleX, initScaleY, initScaleZ);
         scale = VectorGeometry.scale(xScale, yScale, zScale);
 
-        /*System.out.println("Ghost");
-        System.out.println(initTransX + " " + initTransY + " " + initTransZ + "\n" );
-        System.out.println(xTranslation + " " + yTranslation + " " + zTranslation + "\n" );
-        System.out.println(initTrans);
-        System.out.println(matTrans);
-        System.out.println("Ghost2");
-        System.out.println(initScaleX + " " + initScaleY + " " + initScaleZ + "\n" );
-        System.out.println(xScale + " " + yScale + " " + zScale + "\n" );
-        System.out.println(initScale);
-        System.out.println(scale);*/
 
         Matrix4by4 matWorld;
         matWorld = VectorGeometry.makeIdentity();
@@ -43,17 +64,26 @@ public class ObbMesh extends Mesh{
         matWorld = VectorGeometry.multiplyMatrix(matWorld, scale);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);
 
-        //System.out.println("In OBB:-");
-        /*System.out.println(initScale+"\n"+initTrans+"\n"+matRotZ+"\n"+matRotX+"\n"+matRotY+"\n"+scale
-        +"\n"+matTrans);*/
+        return matWorld;
+    }
 
-        /*
-        //Old shit
-        matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
-        matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotY);
+    public Matrix4by4 getWorldMatWithoutRotation()
+    {
+        Matrix4by4 matTrans, scale, initTrans, initScale;
+        matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
+        initTrans=VectorGeometry.makeTranslation(initTransX, initTransY, initTransZ);
+        initScale = VectorGeometry.scale(initScaleX, initScaleY, initScaleZ);
+        scale = VectorGeometry.scale(xScale, yScale, zScale);
+
+
+        Matrix4by4 matWorld;
+        matWorld = VectorGeometry.makeIdentity();
+
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, initScale);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, initTrans);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, scale);
-        matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);*/
-        //matWorld = VectorGeometry.multiplyMatrix(matWorld, initTrans);
+        matWorld = VectorGeometry.multiplyMatrix(matWorld, matTrans);
+
         return matWorld;
     }
 

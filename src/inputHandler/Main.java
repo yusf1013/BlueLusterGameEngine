@@ -14,7 +14,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
 /*
         Scanner input = new Scanner(System.in);
-        System.out.println(input.nextInt());
+       System.out.println(input.nextInt());
         System.exit(1);*/
 
         Group root = new Group();
@@ -50,12 +50,12 @@ public class Main extends Application {
                         temp=0;
                         count+= 1.0f/elapsedTime;
                         c++;
-                        System.out.println(count/c);
+                       System.out.println(count/c);
                     }
                     elapsedTime=0;
-                    //System.out.println(timeLim);
+                    //ystem.out.println(timeLim);
                 }
-                //System.out.println("fixie");
+                //ystem.out.println("fixie");
             }
         }.start();
 

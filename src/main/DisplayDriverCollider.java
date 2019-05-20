@@ -8,7 +8,7 @@ public class DisplayDriverCollider extends DisplayDriverGUI {
     public void fillTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)
     {
         gc.setStroke(Color.BLACK);
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         //gc.setFill(fill);
         gc.setLineWidth(1);
         /*if(fill==Color.TRANSPARENT)
@@ -24,7 +24,7 @@ public class DisplayDriverCollider extends DisplayDriverGUI {
             gc.setFill(fill);
             gc.fillPolygon(new double[]{x1, x2, x3},
                 new double[]{y1,y2,y3}, 3);
-            System.out.println("Drawing gray: ");
+           System.out.println("Drawing gray: ");
         }*/
     }
 

@@ -74,7 +74,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //anchor.setOnMouseClicked(e-> System.out.println("dies"));
+        //anchor.setOnMouseClicked(e->System.out.println("dies"));
         VBox vbox = new VBox();
         vbox.setSpacing(10);
         fileListPane.getChildren().add(vbox);
@@ -145,44 +145,45 @@ public class Controller implements Initializable {
                 meshArray.get(selectedObject).obb =null;
                 createColliderButton.setDisable(true);
             }
-            System.out.println(meshArray.get(selectedObject).isRigidBody);
+           System.out.println(meshArray.get(selectedObject).isRigidBody);
             //createColliderButton.setDisable(false);
         });
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         //rhsPane.getChildren().clear();
         //initializeControls();
     }
 
     public void tro()
     {
-        System.out.println("dsfdss");
+       System.out.println("dsfdss");
         int i=0;
     }
 
     public void addMeshToList(String name)
     {
-        //System.out.println("Loading first shit: " + ml.id);
-        ArrayList<Mesh> al=null, al2=new ArrayList<>();
+        //ystem.out.println("Loading first shit: " + ml.id);
+        //ArrayList<Mesh> al=null, al2=new ArrayList<>();
         try {
                 Mesh toAdd = ml.meshLoader("src\\resources\\",name, true);
-            /*System.out.println("After loading: " + toAdd.max);
-            ObjectSliceAndMerge obj = new ObjectSliceAndMerge(toAdd);
+           System.out.println("TOADD stats:  " + toAdd.getStats());
+           System.out.println("After loading: " + toAdd.max);
+            /*ObjectSliceAndMerge obj = new ObjectSliceAndMerge(toAdd, 4, 0.01f);
             obj.createTree();
             al=new ArrayList<>();
-            al.addAll(obj.clusterize());*/
+            al.addAll(obj.clusterize());
             //al = obj.getObbList();
-            //meshArray.addAll(al);
+            meshArray.addAll(al);
+            meshArray.add(toAdd);*/
+
+            //meshArray.add(toAdd);
+            /*ystem.out.println("S ing out: " + al.get(0));
+           System.out.println("S ing out again: " + al.get(1));*/
+            //ystem.out.println("Big moment: " + al.size());
+
             meshArray.add(toAdd);
 
-            //meshArray.add(toAdd);
-            /*System.out.println("S ing out: " + al.get(0));
-            System.out.println("S ing out again: " + al.get(1));*/
-            //System.out.println("Big moment: " + al.size());
-
-            //meshArray.add(toAdd);
-
             //obj.divideWRTX(meshArray.get(meshArray.size()-1), 0.1f);
-            //System.out.println("After division: " + meshArray.get(meshArray.size()-1));
+            //ystem.out.println("After division: " + meshArray.get(meshArray.size()-1));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -203,7 +204,7 @@ public class Controller implements Initializable {
             label.setOnMouseClicked(e -> {
                 if (isObjectSelected) {
                     int earlierSelection = selectedObject;
-                    System.out.println(labelVec.size() + "  " + selectedObject);
+                   System.out.println(labelVec.size() + "  " + selectedObject);
                     labelVec.get(selectedObject).setStyle("-fx-border-color: black;");
                     deSelectObject();
                     if (temp != earlierSelection) {
@@ -213,14 +214,14 @@ public class Controller implements Initializable {
                     }
                 } else {
                     //selectObject(label.getText().substring(2,3));
-                    System.out.println("Before special op: " + splitString(label.getText(), ".", true));
+                   System.out.println("Before special op: " + splitString(label.getText(), ".", true));
                     selectObject(splitString(label.getText(), ".", true));
 
                     label.setStyle("-fx-border-color: red;");
-                    System.out.println("else: " + selectedObject);
+                   System.out.println("else: " + selectedObject);
                 }
             });
-            label.setOnKeyPressed(e -> System.out.println("sfdfsefsd"));
+            //label.setOnKeyPressed(e ->System.out.println("sfdfsefsd"));
             label.setStyle("-fx-border-color: black;");
             label.setPrefWidth(200d);
             //vbox2.getChildren().add(label);
@@ -274,8 +275,8 @@ public class Controller implements Initializable {
 
 
         /*}*/
-        //System.out.println(s + " has been selected and its index is: " + hash.get(meshArray.get(selectedObject).id));
-        //System.out.println("But its ID is: " + meshArray.get(selectedObject).id);
+        //ystem.out.println(s + " has been selected and its index is: " + hash.get(meshArray.get(selectedObject).id));
+        //ystem.out.println("But its ID is: " + meshArray.get(selectedObject).id);
     }
 
     public void updateSelectedObj()
@@ -286,7 +287,7 @@ public class Controller implements Initializable {
         {
             String temp = splitString(label.getText(), ".", false);
             label.setText("  " + i + ". " + temp);
-            System.out.println(temp);
+           System.out.println(temp);
             vbox2.getChildren().add(label);
             i++;
         }
@@ -333,7 +334,7 @@ public class Controller implements Initializable {
     {
         /*if(meshArray.size()==4)
         {
-            System.out.println(meshArray.get(1));
+           System.out.println(meshArray.get(1));
             meshArray.remove(1);
         }*/
         updateSelectedObj();
@@ -491,7 +492,7 @@ public class Controller implements Initializable {
             ddgui.camera.position=new Vec3d(0,5,0);
             ddgui.camera.pitch=3.14159f/2.0f;
             ddgui.camera.yaw=0;
-            System.out.println("View");
+           System.out.println("View");
             update();
         });
 
@@ -499,7 +500,7 @@ public class Controller implements Initializable {
             ddgui.camera.position=new Vec3d(0,-5,0);
             ddgui.camera.pitch=-3.14159f/2.0f;
             ddgui.camera.yaw=0;
-            System.out.println("View");
+           System.out.println("View");
             update();
         });
 
@@ -521,7 +522,7 @@ public class Controller implements Initializable {
             ddgui.camera.position=new Vec3d(5,0,0);
             ddgui.camera.pitch=0;
             ddgui.camera.yaw=-3.14159f/2.0f;
-            System.out.println("View");
+           System.out.println("View");
             update();
         });
 
@@ -529,7 +530,7 @@ public class Controller implements Initializable {
             ddgui.camera.position=new Vec3d(-5,0,0);
             ddgui.camera.pitch=0;
             ddgui.camera.yaw=3.14159f/2.0f;
-            System.out.println("leftView");
+           System.out.println("leftView");
             update();
         });
 
@@ -537,7 +538,7 @@ public class Controller implements Initializable {
             ddgui.camera.position=new Vec3d(-3,5,-5);
             ddgui.camera.yaw=30*3.14159f/180f;
             ddgui.camera.pitch=30*3.14159f/180f;
-            System.out.println("View");
+           System.out.println("View");
             update();
         });
 
@@ -545,20 +546,20 @@ public class Controller implements Initializable {
 
     public void initializePublisherMenuItems()
     {
-        System.out.println("");
+       System.out.println("");
         runInReleaseMode.setOnAction(e->{
             for(Mesh m: meshArray)
             {
-                System.out.println("Is ID vsl: " + m.id);
+               System.out.println("Is ID vsl: " + m.id);
             }
             publish.publish(ml.fileNameVector, meshArray);
-            System.out.println("Confirmation recieved");
+           System.out.println("Confirmation recieved");
             //Cmd.runCommand("pushd D:\\ideaIntellij\\olcge\\out\\production\\olcge\\rendererEngine && java MainGL");
 
             File file = new File("src\\Games");
             if(file.exists())
             {
-                System.out.println("File exists: " + "src\\Games");
+               System.out.println("File exists: " + "src\\Games");
 
                 Cmd.runCommand("xcopy /s out\\production\\olcge\\*.class .\\olcge\\ /Y && echo copy done && exit");
 
@@ -623,8 +624,8 @@ public class Controller implements Initializable {
         });
 
         createScript.setOnAction(e->{
-            System.out.println("Selected obj is: " + selectedObject);
-            System.out.println("ID is: " + meshArray.get(selectedObject).id);
+           System.out.println("Selected obj is: " + selectedObject);
+           System.out.println("ID is: " + meshArray.get(selectedObject).id);
             File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(selectedObject).id+".java");
             String scriptBody=
                     "package Games;\n" +
@@ -633,10 +634,12 @@ public class Controller implements Initializable {
                     "import java.util.*; \n" +
                     "public class scriptOfMesh"+meshArray.get(selectedObject).id+" extends Inheritable {\n" +
                         "\t//Mesh mesh = getMesh(0);\n" +
+                        "\tint i=0;" +
                         "\t@Override\n" +
                         "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
-                            "\t\tSystem.out.println(\"YO\");\n" +
-                            "\t\tmeshMap.get(0).xTheta+=0.01f;\n" +
+                            "\t\tSystem.out.println(++i);\n" +
+                            "\t\t//meshMap.get(0).zTheta+=0.01f;\n" +
+                            "\t\tmeshMap.get(0).xTranslation+=0.01f;\n" +
                         "\t}\n" +
                     "}";
             try {
@@ -680,6 +683,7 @@ public class Controller implements Initializable {
                 stage.show();
 
                 ColliderController c= loader.getController();
+                //c.setThisMesh(meshArray.get(selectedObject));
                 c.setObb(meshArray.get(selectedObject));
 
                 /*c.setThisMesh(meshArray.get(selectedObject));
@@ -704,8 +708,8 @@ public class Controller implements Initializable {
         InputStream inputStream = null;
         OutputStream outputStream = null;
         File oFile = new File(dest.getPath()+"\\"+source.getName());
-        System.out.println("OFILE: " + dest.getPath()+"\\"+source.getName());
-        System.out.println(oFile.getPath());
+       System.out.println("OFILE: " + dest.getPath()+"\\"+source.getName());
+       System.out.println(oFile.getPath());
 
         try {
             inputStream = new FileInputStream(source);
@@ -730,7 +734,7 @@ public class Controller implements Initializable {
     @FXML
     public void handleInputs(KeyEvent event)
     {
-        System.out.println("dsds");
+       System.out.println("dsds");
     }
 
     public void useless()

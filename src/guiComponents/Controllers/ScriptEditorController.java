@@ -43,7 +43,7 @@ public class ScriptEditorController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
     }
 
     public void useless()

@@ -18,7 +18,7 @@ public class Vec3d implements Serializable {
         this.y = y;
         this.z = z;
         this.w = 1.0f;
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
     }
 
     public Vec3d()

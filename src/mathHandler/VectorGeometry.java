@@ -84,7 +84,7 @@ public class VectorGeometry {
         return v;
     }
 
-    public Vec3d multiplyMatrixAndVector(Matrix4by4 m, Vec3d i)
+    public static Vec3d multiplyMatrixAndVector(Matrix4by4 m, Vec3d i)
     {
         Vec3d v = new Vec3d();
         v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];
@@ -215,7 +215,7 @@ public class VectorGeometry {
     public static Matrix4by4 makeRotation(float x, float y, float z)
     {
         Matrix4by4 temp=multiplyMatrix(makeZRotationMatrix(z), makeXRotationMatrix(x));
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         return multiplyMatrix(temp , makeYRotationMatrix(y));
 
     }

@@ -12,13 +12,13 @@ public class Cmd {
             BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while(reader.readLine()!=null)
             {
-                System.out.println("Going");
+               System.out.println("Going");
             }
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
     }
 }

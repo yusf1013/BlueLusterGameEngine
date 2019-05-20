@@ -18,7 +18,7 @@ public class ModelLoader {
 
     public List loadAll(boolean bool)
     {
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         try {
             return ((List)(new ObjectInputStream(new FileInputStream("Games/gameInfo.hlit"))));
         } catch (IOException e) {
@@ -34,15 +34,15 @@ public class ModelLoader {
             //Scanner in = new Scanner(new File("src\\Games\\info.hma"));
             Scanner in = new Scanner(new File("Games\\info.hma"));
             //Scanner in = new Scanner(new File("out\\artifacts\\olcge_jar\\olcge\\Games\\info.hma"));
-            System.out.println("Trying to loadAll");
+           System.out.println("Trying to loadAll");
 
             //File info = new File("src\\Games\\info.hma");
             while(in.hasNext())
             {
                 String meshName = in.next();
-                System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
+               System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
                 vec.add(meshLoader("Games\\", meshName, false));
-                System.out.println("Load done");
+               System.out.println("Load done");
                 vec.lastElement().xTheta=in.nextFloat(); vec.lastElement().yTheta=in.nextFloat(); vec.lastElement().zTheta=in.nextFloat();
                 vec.lastElement().xTranslation=in.nextFloat(); vec.lastElement().yTranslation=in.nextFloat(); vec.lastElement().zTranslation=in.nextFloat();
                 vec.lastElement().xScale=in.nextFloat(); vec.lastElement().yScale=in.nextFloat(); vec.lastElement().zScale=in.nextFloat();
@@ -51,30 +51,59 @@ public class ModelLoader {
                 String rb = in.next();
 
                 if(scripted.equals("true")) {
-                    System.out.println("Is scripted and THE ID IS: " + vec.lastElement().id);
+                   System.out.println("Is scripted and THE ID IS: " + vec.lastElement().id);
                     vec.lastElement().isScripted=true;
                     loadScript(vec.lastElement().id);
 
                 }
                 else
                 {
-                    System.out.println("Is not scripted");
+                   System.out.println("Is not scripted");
                     vec.lastElement().isScripted=false;
                 }
 
-
-                System.out.println("SHIIIT");
-                System.out.println("RB is : " + rb);
                 if(rb.equals("true")){
-                    System.out.println("Is rigid body in model loader");
+                   System.out.println("Is rigid body in model loader " + meshName);
                     vec.lastElement().isRigidBody=true;
                     vec.lastElement().obb = new Obb(new Vec3d(in.nextFloat(), in.nextFloat(), in.nextFloat()), new Vec3d(in.nextFloat(), in.nextFloat(), in.nextFloat()), vec.lastElement().id);
+
+                    int size = in.nextInt();
+                    for(int i=0; i<size; i++) {
+                        ObbMesh om=null;
+
+                        try{
+                            om = obbMeshLoader("src\\resources\\","cube.obj");
+                        } catch (FileNotFoundException e) {
+                            try {
+                                om = obbMeshLoader("resources\\","cube.obj");
+                            } catch (FileNotFoundException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+
+                        om.xTheta = in.nextFloat();
+                        om.yTheta = in.nextFloat();
+                        om.zTheta = in.nextFloat();
+                        om.xTranslation = in.nextFloat();
+                        om.yTranslation = in.nextFloat();
+                        om.zTranslation = in.nextFloat();
+                        om.xScale = in.nextFloat();
+                        om.yScale  = in.nextFloat();
+                        om.zScale = in.nextFloat();
+                        om.initTransX  = in.nextFloat();
+                        om.initTransY = in.nextFloat();
+                        om.initTransZ = in.nextFloat();
+                        om.initScaleX = in.nextFloat();
+                        om.initScaleY  = in.nextFloat();
+                        om.initScaleZ = in.nextFloat();
+                        vec.lastElement().obbList.add(om);
+                    }
                 }
 
                 else
                     vec.lastElement().isRigidBody=false;
 
-                System.out.println("Here, vecSize is: " + vec.size());
+               System.out.println("Here, vecSize is: " + vec.size());
             }
 
         } catch (FileNotFoundException e) {
@@ -92,25 +121,27 @@ public class ModelLoader {
             fileNameVector.add(fileName);
 
         ArrayList<Triangle> al = MeshData.getDataPointReference(fileName);
+        //Vector<Vec3d> vec = MeshData.getPointMapReference(fileName);
         if(al!=null)
         {
             mesh.tris=al;
-            System.out.println("\n\nReturning\n\n");
+            //mesh.p=vec;
             return mesh;
         }
         mesh.tris=new ArrayList<Triangle>();
+        //mesh.p=new Vector<>();
         MeshData.insertDataArray(fileName, mesh.tris);
-
+        //MeshData.insertDataArray(fileName, mesh.p);
         /*if(ItemBag.loadedMesh.get(fileName)!=null)
         {
             mesh.setTris(ItemBag.loadedMesh.get(fileName).tris);
             return mesh;
         }
-        System.out.println("PASSING THE DANGER GUARD");*/
+       System.out.println("PASSING THE DANGER GUARD");*/
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
         File file = new File(directory+fileName);
-        //System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
+        //ystem.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         /*try {*/
             Scanner jin = new Scanner(file);
             while(jin.hasNext())
@@ -140,19 +171,29 @@ public class ModelLoader {
 
                 }
             }
-            /*Mesh temp = new Mesh();
-            temp.setTris(mesh.tris);
-            ItemBag.loadedMesh.put(fileName, temp);*/
+            //mesh.p=pointBuffer;
             return mesh;
     }
 
     public ObbMesh obbMeshLoader(String directory, String fileName) throws FileNotFoundException {
-        //Mesh mesh = new Mesh();
         ObbMesh mesh = new ObbMesh();
+
+        ArrayList<Triangle> al = MeshData.getDataPointReference(fileName);
+        //Vector<Vec3d> vec = MeshData.getPointMapReference(fileName);
+        if(al!=null && !al.isEmpty())
+        {
+            mesh.tris=al;
+            //mesh.p=vec;
+            return mesh;
+        }
+        mesh.tris=new ArrayList<Triangle>();
+        //mesh.p=new Vector<>();
+        MeshData.insertDataArray(fileName, mesh.tris);
+        //MeshData.insertDataArray(fileName, mesh.p);
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
         File file = new File(directory+fileName);
-        //System.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
+        //ystem.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         /*try {*/
         Scanner jin = new Scanner(file);
         while(jin.hasNext())
@@ -182,13 +223,13 @@ public class ModelLoader {
 
             }
         }
+        //mesh.p=pointBuffer;
         return mesh;
     }
 
     public void loadScript(int id)
     {
         try {
-            System.out.println("Trying to oad class for: " + "Games.scriptOfMesh"+id);
             ItemBag.addScript(id, (Inheritable) Class.forName( "Games.scriptOfMesh"+id).newInstance());
             /*Class cl = Class.forName("Games.scriptOfMesh"+id);
             Constructor ctor = cl.getDeclaredConstructor(ItemBag.getMeshMap().getClass());

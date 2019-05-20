@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Vector;
 import threeDItems.ObbMesh;
 
-
 class Node{
     Mesh node;
     ArrayList<Node> children = new ArrayList<>();
@@ -31,12 +30,16 @@ class Node{
 public class ObjectSliceAndMerge {
 
     Node tree;
-    int wantedDivisionDepth=4;
-    float eps=0.001f;
+    /*int wantedDivisionDepth=4;
+    float eps=0.001f;*/
+    int wantedDivisionDepth;
+    float eps;
 
-    public ObjectSliceAndMerge(Mesh mesh)
+    public ObjectSliceAndMerge(Mesh mesh, int wantedDivisionDepth, float eps)
     {
         tree = new Node(mesh);
+        this.wantedDivisionDepth=wantedDivisionDepth;
+        this.eps=eps;
     }
 
     public void createTree()
@@ -57,7 +60,6 @@ public class ObjectSliceAndMerge {
             /*Obb obb = new Obb(node.node);
             Vec3d criticalValue = calcCriticalValue(obb.min, obb.max);*/
             Vec3d criticalValue = calcCriticalValue(node.node.min, node.node.max);
-            System.out.println("Critical min: " + node.node.max);
             createChildren(node, criticalValue.x,"x");
             createChildren(node, criticalValue.y,"y");
             createChildren(node, criticalValue.z,"z");
@@ -75,16 +77,12 @@ public class ObjectSliceAndMerge {
         int size=tree.children.size();
         for(int i=0; i<size; i++)
         {
-            System.out.println("In createChildrenX for");
             /*for(Node n: tree.children)
-                System.out.println(n.node);*/
-            System.out.println("Ending\n\n");
+               System.out.println(n.node);*/
             tree.children.addAll(divideWRT(tree.children.get(0), criticalValue, axis));
             tree.children.remove(0);
-            System.out.println("At the end");
             /*for(Node n: tree.children)
-                System.out.println(n.node);*/
-            System.out.println("Ending\n\n");
+               System.out.println(n.node);*/
         }
     }
 
@@ -102,7 +100,7 @@ public class ObjectSliceAndMerge {
         }
 
         ArrayList<Node> toBeReturned = new ArrayList<>();
-        Mesh m1=new Mesh(), m2 = new Mesh();
+        Mesh m1=new Mesh(true), m2 = new Mesh(true);
         m1.setTris(newTriangleAL1);
         m2.setTris(newTriangleAL12);
         if(newTriangleAL12.size()!=0)
@@ -240,7 +238,7 @@ public class ObjectSliceAndMerge {
         }
         else if(count==2)
         {
-            //System.out.println("ShitCount 2");
+            //ystem.out.println("ShitCount 2");
 
 
             int lowestOne=-1;
@@ -361,7 +359,7 @@ public class ObjectSliceAndMerge {
     public float zcalc(float xoy1, float z1, float xoy3, float z3, float criticalValue)
     {
         if(z1==z3) {
-            System.out.println("You died");
+           System.out.println("You died");
         }
         return (((xoy1-xoy3)*(criticalValue-z3)/(z1-z3))+xoy3);
     }
@@ -371,15 +369,15 @@ public class ObjectSliceAndMerge {
         int j=0;
         float [] arr = new float[]{1,-1,1.5f,-1.5f,2,-2};
         ArrayList<Mesh> meshList = new ArrayList<>();
-        System.out.println(tree.node);*/
+       System.out.println(tree.node);*/
         ArrayList<Mesh> toReturn = prepareMeshList(tree);
         /*for(Mesh m: toReturn)
         {
-            *//*System.out.println("In getMeshList for");
-            System.out.println(m);
+            *//*ystem.out.println("In getMeshList for");
+           System.out.println(m);
             m.xTranslation=arr[j%6]*//*;
             *//*m.xTranslation=f*i;
-            System.out.println("Mesh trans: " + m.xTranslation);
+           System.out.println("Mesh trans: " + m.xTranslation);
             if(j%2==1)
                 i++;
             f*=-1;
@@ -403,7 +401,7 @@ public class ObjectSliceAndMerge {
 
         for(Node n: pointer.children)
         {
-            //System.out.println("In for");
+            //ystem.out.println("In for");
             meshList.addAll(prepareMeshList(n));
         }
 
@@ -416,13 +414,43 @@ public class ObjectSliceAndMerge {
         return prepareObbList(tree);
     }
 
+    public ArrayList<ObbMesh> getObbMeshList()
+    {
+        return prepareObbMeshList(tree);
+    }
+
+    public ArrayList<ObbMesh> prepareObbMeshList(Node pointer)
+    {
+        ArrayList<ObbMesh> meshList = new ArrayList<>();
+        if(pointer == null)
+        {
+            System.out.println("Pointer is null");
+            return meshList;
+        }
+        if(pointer.node!=null)
+        {
+            //meshList.add(new Obb(pointer.node).getMesh(pointer.node));
+            Mesh tempMesh = pointer.node.getObb().getMesh(pointer.node);
+            meshList.add(new Obb(tempMesh).cube);
+        }
+
+        for(Node n: pointer.children)
+        {
+            //ystem.out.println("In for");
+            meshList.addAll(prepareObbMeshList(n));
+        }
+
+        return meshList;
+
+    }
+
 
     public ArrayList<Mesh> prepareObbList(Node pointer)
     {
         ArrayList<Mesh> meshList = new ArrayList<>();
         if(pointer == null)
         {
-            System.out.println("Pointer is null");
+           System.out.println("Pointer is null");
             return meshList;
         }
         if(pointer.node!=null)
@@ -434,7 +462,7 @@ public class ObjectSliceAndMerge {
 
         for(Node n: pointer.children)
         {
-            //System.out.println("In for");
+            //ystem.out.println("In for");
             meshList.addAll(prepareObbList(n));
         }
 
@@ -450,55 +478,51 @@ public class ObjectSliceAndMerge {
 
     public List clusterize()
     {
-        System.out.println("STArts");
+       System.out.println("STArts");
         LinkedList list = new LinkedList();
         list.addAll(getObbList());
-        System.out.println("SHIT st: " + list.size());
+
+        //list.addAll(getObbMeshList());
+
+       System.out.println("SHIT st: " + list.size());
         LinkedList <LinkedList<Float>> table = new LinkedList<>();
 
         int counter=0, stop=50000;
         boolean restart=false;
         for(int i=0; i<list.size(); i++)
         {
-            //System.out.println("COUNTER" + " " + counter);
             counter++;
             if(counter>stop)
                 break;
             table.add(new LinkedList<>());
-            //float vol = calcVol((ObbMesh)list.get(i));
-
-            /*System.out.println("DONT RUN YET");
-            System.out.println(((ObbMesh) list.get(i)).getStats());*/
-
-
 
             for(int j=0; j<i; j++)
             {
-                //System.out.println("COUNTer" + " " + counter);
-                /*counter++;
-                if(counter>stop)
-                    break;*/
+
                 float mergeVol=-calcVol((ObbMesh)list.get(i))-calcVol((ObbMesh)list.get(j))+calcMergeVol((ObbMesh)list.get(i), (ObbMesh)list.get(j));
                 table.get(i).add(mergeVol);
-                /*System.out.println("New shit added. I: " + i);
-                printTable(table);*/
+
                 if((mergeVol)<=eps)
                 {
-                    //System.out.println("Change");
                     merge(list, i, j);
+
                     updatePartialTable(list, table, i, j);
+
                     i=table.size()-2;
                     break;
                 }
             }
-            /*if(table.get(i).isEmpty())
-                table.get(i).add(vol);*/
-            /*System.out.println("End major loop table. I: " + i);
-            printTable(table);
-            printTableSize(table);*/
+
+            /*System.out.println("Printing entire list");
+            for(Object o : list)
+            {
+                System.out.println(((Mesh)o).getStats());
+            }*/
         }
 
         //printTable(table);
+
+
 
         return list;
     }
@@ -506,30 +530,36 @@ public class ObjectSliceAndMerge {
 
     public void merge(LinkedList<Mesh> list, int indexI, int indexJ)
     {
-        ObbMesh mesh = new ObbMesh();
-        ArrayList <Triangle> al = new ArrayList<>();
+        ObbMesh mesh = new ObbMesh(true);
+        //ArrayList <Triangle> al = new ArrayList<>();
         mesh.tris.clear();
-        al.addAll(list.get(indexI).tris);
-        al.addAll(list.get(indexJ).tris);
-        mesh.setTris(al);
+        //al.addAll(list.get(indexI).tris);
+        //al.addAll(list.get(indexJ).tris);
+        //mesh.setTris(al);
+       //System.out.println("\n\nMerge has started!\n");
         ObbMesh mesh1=(ObbMesh)list.get(indexI);
         ObbMesh mesh2 = (ObbMesh)list.get(indexJ);
+       /*System.out.println("Mesh 1 stats: " + mesh1.getStats());
+       System.out.println("Mesh 2 stats: " + mesh2.getStats());*/
         list.remove(indexI);
         if(indexI<indexJ)
             indexJ--;
         list.remove(indexJ);
-        Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
+        /*Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
         Vec3d m1max= new Vec3d(mesh1.max.x*mesh1.initScaleX+mesh1.initTransX, mesh1.max.y*mesh1.initScaleY+mesh1.initTransY, mesh1.max.z*mesh1.initScaleZ+mesh1.initTransZ);
         Vec3d m2min= new Vec3d(mesh2.min.x*mesh2.initScaleX+mesh2.initTransX, mesh2.min.y*mesh2.initScaleY+mesh2.initTransY, mesh2.min.z*mesh2.initScaleZ+mesh2.initTransZ);
         Vec3d m2max= new Vec3d(mesh2.max.x*mesh2.initScaleX+mesh2.initTransX, mesh2.max.y*mesh2.initScaleY+mesh2.initTransY, mesh2.max.z*mesh2.initScaleZ+mesh2.initTransZ);
         Vec3d newMin = new Vec3d(Math.min(m1min.x, m2min.x),Math.min(m1min.y, m2min.y),Math.min(m1min.z, m2min.z));
-        Vec3d newMax = new Vec3d(Math.max(m1max.x, m2max.x),Math.max(m1max.y, m2max.y),Math.max(m1max.z, m2max.z));
+        Vec3d newMax = new Vec3d(Math.max(m1max.x, m2max.x),Math.max(m1max.y, m2max.y),Math.max(m1max.z, m2max.z));*/
+        Vec3d newMin = new Vec3d(Math.min(mesh1.min.x, mesh2.min.x),Math.min(mesh1.min.y, mesh2.min.y),Math.min(mesh1.min.z, mesh2.min.z));
+        Vec3d newMax = new Vec3d(Math.max(mesh1.max.x, mesh2.max.x),Math.max(mesh1.max.y, mesh2.max.y),Math.max(mesh1.max.z, mesh2.max.z));
+        //System.out.println(m1min + ", " + m1max + ", " + m2min + ", " + m2max + ", " + newMin + ", " + newMax);
         list.add(new Obb(newMin, newMax, 0).getMesh());
     }
 
     public void updatePartialTable(List<Mesh> list, LinkedList <LinkedList<Float>> table, int minI, int minJ)
     {
-        //System.out.println("In update: " + minI + " " + minJ);
+        //ystem.out.println("In update: " + minI + " " + minJ);
         table.remove(minI);
         if(!table.isEmpty())
         {
@@ -568,10 +598,9 @@ public class ObjectSliceAndMerge {
         table.add(new LinkedList<>());
 
         float vol = calcVol((ObbMesh)list.get(list.size()-1)), minVol=500000f;
-        System.out.println("Size: "+list.size());
+       System.out.println("Size: "+list.size());
         for(int j=0; j<list.size()-1; j++)
         {
-            System.out.println("RUN");
             float mergeVol=calcMergeVol((ObbMesh)list.get(list.size()-1), (ObbMesh)list.get(j));
             table.get(list.size()).add(mergeVol);
             if(mergeVol<minVol)
@@ -586,14 +615,14 @@ public class ObjectSliceAndMerge {
 
     public void printTable(LinkedList<LinkedList<Float>> table)
     {
-        System.out.println("Printing table: ");
+       System.out.println("Printing table: ");
         for(List l: table)
         {
             for(Object o:l)
             {
                 System.out.print(o+"\t\t");
             }
-            System.out.println(" -");
+           System.out.println(" -");
         }
     }
 
@@ -601,29 +630,34 @@ public class ObjectSliceAndMerge {
     {
         if(table!=null)
         {
-            System.out.println("Sizes comping up:");
+           System.out.println("Sizes comping up:");
             for(List l:table)
-                System.out.println(l.size());
+               System.out.println(l.size());
         }
         else
-            System.out.println("table is null");
+           System.out.println("table is null");
     }
 
     public float calcVol(ObbMesh mesh)
     {
         Vec3d temp = new Vec3d(mesh.max.x-mesh.min.x, mesh.max.y-mesh.min.y, mesh.max.z-mesh.min.z);
-        float f =temp.x*temp.y*temp.z*(mesh.xScale*mesh.yScale*mesh.zScale)*(mesh.initScaleX*mesh.initScaleY*mesh.initScaleZ);
+        //float f =temp.x*temp.y*temp.z*(mesh.xScale*mesh.yScale*mesh.zScale)*(mesh.initScaleX*mesh.initScaleY*mesh.initScaleZ);
+        float f =temp.x*temp.y*temp.z;
         return Math.abs(f);
     }
 
     public float calcMergeVol(ObbMesh mesh1, ObbMesh mesh2)
     {
-        Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
+        /*Vec3d m1min= new Vec3d(mesh1.min.x*mesh1.initScaleX+mesh1.initTransX, mesh1.min.y*mesh1.initScaleY+mesh1.initTransY, mesh1.min.z*mesh1.initScaleZ+mesh1.initTransZ);
         Vec3d m1max= new Vec3d(mesh1.max.x*mesh1.initScaleX+mesh1.initTransX, mesh1.max.y*mesh1.initScaleY+mesh1.initTransY, mesh1.max.z*mesh1.initScaleZ+mesh1.initTransZ);
         Vec3d m2min= new Vec3d(mesh2.min.x*mesh2.initScaleX+mesh2.initTransX, mesh2.min.y*mesh2.initScaleY+mesh2.initTransY, mesh2.min.z*mesh2.initScaleZ+mesh2.initTransZ);
         Vec3d m2max= new Vec3d(mesh2.max.x*mesh2.initScaleX+mesh2.initTransX, mesh2.max.y*mesh2.initScaleY+mesh2.initTransY, mesh2.max.z*mesh2.initScaleZ+mesh2.initTransZ);
         Vec3d newMin = new Vec3d(Math.min(m1min.x, m2min.x),Math.min(m1min.y, m2min.y),Math.min(m1min.z, m2min.z));
         Vec3d newMax = new Vec3d(Math.max(m1max.x, m2max.x),Math.max(m1max.y, m2max.y),Math.max(m1max.z, m2max.z));
+        Vec3d temp = new Vec3d(newMax.x-newMin.x, newMax.y-newMin.y, newMax.z-newMin.z);*/
+
+        Vec3d newMin = new Vec3d(Math.min(mesh1.min.x, mesh2.min.x),Math.min(mesh1.min.y, mesh2.min.y),Math.min(mesh1.min.z, mesh2.min.z));
+        Vec3d newMax = new Vec3d(Math.max(mesh1.max.x, mesh2.max.x),Math.max(mesh1.max.y, mesh2.max.y),Math.max(mesh1.max.z, mesh2.max.z));
         Vec3d temp = new Vec3d(newMax.x-newMin.x, newMax.y-newMin.y, newMax.z-newMin.z);
 
         /*Vec3d temp1=new Vec3d(mesh1.initScaleX+mesh1.initTransX, mesh1.initScaleY+mesh1.initTransY, mesh1.initScaleZ+mesh1.initTransZ);
@@ -647,7 +681,7 @@ public class ObjectSliceAndMerge {
             float vol = calcVol((ObbMesh)list.get(i));
 
 
-            System.out.println(((ObbMesh) list.get(i)).getStats());
+           System.out.println(((ObbMesh) list.get(i)).getStats());
 
             for(int j=0; j<i; j++)
             {
@@ -670,7 +704,7 @@ public class ObjectSliceAndMerge {
 
         printTable(table);
 
-        System.out.println(minVol + " " + minI + " " + minJ);
+       System.out.println(minVol + " " + minI + " " + minJ);
 
         merge(list, minI, minJ);
 

@@ -7,11 +7,12 @@ import threeDItems.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Vector;
 
-public class Obb extends Collider{
+public class Obb extends BoundingVolume{
     public Vec3d min= new Vec3d();
     public Vec3d max = new Vec3d();
-    ObbMesh cube = new ObbMesh();
+    public ObbMesh cube = new ObbMesh();
     int id;
 
     public Obb(Vec3d min, Vec3d max, int id)
@@ -28,6 +29,14 @@ public class Obb extends Collider{
                 e1.printStackTrace();
             }
         }
+
+        /*cube.vect= new Vector<>();
+        cube.vect.add(new Vec3d(-0.5f, -0.5f, 0.0f));
+        cube.vect.add(new Vec3d(-0.5f, 0.5f, 0.0f));
+        cube.vect.add(new Vec3d(0.5f, 0.5f, 0.0f));
+        cube.vect.add(new Vec3d(0.5f, -0.5f, 0.0f));
+
+       System.out.println("Filling in points arr\n\n");*/
     }
 
     public Obb(Triangle tri)
@@ -39,6 +48,8 @@ public class Obb extends Collider{
         max.x=findMax(tri.p[0].x, tri.p[1].x, tri.p[2].x);
         max.y=findMax(tri.p[0].y, tri.p[1].y, tri.p[2].y);
         max.z=findMax(tri.p[0].z, tri.p[1].z, tri.p[2].z);
+
+
     }
 
     public Obb(Mesh mesh)
@@ -46,7 +57,6 @@ public class Obb extends Collider{
         this(mesh.tris.get(0));
         ArrayList<Triangle> vec = mesh.tris;
         this.id = mesh.id;
-        System.out.println("In big constructor");
 
         try{
             cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj");
@@ -77,6 +87,15 @@ public class Obb extends Collider{
             max.y=Math.max(max.y, tMax.y);
             max.z=Math.max(max.z, tMax.z);
         }
+
+        /*cube.vect= new Vector<>();
+        cube.vect.add(new Vec3d(-0.5f, -0.5f, 0.0f));
+        cube.vect.add(new Vec3d(-0.5f, 0.5f, 0.0f));
+        cube.vect.add(new Vec3d(0.5f, 0.5f, 0.0f));
+        cube.vect.add(new Vec3d(0.5f, -0.5f, 0.0f));
+
+       System.out.println("Filling in points arr\n\n");*/
+
     }
 
     public float findMin(float f1, float f2, float f3)
@@ -100,7 +119,6 @@ public class Obb extends Collider{
             System.out.println("Different mesh is being used");
             //throw new IllegalArgumentException("Different mesh is being used");
         }
-        //System.out.println("In get mesh: " + min + "\n" + max);
         return fitMesh(mesh, cube, max, min);
 
     }
@@ -115,7 +133,7 @@ public class Obb extends Collider{
     {
         //clearCube(cube);
 
-        VectorGeometry vg = new VectorGeometry();
+        //VectorGeometry vg = new VectorGeometry();
         //old reliable shit
         /*cube.xScale=tDif.x*mesh.xScale;
         cube.yScale=tDif.y*mesh.yScale;
@@ -143,6 +161,8 @@ public class Obb extends Collider{
         cube.yTheta=mesh.yTheta;
         cube.zTheta=mesh.zTheta;
         cube.setColor(Color.TRANSPARENT);
+        cube.min=min;
+        cube.max=max;
 
         return cube;
     }
@@ -159,38 +179,14 @@ public class Obb extends Collider{
         cube.initTransZ = min.z + 0.5f*cube.initScaleZ;
     }
 
-    public void clearCube(ObbMesh cube)
+    public  Matrix4by4 getWorldMat()
     {
-        cube.xTheta=0;
-        cube.yTheta=0;
-        cube.zTheta=0;
-
-        cube.xScale=1;
-        cube.yScale=1;
-        cube.zScale=1;
-
-        cube.xTranslation=0;
-        cube.yTranslation=0;
-        cube.zTranslation=0;
-
-        cube.initScaleZ=1;
-        cube.initScaleY=1;
-        cube.initScaleX=1;
-
-        cube.initTransZ=0;
-        cube.initTransY=0;
-        cube.initTransZ=0;
+        return cube.getWorldMat();
     }
 
-}
+    @Override
+    public void collidesWith(BoundingVolume bv) {
 
-class ObbDataOnly{
-    public Vec3d min;
-    public Vec3d max;
-
-    public ObbDataOnly(Vec3d min, Vec3d max) {
-        this.min = min;
-        this.max = max;
     }
-
 }
+

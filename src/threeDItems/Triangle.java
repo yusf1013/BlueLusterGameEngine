@@ -76,7 +76,7 @@ public class Triangle implements Serializable {
         green=color.getGreen();
         blue=color.getBlue();
         opacity=color.getOpacity();
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
     }
 
     public float getMidPointz()

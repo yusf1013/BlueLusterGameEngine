@@ -31,7 +31,7 @@ public class DisplayDriverGUI extends VectorGeometry {
         camera.yaw=30*3.14159f/180f;
         camera.pitch=30*3.14159f/180f;
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
-        System.out.println("Object has been loaded successfullyyyy");
+       System.out.println("Object has been loaded successfullyyyy");
         //camera.cameraLookingAtVector=new Vec3d(0,-1,0);
     }
 
@@ -116,7 +116,7 @@ public class DisplayDriverGUI extends VectorGeometry {
             triToRaster.set(i, triProjected);
 
             /*if(i==0)
-                System.out.println("For i: "+ i + "\n" + triToRaster.get(i));*/
+               System.out.println("For i: "+ i + "\n" + triToRaster.get(i));*/
 
             fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y, triToRaster.get(i).p[0].z,
                     triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y, triToRaster.get(i).p[1].z,
@@ -226,7 +226,7 @@ public class DisplayDriverGUI extends VectorGeometry {
     public float zcalc(float xoy1, float z1, float xoy3, float z3)
     {
         if(z1==z3) {
-            System.out.println("You died");
+           System.out.println("You died");
         }
         return (((xoy1-xoy3)*(0.1f-z3)/(z1-z3))+xoy3);
     }
@@ -250,20 +250,20 @@ public class DisplayDriverGUI extends VectorGeometry {
                     new double[]{y1,y2,y3}, 3);
         }
         /*if(i==0 && Math.abs(x1-244.0)<5) {
-            System.out.println("Death");
+           System.out.println("Death");
             gc.setFill(Color.RED);
-            System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
+           System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
                     y1 + " " + y2 + " " + y3);
             gc.fillPolygon(new double[]{x1, x2, x3},
                 new double[]{y1,y2,y3}, 3);
             gc.setFill(Color.BLUE);
-            System.out.println("In blue");
+           System.out.println("In blue");
             *//*gc.fillPolygon(new double[]{244.65868, 316.7638, 321.57477},
                     new double[]{327.4041, 301.16647, 249.31152}, 3);*//*
-            System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
+           System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
                     y1 + " " + y2 + " " + y3);
         }*/
-        //System.out.println(x1 + " " + x2 + " " + x3 + "\n" + y1 + " " + y2 + " " + y3 + " " + "\n");
+        //ystem.out.println(x1 + " " + x2 + " " + x3 + "\n" + y1 + " " + y2 + " " + y3 + " " + "\n");
     }
 
     /*public static void drawTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)

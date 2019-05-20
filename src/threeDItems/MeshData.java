@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 public class MeshData {
     private static Map<String, ArrayList<Triangle>> map = new TreeMap<>();
+    //private static Map<String, Vector<Vec3d>> pointMap = new TreeMap<>();
 
     public static void insertDataArray(String name, ArrayList<Triangle> arrayList)
     {
@@ -16,5 +17,4 @@ public class MeshData {
     {
         return map.get(name);
     }
-
 }

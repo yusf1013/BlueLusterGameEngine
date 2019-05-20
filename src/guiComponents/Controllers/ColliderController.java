@@ -5,13 +5,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import main.DisplayDriverCollider;
 import physicsEngine.CollisionModule.Obb;
+import physicsEngine.CollisionModule.ObjectSliceAndMerge;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
+import threeDItems.ObbMesh;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,6 +27,10 @@ public class ColliderController implements Initializable {
     Button setButton;
     @FXML
     MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView;
+    @FXML
+    TextField depthTF, epsilonTF;
+    @FXML
+    Label nOfBoxesLabel;
 
     Mesh thisMesh;
     double width=475, height=475;
@@ -47,7 +52,7 @@ public class ColliderController implements Initializable {
 
     public void update(boolean meshAdded)
     {
-        //System.out.println("fixie");
+        //ystem.out.println("fixie");
         /*gc.clearRect(0,0, width, height);
         if(bool2)
         {
@@ -69,23 +74,25 @@ public class ColliderController implements Initializable {
             if(!meshAddeda)
             {
                 vector.add(aabbBox);
-                System.out.println("aabbBox added");
+               System.out.println("aabbBox added");
                 meshAddeda=true;
             }
 
-            System.out.println("Min and Max y: " + obb.min.y + " " + obb.max.y);
+           System.out.println("Min and Max y: " + obb.min.y + " " + obb.max.y);
         }
         ddcol.onUserUpdate(0f, gc, vector);
-        System.out.println("Vector size in collider controller: " + vector.size());
-        //System.out.println(aabbBox);*/
-        System.out.println("everything in update is disabled");
+       System.out.println("Vector size in collider controller: " + vector.size());
+        //ystem.out.println(aabbBox);*/
+       System.out.println("everything in update is disabled");
         gc.clearRect(0,0, width, height);
         ddcol.onUserUpdate(0f, gc, vector);
+        if(thisMesh!=null && thisMesh.obbList!=null)
+            System.out.println("i update : " + thisMesh.obbList.size());
     }
 
     public void setButtonAction()
     {
-        /*System.out.println("In set button action");
+        /*ystem.out.println("In set button action");
         obb=new Obb(thisMesh);
         aabbBox=obb.getMesh(thisMesh);
         thisMesh.obb=obb;
@@ -95,12 +102,11 @@ public class ColliderController implements Initializable {
         }
 
         update(true);*/
-        System.out.println("Everything is diabled");
+       System.out.println("Everything is diabled");
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("Initialize");
         /*try {
             grid=ml.meshLoader("src\\resources\\","toNotDisplay\\grid2.obj", false);
             vector.add(ml.meshLoader("src\\resources\\","point.obj", false));
@@ -115,10 +121,16 @@ public class ColliderController implements Initializable {
         //ddcol.drawMesh(grid, 0f, gc);
         gameStage.getChildren().add(canvas);
         initializeViewMenu();
+        epsilonTF.setText("0.001");
+        depthTF.setText("4");
+        nOfBoxesLabel.setText("Number of Boxes: " + 1);
+
     }
 
     public void setObb(Mesh mesh)
     {
+        setThisMesh(mesh);
+
         if(mesh.obb ==null)
         {
             obb = new Obb(mesh);
@@ -126,7 +138,6 @@ public class ColliderController implements Initializable {
             vector.add(mesh);
             vector.add(aabbBox);
             mesh.obb = obb;
-            update(true);
         }
         else
         {
@@ -134,9 +145,65 @@ public class ColliderController implements Initializable {
             aabbBox = mesh.obb.getMesh(mesh);
             vector.add(mesh);
             vector.add(aabbBox);
-            update(true);
-            System.out.println("Obb loaded");
         }
+
+        if(mesh.obbList!=null && !mesh.obbList.isEmpty())
+        {
+            vector.remove(mesh.obb.getMesh(mesh));
+            vector.addAll(mesh.obbList);
+        }
+        if(mesh.obbList.isEmpty())
+        {
+            System.out.println("Shit is added!");
+            mesh.obbList.add((ObbMesh)aabbBox);
+        }
+        else
+            nOfBoxesLabel.setText("Number of Boxes: " + mesh.obbList.size());
+
+        update(true);
+    }
+
+    public void sliceAndDice()
+    {
+        int depth;
+        float eps;
+
+        try{
+
+            depth = Integer.parseInt(depthTF.getText());
+            eps = Float.parseFloat(epsilonTF.getText());
+        } catch (NumberFormatException e)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Please enter a valid number!");
+            alert.setTitle("Invalid input!");
+            alert.showAndWait();
+            return;
+        }
+
+        /*thisMesh.obj=new ObjectSliceAndMerge(thisMesh, depth, eps);
+        thisMesh.obj.createTree();
+        ArrayList<Mesh> al = new ArrayList<>();
+        al.addAll(thisMesh.obj.clusterize());
+
+        vector.clear();
+        vector.add(thisMesh);
+        vector.addAll(al);
+        nOfBoxesLabel.setText("Number of Boxes: " + al.size());
+        update(true);*/
+
+        ObjectSliceAndMerge obj=new ObjectSliceAndMerge(thisMesh, depth, eps);
+        obj.createTree();
+        ArrayList<ObbMesh> al = new ArrayList<>();
+        al.addAll(obj.clusterize());
+
+        vector.clear();
+        vector.add(thisMesh);
+        vector.addAll(al);
+        thisMesh.obbList=al;
+        nOfBoxesLabel.setText("Number of Boxes: " + al.size());
+        update(true);
+
     }
 
     public void initializeViewMenu()
@@ -145,7 +212,6 @@ public class ColliderController implements Initializable {
             ddcol.camera.position=new Vec3d(0,5,0);
             ddcol.camera.pitch=3.14159f/2.0f;
             ddcol.camera.yaw=0;
-            System.out.println("View");
             update(false);
         });
 
@@ -153,7 +219,6 @@ public class ColliderController implements Initializable {
             ddcol.camera.position=new Vec3d(0,-5,0);
             ddcol.camera.pitch=-3.14159f/2.0f;
             ddcol.camera.yaw=0;
-            System.out.println("View");
             update(false);
         });
 
@@ -175,7 +240,6 @@ public class ColliderController implements Initializable {
             ddcol.camera.position=new Vec3d(5,0,0);
             ddcol.camera.pitch=0;
             ddcol.camera.yaw=-3.14159f/2.0f;
-            System.out.println("View");
             update(false);
         });
 
@@ -183,7 +247,6 @@ public class ColliderController implements Initializable {
             ddcol.camera.position=new Vec3d(-5,0,0);
             ddcol.camera.pitch=0;
             ddcol.camera.yaw=3.14159f/2.0f;
-            System.out.println("leftView");
             update(false);
         });
 
@@ -191,7 +254,6 @@ public class ColliderController implements Initializable {
             ddcol.camera.position=new Vec3d(-3,5,-5);
             ddcol.camera.yaw=30*3.14159f/180f;
             ddcol.camera.pitch=30*3.14159f/180f;
-            System.out.println("View");
             update(false);
         });
 
