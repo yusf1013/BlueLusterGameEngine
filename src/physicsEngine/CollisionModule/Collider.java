@@ -11,7 +11,8 @@ import java.util.Vector;
 
 public class Collider {
 
-    ArrayList<Vec2d> alxy = new ArrayList<>(), alyz = new ArrayList<>(), alxz = new ArrayList<>();
+    float xyOverlap=-1f, yzOverlap=-1f, xzOverlap=-1f;
+
     public boolean detectCollision(Mesh m1, Mesh m2)
     {
         if(m1==null || m2==null)
@@ -49,51 +50,23 @@ public class Collider {
         ArrayList<ObbMesh> al1 = new ArrayList<>(), al2 = new ArrayList<>();
         collidesWith(m1.obb.cube, m2.obbList, al2);
         collidesWith(m2.obb.cube, m1.obbList, al1);
-        //System.out.println("Shit size shape: " + al1.size() + " " + al2.size());
-        return collidesWith(al1, al2);
 
-        /*return (shapeOverlapSAT(m1.obb.cube, m2.obb.cube, "xy") &&
-                shapeOverlapSAT(m1.obb.cube, m2.obb.cube, "xz") &&
-                shapeOverlapSAT(m1.obb.cube, m2.obb.cube, "yz"));*/
+        //return collidesWith(al1, al2);
 
-        /*boolean yo1 = false, yo2 = false;
+        if(collidesWith_Static(al1, al2))
+        {
 
-        if((parentBoxColTest(m1.obb.cube, m2.obb.cube, "xy") &&
-                parentBoxColTest(m1.obb.cube, m2.obb.cube, "xz") &&
-                parentBoxColTest(m1.obb.cube, m2.obb.cube, "yz"))) {
-            System.out.println("In if: " + m1.obbList.size());
-            for(Mesh m: m1.obbList)
-            {
-                System.out.println("In if-for");
-                if((parentChildrenColTest((ObbMesh) m, "xy")) &&
-                        (parentChildrenColTest((ObbMesh) m, "xz")) &&
-                        (parentChildrenColTest((ObbMesh) m, "yz")))
-                {
-                    System.out.println("YO1");
-                    yo1 = true;
-                    break;
-                }
-            }
+            Vec3d c1=m1.obb.cube.getCenter(), c2=m2.obb.cube.getCenter(), d;
+            VectorGeometry vg = new VectorGeometry();
+            d=vg.vectorSub(c1, c2);
+            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
+            m2.xTranslation-= overlap * d.x / s;
+            m2.yTranslation-= overlap * d.y / s;
+            m2.zTranslation-= overlap * d.z / s;
 
-            for(Mesh m: m2.obbList)
-            {
-                if((parentChildrenColTest((ObbMesh) m, "xy")) &&
-                        (parentChildrenColTest((ObbMesh) m, "xz")) &&
-                        (parentChildrenColTest((ObbMesh) m, "yz")))
-                {
-                    System.out.println("YO2");
-                    yo2 = true;
-                    break;
-                }
-            }
-
-            return (yo1 && yo2);
         }
-
-        else
-            return false;
-
-*/
+        System.out.println("Not resolving");
+        return false;
     }
 
     public boolean collidesWith(ObbMesh m1, ArrayList<ObbMesh> al)
@@ -133,9 +106,36 @@ public class Collider {
         return flag;
     }
 
+    public boolean collidesWith_Static(ArrayList<ObbMesh> al, ArrayList<ObbMesh> al2)
+    {
+        boolean flag=false;
+        for(ObbMesh m: al)
+            for(ObbMesh m2: al2)
+                if(collidesWith_Static(m, m2))
+                    flag=true;
+
+        return flag;
+    }
+
     public boolean collidesWith(ObbMesh m1, ObbMesh m2)
     {
         return (shapeOverlapSAT(m1, m2, "xy") && shapeOverlapSAT(m1, m2, "yz") && shapeOverlapSAT(m1, m2, "xz"));
+    }
+
+    public boolean collidesWith_Static(ObbMesh m1, ObbMesh m2)
+    {
+        float xy=xyOverlap, xz=xzOverlap, yz=yzOverlap;
+        if(shapeOverlapSAT_Static(m1, m2, "xy") && shapeOverlapSAT_Static(m1, m2, "yz") && shapeOverlapSAT_Static(m1, m2, "xz"))
+        {
+            return true;
+        }
+        else
+        {
+            xyOverlap=xy;
+            xzOverlap=xz;
+            yzOverlap=yz;
+            return false;
+        }
     }
 
     public boolean shapeOverlapSAT(ObbMesh m1, ObbMesh m2, String axes)
@@ -161,8 +161,6 @@ public class Collider {
         {
             poly1.p.add(VectorGeometry.multiplyMatrixAndVector(poly1.getWorldMat(), v));
             poly2.p.add(VectorGeometry.multiplyMatrixAndVector(poly2.getWorldMat(), v));
-            /*System.out.println(poly1.getStats());
-            System.out.println();*/
         }
 
         for (int shape = 0; shape < 2; shape++)
@@ -173,7 +171,6 @@ public class Collider {
                 poly2 = m1;
             }
 
-            //System.out.println("Poly p.size" + poly1.p.size());
 
             for (int a = 0; a < poly1.p.size(); a++)
             {
@@ -185,8 +182,7 @@ public class Collider {
                     axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).x - poly1.p.get(a).x );
                 else
                     axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).y - poly1.p.get(a).y );
-                //float d = (float) Math.sqrt(axisProj.x * axisProj.x + axisProj.y * axisProj.y);
-                //axisProj = new Vec2d(axisProj.x / d, axisProj.y / d);
+
 
                 // Work out min and max 1D points for r1
                 float min_r1 = 1000000, max_r1 = -1000000;
@@ -220,9 +216,6 @@ public class Collider {
                     max_r2 = Math.max(max_r2, q);
                 }
 
-                //System.out.println("R1: " + min_r1 + ", " + max_r1);
-                //System.out.println("R2: " + min_r2 + ", " + max_r2);
-
                 if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
                 {
                     return false;
@@ -233,10 +226,11 @@ public class Collider {
         return true;
     }
 
-    public boolean parentBoxColTest(ObbMesh m1, ObbMesh m2, String axes)
+    public boolean shapeOverlapSAT_Static(ObbMesh m1, ObbMesh m2, String axes)
     {
         ObbMesh poly1 = m1;
         ObbMesh poly2 = m2;
+        float overlap = 1000000;
 
         poly1.p.clear();
         poly2.p.clear();
@@ -277,8 +271,7 @@ public class Collider {
                     axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).x - poly1.p.get(a).x );
                 else
                     axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).y - poly1.p.get(a).y );
-                //float d = (float) Math.sqrt(axisProj.x * axisProj.x + axisProj.y * axisProj.y);
-                //axisProj = new Vec2d(axisProj.x / d, axisProj.y / d);
+
 
                 // Work out min and max 1D points for r1
                 float min_r1 = 1000000, max_r1 = -1000000;
@@ -312,178 +305,31 @@ public class Collider {
                     max_r2 = Math.max(max_r2, q);
                 }
 
-                //System.out.println("R1: " + min_r1 + ", " + max_r1);
-                //System.out.println("R2: " + min_r2 + ", " + max_r2);
+                overlap = Math.min(Math.min(max_r1, max_r2) - Math.max(min_r1, min_r2), overlap);
 
                 if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
                 {
-                    alxy.clear();
-                    alxz.clear();
-                    alyz.clear();
                     return false;
-                }
-
-                if(axes.equals("xy")) {
-                    alxy.add(new Vec2d(Math.max(min_r1, min_r2), Math.min(max_r1, max_r2)));
-                }
-                else if(axes.equals("xz")) {
-                    alxz.add(new Vec2d(Math.max(min_r1, min_r2), Math.min(max_r1, max_r2)));
-                }
-                else if(axes.equals("yz")){
-                    alyz.add(new Vec2d(Math.max(min_r1, min_r2), Math.min(max_r1, max_r2)));
                 }
             }
         }
+
+        // If we got here, the objects have collided, we will displace r1
+        // by overlap along the vector between the two object centers
+        /*vec2d d = { r2.pos.x - r1.pos.x, r2.pos.y - r1.pos.y };
+        float s = sqrtf(d.x*d.x + d.y*d.y);
+        r1.pos.x -= overlap * d.x / s;
+        r1.pos.y -= overlap * d.y / s;*/
+
+        if(axes.equals("xy") && xyOverlap<overlap)
+            xyOverlap=overlap;
+        else if(axes.equals("yz") && yzOverlap<overlap)
+            yzOverlap=overlap;
+        else if(axes.equals("xz") && xzOverlap<overlap)
+            xzOverlap=overlap;
 
         return true;
     }
-
-    public boolean parentChildrenColTest(ObbMesh m1, String axes)
-    {
-        ObbMesh poly1 = m1;
-        poly1.p.clear();
-
-        if(!(axes.equals("xy") || axes.equals("xz") || axes.equals("yz")))
-            throw new IllegalArgumentException("wrong axes data");
-
-        Vector <Vec3d> vec = null;
-        if(axes.equals("xy"))
-            vec = poly1.vecXY;
-        else if(axes.equals("xz"))
-            vec = poly1.vecXZ;
-        else if(axes.equals("yz"))
-            vec = poly1.vecYZ;
-
-        for(Vec3d v: vec)
-        {
-            poly1.p.add(VectorGeometry.multiplyMatrixAndVector(poly1.getWorldMat(), v));
-        }
-
-        for (int shape = 0; shape < 1; shape++)
-        {
-
-            for (int a = 0; a < poly1.p.size(); a++)
-            {
-                int b = (a + 1) % poly1.p.size();
-                Vec2d axisProj;
-                if(axes.equals("xy"))
-                    axisProj = new Vec2d( -(poly1.p.get(b).y - poly1.p.get(a).y), poly1.p.get(b).x - poly1.p.get(a).x );
-                else if(axes.equals("xz"))
-                    axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).x - poly1.p.get(a).x );
-                else
-                    axisProj = new Vec2d( -(poly1.p.get(b).z - poly1.p.get(a).z), poly1.p.get(b).y - poly1.p.get(a).y );
-                //float d = (float) Math.sqrt(axisProj.x * axisProj.x + axisProj.y * axisProj.y);
-                //axisProj = new Vec2d(axisProj.x / d, axisProj.y / d);
-
-                // Work out min and max 1D points for r1
-                float min_r1 = 1000000, max_r1 = -1000000;
-                for (int p = 0; p < poly1.p.size(); p++)
-                {
-                    float q;
-                    if(axes.equals("xy"))
-                        q = (poly1.p.get(p).x * axisProj.x + poly1.p.get(p).y * axisProj.y);
-                    else if(axes.equals("xz"))
-                        q = (poly1.p.get(p).x * axisProj.x + poly1.p.get(p).z * axisProj.y);
-                    else
-                        q = (poly1.p.get(p).y * axisProj.x + poly1.p.get(p).z * axisProj.y);
-
-                    min_r1 = Math.min(min_r1, q);
-                    max_r1 = Math.max(max_r1, q);
-                }
-
-                // Work out min and max 1D points for r2
-                float min_r2 = 1000000, max_r2 = -1000000;
-                for (int i = 0; i < poly1.p.size(); i++)
-                {
-                    float p,q;
-                    if(axes.equals("xy"))
-                    {
-                        q = alxy.get(i).x;
-                        p = alxy.get(i).y;
-                    }
-                    else if(axes.equals("xz"))
-                    {
-                        q = alxz.get(i).x;
-                        p = alxz.get(i).y;
-                    }
-                    else
-                    {
-                        q = alyz.get(i).x;
-                        p = alyz.get(i).y;
-                    }
-                    min_r2 = Math.min(min_r2, q);
-                    max_r2 = Math.max(max_r2, p);
-                }
-
-                if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
-                {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-            /*ArrayList<Triangle> al1 = new ArrayList<>(), al2=new ArrayList<>();
-        float rot1=obb1.cube.xTheta, rot2
-
-        for(Triangle triangle: obb1.cube.tris) {
-            al1.add(ThreeDObjectTransformations.projectTriangle(triangle, obb1.getWorldMat()));
-            al2.add(ThreeDObjectTransformations.projectTriangle(triangle, obb2.getWorldMat()));
-        }*/
-
-    /*public boolean shapeOverlapSAT(ObbMesh m1, ObbMesh m2, String axes)
-    {
-        ObbMesh poly1 = m1;
-        ObbMesh poly2 = m2;
-
-        for(Vec3d v: poly1.vec)
-        {
-            poly1.p.add(VectorGeometry.multiplyMatrixAndVector(poly1.getWorldMat(), v));
-            poly2.p.add(VectorGeometry.multiplyMatrixAndVector(poly2.getWorldMat(), v));
-        }
-
-        for (int shape = 0; shape < 2; shape++)
-        {
-            if (shape == 1)
-            {
-                poly1 = m2;
-                poly2 = m1;
-            }
-
-            for (int a = 0; a < poly1.p.size(); a++)
-            {
-                int b = (a + 1) % poly1.p.size();
-                Vec2d axisProj = new Vec2d( -(poly1.p.get(b).y - poly1.p.get(a).y), poly1.p.get(b).x - poly1.p.get(a).x );
-                //float d = (float) Math.sqrt(axisProj.x * axisProj.x + axisProj.y * axisProj.y);
-                //axisProj = new Vec2d(axisProj.x / d, axisProj.y / d);
-
-                // Work out min and max 1D points for r1
-                float min_r1 = 1000000, max_r1 = -1000000;
-                for (int p = 0; p < poly1.p.size(); p++)
-                {
-                    float q = (poly1.p.get(p).x * axisProj.x + poly1.p.get(p).y * axisProj.y);
-                    min_r1 = Math.min(min_r1, q);
-                    max_r1 = Math.max(max_r1, q);
-                }
-
-                // Work out min and max 1D points for r2
-                float min_r2 = 1000000, max_r2 = -1000000;
-                for (int p = 0; p < poly2.p.size(); p++)
-                {
-                    float q = (poly2.p.get(p).x * axisProj.x + poly2.p.get(p).y * axisProj.y);
-                    min_r2 = Math.min(min_r2, q);
-                    max_r2 = Math.max(max_r2, q);
-                }
-
-                if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
-                    return false;
-            }
-        }
-
-        return true;
-    }*/
 
 }
 

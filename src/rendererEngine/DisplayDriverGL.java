@@ -103,6 +103,7 @@ public class DisplayDriverGL extends VectorGeometry {
         {
            System.out.println(tri);
         }*/
+        collider.detectCollision(m1, m2);
         draw();
         handleUserInputs(fElapsedTime);
 
@@ -112,12 +113,12 @@ public class DisplayDriverGL extends VectorGeometry {
         for(Vec3d v: m1.obb.cube.vec)
            System.out.println(v);*/
 
-        if(collider.detectCollision(m1, m2))
+        /*if(collider.detectCollision(m1, m2))
         {
             //ystem.out.println("Collision detected");
             return false;
         }
-        else
+        else*/
             //ystem.out.println("No collision");
 
         ms.run();

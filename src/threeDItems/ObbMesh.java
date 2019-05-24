@@ -87,6 +87,15 @@ public class ObbMesh extends Mesh{
         return matWorld;
     }
 
+    public Vec3d getCenter()
+    {
+        Vec3d tmin=new Vec3d(-0.5f, -0.5f, -0.5f), tmax=new Vec3d(0.5f, 0.5f, 0.5f);
+        Matrix4by4 matWorld=getWorldMat();
+        tmin=VectorGeometry.multiplyMatrixAndVector(matWorld, tmin);
+        tmax=VectorGeometry.multiplyMatrixAndVector(matWorld, tmax);
+        return new Vec3d((tmax.x+tmin.x)/2.0f, (tmax.y+tmin.y)/2.0f, (tmax.z+tmin.z)/2.0f);
+    }
+
     @Override
     public String getStats() {
         return super.getStats()+"ObbMesh{" +
