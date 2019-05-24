@@ -26,13 +26,19 @@ public class ModelLoader {
         }
         return null;
     }
+
     public Vector<Mesh> loadAll()
+    {
+        return loadAll(new File("Games\\info.hma"));
+    }
+
+    public Vector<Mesh> loadAll(File file)
     {
         Vector<Mesh> vec = new Vector<>();
         try {
 
             //Scanner in = new Scanner(new File("src\\Games\\info.hma"));
-            Scanner in = new Scanner(new File("Games\\info.hma"));
+            Scanner in = new Scanner(file);
             //Scanner in = new Scanner(new File("out\\artifacts\\olcge_jar\\olcge\\Games\\info.hma"));
            System.out.println("Trying to loadAll");
 
@@ -41,11 +47,12 @@ public class ModelLoader {
             {
                 String meshName = in.next();
                System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
-                vec.add(meshLoader("Games\\", meshName, false));
+                //vec.add(meshLoader("Games\\", meshName, false));
+                vec.add(meshLoader(file.getParentFile().getAbsolutePath(), meshName, false));
                System.out.println("Load done");
-                vec.lastElement().xTheta=in.nextFloat(); vec.lastElement().yTheta=in.nextFloat(); vec.lastElement().zTheta=in.nextFloat();
-                vec.lastElement().xTranslation=in.nextFloat(); vec.lastElement().yTranslation=in.nextFloat(); vec.lastElement().zTranslation=in.nextFloat();
-                vec.lastElement().xScale=in.nextFloat(); vec.lastElement().yScale=in.nextFloat(); vec.lastElement().zScale=in.nextFloat();
+                vec.lastElement().setxTheta(in.nextFloat()); vec.lastElement().setyTheta(in.nextFloat()); vec.lastElement().setzTheta(in.nextFloat());
+                vec.lastElement().setxTranslation(in.nextFloat()); vec.lastElement().setyTranslation(in.nextFloat()); vec.lastElement().setzTranslation(in.nextFloat());
+                vec.lastElement().setxScale(in.nextFloat()); vec.lastElement().setyScale(in.nextFloat()); vec.lastElement().setzScale(in.nextFloat());
                 String scripted = in.next();
                 vec.lastElement().id=in.nextInt();
                 String rb = in.next();
@@ -81,15 +88,15 @@ public class ModelLoader {
                             }
                         }
 
-                        om.xTheta = in.nextFloat();
-                        om.yTheta = in.nextFloat();
-                        om.zTheta = in.nextFloat();
-                        om.xTranslation = in.nextFloat();
-                        om.yTranslation = in.nextFloat();
-                        om.zTranslation = in.nextFloat();
-                        om.xScale = in.nextFloat();
-                        om.yScale  = in.nextFloat();
-                        om.zScale = in.nextFloat();
+                        om.setxTheta(in.nextFloat());
+                        om.setyTheta(in.nextFloat());
+                        om.setzTheta(in.nextFloat());
+                        om.setxTranslation(in.nextFloat());
+                        om.setyTranslation(in.nextFloat());
+                        om.setzTranslation(in.nextFloat());
+                        om.setxScale(in.nextFloat());
+                        om.setyScale(in.nextFloat());
+                        om.setzScale(in.nextFloat());
                         om.initTransX  = in.nextFloat();
                         om.initTransY = in.nextFloat();
                         om.initTransZ = in.nextFloat();
@@ -115,6 +122,7 @@ public class ModelLoader {
 
     public Mesh meshLoader(String directory, String fileName, boolean isGameObj) throws FileNotFoundException {
         Mesh mesh = new Mesh();
+        mesh.name=fileName;
         if(isGameObj)
             mesh.id=id++;
         if(isGameObj)
@@ -140,7 +148,7 @@ public class ModelLoader {
        System.out.println("PASSING THE DANGER GUARD");*/
         Vector<Vec3d> pointBuffer = new Vector<>();
         //Vector<Vec3d> normalBuffer = new Vector<>();
-        File file = new File(directory+fileName);
+        File file = new File(directory+"\\"+fileName);
         //ystem.out.println("Model loader -> Mesh loader -> " + file.getAbsolutePath());
         /*try {*/
             Scanner jin = new Scanner(file);
@@ -171,6 +179,7 @@ public class ModelLoader {
 
                 }
             }
+
             //mesh.p=pointBuffer;
             return mesh;
     }

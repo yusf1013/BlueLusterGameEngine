@@ -2,19 +2,26 @@ package threeDItems;
 
 import javafx.scene.paint.Color;
 import mathHandler.VectorGeometry;
-import physicsEngine.CollisionModule.BoundingVolume;
 import physicsEngine.CollisionModule.Obb;
-import physicsEngine.CollisionModule.ObjectSliceAndMerge;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Mesh {
     public ArrayList<Triangle> tris= null;
-    public float xTheta=0, yTheta=0, zTheta=0, xTranslation=0, yTranslation=0, zTranslation=0, xScale=1, yScale=1, zScale=1;
+    protected float xTheta=0;
+    protected float yTheta=0;
+    protected float zTheta=0;
+    protected float xTranslation=0;
+    protected float yTranslation=0;
+    protected float zTranslation=0;
+    protected float xScale=1;
+    protected float yScale=1;
+    protected float zScale=1;
+    public boolean isFixed=false, flagNew=false;
     public boolean isScripted=false, isRigidBody=false;
     public int id;
     public Obb obb;
+    public String name;
     //public ObjectSliceAndMerge obj=null;
     public ArrayList<ObbMesh> obbList = new ArrayList<>();
     public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000);
@@ -22,6 +29,10 @@ public class Mesh {
     public Mesh()
     {
 
+    }
+    public Mesh(String name)
+    {
+        this.name=name;
     }
     public Mesh(boolean bool)
     {
@@ -65,13 +76,13 @@ public class Mesh {
     {
         updateObbList();
         Matrix4by4 matRotZ, matRotX, matRotY;
-        matRotZ = VectorGeometry.makeZRotationMatrix(zTheta);
-        matRotX = VectorGeometry.makeXRotationMatrix(xTheta);
-        matRotY = VectorGeometry.makeYRotationMatrix(yTheta);
+        matRotZ = VectorGeometry.makeZRotationMatrix(getzTheta());
+        matRotX = VectorGeometry.makeXRotationMatrix(getxTheta());
+        matRotY = VectorGeometry.makeYRotationMatrix(getyTheta());
 
         Matrix4by4 matTrans, scale;
-        matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
-        scale = VectorGeometry.scale(xScale, yScale, zScale);
+        matTrans = VectorGeometry.makeTranslation(getxTranslation(), getyTranslation(), getzTranslation());
+        scale = VectorGeometry.scale(getxScale(), getyScale(), getzScale());
 
         /*Matrix4by4 matWorld = VectorGeometry.multiplyMatrix(matRotZ, matRotX);
         matWorld = VectorGeometry.multiplyMatrix(matWorld, matRotY);
@@ -92,15 +103,15 @@ public class Mesh {
     {
         for(ObbMesh m: obbList)
         {
-            m.xTheta=xTheta;
-            m.yTheta=yTheta;
-            m.zTheta=xTheta;
-            m.xTranslation=xTranslation;
-            m.yTranslation=yTranslation;
-            m.zTranslation=zTranslation;
-            m.xScale=xScale;
-            m.yScale=yScale;
-            m.zScale=zScale;
+            m.setxTheta(getxTheta());
+            m.setyTheta(getyTheta());
+            m.setzTheta(getxTheta());
+            m.setxTranslation(getxTranslation());
+            m.setyTranslation(getyTranslation());
+            m.setzTranslation(getzTranslation());
+            m.setxScale(getxScale());
+            m.setyScale(getyScale());
+            m.setzScale(getzScale());
         }
     }
 
@@ -149,20 +160,101 @@ public class Mesh {
 
     public String getStats() {
         return "Mesh{" +
-                "xTheta=" + xTheta +
-                ", yTheta=" + yTheta +
-                ", zTheta=" + zTheta +
-                ", xTranslation=" + xTranslation +
-                ", yTranslation=" + yTranslation +
-                ", zTranslation=" + zTranslation +
-                ", xScale=" + xScale +
-                ", yScale=" + yScale +
-                ", zScale=" + zScale +
+                "xTheta=" + getxTheta() +
+                ", yTheta=" + getyTheta() +
+                ", zTheta=" + getzTheta() +
+                ", xTranslation=" + getxTranslation() +
+                ", yTranslation=" + getyTranslation() +
+                ", zTranslation=" + getzTranslation() +
+                ", xScale=" + getxScale() +
+                ", yScale=" + getyScale() +
+                ", zScale=" + getzScale() +
                 ", isScripted=" + isScripted +
                 ", isRigidBody=" + isRigidBody +
                 ", id=" + id +
                 ", min=" + min +
                 ", max=" + max +
                 '}';
+    }
+
+    public float getxTheta() {
+        return xTheta;
+    }
+
+    public float getyTheta() {
+        return yTheta;
+    }
+
+    public float getzTheta() {
+        return zTheta;
+    }
+
+    public void setxTheta(float xTheta) {
+        flagNew=false;
+        this.xTheta = xTheta;
+    }
+
+    public void setyTheta(float yTheta) {
+        flagNew=false;
+        this.yTheta = yTheta;
+    }
+
+    public void setzTheta(float zTheta) {
+        flagNew=false;
+        this.zTheta = zTheta;
+    }
+
+    public float getxTranslation() {
+        return xTranslation;
+    }
+
+    public void setxTranslation(float xTranslation) {
+        flagNew=false;
+        this.xTranslation = xTranslation;
+    }
+
+    public float getyTranslation() {
+        return yTranslation;
+    }
+
+    public void setyTranslation(float yTranslation) {
+        flagNew=false;
+        this.yTranslation = yTranslation;
+    }
+
+    public float getzTranslation() {
+        return zTranslation;
+    }
+
+    public void setzTranslation(float zTranslation) {
+        flagNew=false;
+        this.zTranslation = zTranslation;
+    }
+
+    public float getxScale() {
+        return xScale;
+    }
+
+    public void setxScale(float xScale) {
+        flagNew=false;
+        this.xScale = xScale;
+    }
+
+    public float getyScale() {
+        return yScale;
+    }
+
+    public void setyScale(float yScale) {
+        flagNew=false;
+        this.yScale = yScale;
+    }
+
+    public float getzScale() {
+        return zScale;
+    }
+
+    public void setzScale(float zScale) {
+        flagNew=false;
+        this.zScale = zScale;
     }
 }

@@ -1,7 +1,6 @@
 package physicsEngine.CollisionModule;
 
 import mathHandler.VectorGeometry;
-import threeDItems.Matrix4by4;
 import threeDItems.Mesh;
 import threeDItems.ObbMesh;
 import threeDItems.Vec3d;
@@ -36,7 +35,6 @@ public class Collider {
 
         if(!collidesWith(m1.obb.cube, m2.obb.cube))
         {
-            System.out.println("Early false");
             return false;
         }
         /*else if(collidesWith(m1.obb.cube, m2.obb.cube))
@@ -59,13 +57,24 @@ public class Collider {
             Vec3d c1=m1.obb.cube.getCenter(), c2=m2.obb.cube.getCenter(), d;
             VectorGeometry vg = new VectorGeometry();
             d=vg.vectorSub(c1, c2);
+
+            //new not working shit
             float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
-            m2.xTranslation-= overlap * d.x / s;
-            m2.yTranslation-= overlap * d.y / s;
-            m2.zTranslation-= overlap * d.z / s;
+            //d.x=1; d.y=1; d.z=1;
+            m2.setxTranslation(m2.getxTranslation() - Math.min(xyOverlap, xzOverlap) * d.x / s);
+            m2.setyTranslation(m2.getyTranslation() - Math.min(xyOverlap, yzOverlap) * d.y / s);
+            m2.setzTranslation(m2.getzTranslation() - Math.min(yzOverlap, xzOverlap) * d.z / s);
+
+
+
+            /*
+            //old working shit
+            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
+            m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
+            m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
+            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);*/
 
         }
-        System.out.println("Not resolving");
         return false;
     }
 

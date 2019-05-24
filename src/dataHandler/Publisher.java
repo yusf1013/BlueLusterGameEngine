@@ -16,26 +16,22 @@ public class Publisher {
     public void publish(Vector<String> fileVec, List<Mesh> meshList)
     {
         deleteAllFilesFromGames();
-       System.out.println("Deleted");
-
-        /*try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("src/Games/gameInfo.hlit"));
-            out.writeObject(meshList);
-            List  l = (List) new ObjectInputStream(new FileInputStream("src/Games/gameInfo.hlit")).readObject();
-           System.out.println("List loaded");
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
+        System.out.println("Deleted");
+        publishNoGames(fileVec, meshList, "src\\Games\\");
+        compileAndCopyClasses();
+    }
+    public void publishNoGames(Vector<String> fileVec, List<Mesh> meshList, String saveFolderAbsolutePath)
+    {
         if(fileVec.size()==0)
             return;
+
+        System.out.println("File name as received in publish no games: " + saveFolderAbsolutePath);
 
         for(int i=0; i<fileVec.size(); i++)
         {
             File source = new File("src\\resources\\"+fileVec.elementAt(i));
-            File dest = new File("src\\Games\\"+fileVec.elementAt(i));
+            File dest = new File(saveFolderAbsolutePath+fileVec.elementAt(i));
+            System.out.println("File name in publish no games: " + dest.getAbsolutePath());
             if(dest.exists())
             {
                System.out.println("It exists");
@@ -44,23 +40,7 @@ public class Publisher {
                 copyFile(source, dest);
         }
 
-
-            /*if(testFile.exists())
-            {
-               System.out.println("2nd shit maybe?");
-                cmd.runCommand("pushd src\\Games &&" +
-                        "move *.class ..\\..\\out\\production\\olcge\\Games" +
-                        "&& exit");
-            }
-            else
-            {
-               System.out.println("Not 2nd shit maybe?");
-                cmd.runCommand("pushd src\\Games &&" +
-                        "move *.class ..\\..\\Games" +
-                        "&& exit");
-            }*/
-
-        File info = new File("src\\Games\\info.hma");
+        File info = new File(saveFolderAbsolutePath+ "info.hma");
         try {
             //Writer write = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(info)));
             BufferedWriter write = new BufferedWriter(new FileWriter(info));
@@ -71,9 +51,9 @@ public class Publisher {
                 //write.write("Please kill me");
                System.out.println("Please kill me");
                 write.write(fileVec.elementAt(i)+ " ");
-                write.write(meshList.get(i).xTheta+" "+ meshList.get(i).yTheta + " " + meshList.get(i).zTheta + " ");
-                write.write(meshList.get(i).xTranslation+" "+ meshList.get(i).yTranslation + " " + meshList.get(i).zTranslation+ " ");
-                write.write(meshList.get(i).xScale+" "+ meshList.get(i).yScale + " " + meshList.get(i).zScale + " ");
+                write.write(meshList.get(i).getxTheta() +" "+ meshList.get(i).getyTheta() + " " + meshList.get(i).getzTheta() + " ");
+                write.write(meshList.get(i).getxTranslation() +" "+ meshList.get(i).getyTranslation() + " " + meshList.get(i).getzTranslation() + " ");
+                write.write(meshList.get(i).getxScale() +" "+ meshList.get(i).getyScale() + " " + meshList.get(i).getzScale() + " ");
                 write.write(meshList.get(i).isScripted + " " + meshList.get(i).id + " " + meshList.get(i).isRigidBody + " ");
                 if(meshList.get(i).isRigidBody)
                 {
@@ -84,9 +64,9 @@ public class Publisher {
 
                     System.out.println("Faltu out: " + meshList.get(i).obbList.size());
                     for(ObbMesh m: meshList.get(i).obbList) {
-                        write.write(m.xTheta+" "+ m.yTheta + " " + m.zTheta + " ");
-                        write.write(m.xTranslation+" "+ m.yTranslation + " " + m.zTranslation+ " ");
-                        write.write(m.xScale+" "+ m.yScale + " " + m.zScale + " ");
+                        write.write(m.getxTheta() +" "+ m.getyTheta() + " " + m.getzTheta() + " ");
+                        write.write(m.getxTranslation() +" "+ m.getyTranslation() + " " + m.getzTranslation() + " ");
+                        write.write(m.getxScale() +" "+ m.getyScale() + " " + m.getzScale() + " ");
                         write.write(m.initTransX + " " + m.initTransY + " " + m.initTransZ + " ");
                         write.write(m.initScaleX + " " + m.initScaleY + " " + m.initScaleZ + " ");
                     }
@@ -99,18 +79,7 @@ public class Publisher {
            System.out.println("writer closed");
             //System.exit(0);
 
-           System.out.println("Worthless life");
-            Cmd cmd = new Cmd();
-            File testFile = new File("out\\production\\olcge\\Games");
 
-            if(testFile.exists())
-                cmd.runCommand("echo lieee && pushd src && cd && " + "javac Games\\*.java && exit");
-            else
-                cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && echo \"Test File DNE\"");
-
-            cmd.runCommand("echo \"Moving class\" && pushd src\\Games &&" +
-                    "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games && exit");
-            cmd.runCommand("pushd src\\Games && copy .\\info.hma ..\\..\\olcge\\Games && exit");
 
             //cmd.runCommand("");
 
@@ -120,8 +89,22 @@ public class Publisher {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public void compileAndCopyClasses()
+    {
+        System.out.println("Worthless life");
+        Cmd cmd = new Cmd();
+        File testFile = new File("out\\production\\olcge\\Games");
 
+        if(testFile.exists())
+            cmd.runCommand("echo lieee && pushd src && cd && " + "javac Games\\*.java && exit");
+        else
+            cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && echo \"Test File DNE\"");
+
+        cmd.runCommand("echo \"Moving class\" && pushd src\\Games &&" +
+                "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games && exit");
+        cmd.runCommand("pushd src\\Games && copy .\\info.hma ..\\..\\olcge\\Games && exit");
     }
 
     public void deleteAllFilesFromGames()
@@ -133,12 +116,6 @@ public class Publisher {
             if(f.getName().endsWith(".obj"))
                 f.delete();
         }
-        //ystem.out.println("fixie");
-    }
-
-    public File loadFile(String fileName)
-    {
-        return new File(fileName);
     }
 
     public void copyFile(File source,File dest) {
@@ -165,12 +142,5 @@ public class Publisher {
             e.printStackTrace();
         }
     }
-
-    public void useless()
-    {
-        int i=0;
-        i++;
-    }
-
 
 }

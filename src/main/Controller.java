@@ -4,12 +4,14 @@ import dataHandler.ModelLoader;
 import dataHandler.Publisher;
 import guiComponents.Controllers.ColliderController;
 import guiComponents.Controllers.ScriptEditorController;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -20,15 +22,14 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import physicsEngine.CollisionModule.ObjectSliceAndMerge;
+import javafx.stage.*;
 import rendererEngine.Cmd;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.*;
 
 public class Controller implements Initializable {
@@ -44,7 +45,7 @@ public class Controller implements Initializable {
     @FXML
     MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView, runInReleaseMode;
     @FXML
-    MenuItem transMenuItem;
+    MenuItem transMenuItem, save, load;
     @FXML
     Button delButton, editScript, createScript, createColliderButton;
     @FXML
@@ -70,6 +71,7 @@ public class Controller implements Initializable {
     Scanner scan = new Scanner(System.in);
     public Vector<Integer> hash = new Vector<>();
     FXMLLoader loader;
+    File saveFile=null;
 
 
     @Override
@@ -89,7 +91,7 @@ public class Controller implements Initializable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        grid.zTranslation=3f;
+        grid.setzTranslation(3f);
         ddgui.drawMesh(grid, 0f, gc);
 
         for(int i=0,j=i+1; i<arrOfFiles.length; i++)
@@ -122,6 +124,7 @@ public class Controller implements Initializable {
         initializeMenuItems();
         initializePublisherMenuItems();
         initializeButtons();
+
         rigidBodyCB.setOnAction(e->{
             meshArray.get(selectedObject).isRigidBody=rigidBodyCB.isSelected();
             if(meshArray.get(selectedObject).isRigidBody)
@@ -195,37 +198,41 @@ public class Controller implements Initializable {
             else
                 hash.add(0);
             counter++;
-            Label label = new Label();
-            labelVec.add(label);
-            label.setPadding(new Insets(3, 5, 3, 5));
-            label.setText("  " + (counter) + ". " + name + "  ");
-            //label.setText(name + "  ");
-            int temp = Integer.parseInt(label.getText().substring(2, 3)) - 1;
-            label.setOnMouseClicked(e -> {
-                if (isObjectSelected) {
-                    int earlierSelection = selectedObject;
-                   System.out.println(labelVec.size() + "  " + selectedObject);
-                    labelVec.get(selectedObject).setStyle("-fx-border-color: black;");
-                    deSelectObject();
-                    if (temp != earlierSelection) {
-                        //selectObject(label.getText().substring(2,3));
-                        selectObject(splitString(label.getText(), ".", true));
-                        label.setStyle("-fx-border-color: red;");
-                    }
-                } else {
-                    //selectObject(label.getText().substring(2,3));
-                   System.out.println("Before special op: " + splitString(label.getText(), ".", true));
-                    selectObject(splitString(label.getText(), ".", true));
-
-                    label.setStyle("-fx-border-color: red;");
-                   System.out.println("else: " + selectedObject);
-                }
-            });
-            //label.setOnKeyPressed(e ->System.out.println("sfdfsefsd"));
-            label.setStyle("-fx-border-color: black;");
-            label.setPrefWidth(200d);
+            addLabel(counter, name);
             //vbox2.getChildren().add(label);
         }
+    }
+
+    public void addLabel(int counter, String name)
+    {
+        Label label = new Label();
+        labelVec.add(label);
+        label.setPadding(new Insets(3, 5, 3, 5));
+        label.setText("  " + (counter) + ". " + name + "  ");
+        //label.setText(name + "  ");
+        int temp = Integer.parseInt(label.getText().substring(2, 3)) - 1;
+        label.setOnMouseClicked(e -> {
+            if (isObjectSelected) {
+                int earlierSelection = selectedObject;
+                labelVec.get(selectedObject).setStyle("-fx-border-color: black;");
+                deSelectObject();
+                if (temp != earlierSelection) {
+                    //selectObject(label.getText().substring(2,3));
+                    selectObject(splitString(label.getText(), ".", true));
+                    label.setStyle("-fx-border-color: red;");
+                }
+            } else {
+                //selectObject(label.getText().substring(2,3));
+                System.out.println("Before special op: " + splitString(label.getText(), ".", true));
+                selectObject(splitString(label.getText(), ".", true));
+
+                label.setStyle("-fx-border-color: red;");
+                System.out.println("else: " + selectedObject);
+            }
+        });
+        //label.setOnKeyPressed(e ->System.out.println("sfdfsefsd"));
+        label.setStyle("-fx-border-color: black;");
+        label.setPrefWidth(200d);
     }
 
     public void selectObject(String s)
@@ -285,6 +292,7 @@ public class Controller implements Initializable {
         vbox2.getChildren().clear();
         for(Label label: labelVec)
         {
+            System.out.println("Label name: "+label.getText());
             String temp = splitString(label.getText(), ".", false);
             label.setText("  " + i + ". " + temp);
            System.out.println(temp);
@@ -330,6 +338,28 @@ public class Controller implements Initializable {
         meshId.setText("Mesh Id");
     }
 
+    public void updateLabelList()
+    {
+        System.out.println("Size matters!");
+        labelVec.clear();
+        int counter=0;
+        for(Mesh mesh: meshArray)
+        {
+            System.out.println("Mesh name in controller: " + mesh.name);
+            addLabel(++counter, mesh.name);
+        }
+
+        vbox2.getChildren().clear();
+        //int i=0;
+        for(Label l: labelVec) {
+            /*//System.out.println("label text before: " + l.getText());
+            i++;
+            l.setText(i + ". " + l.getText());
+            System.out.println("label text after: " + l.getText());*/
+            vbox2.getChildren().add(l);
+        }
+    }
+
     public void update()
     {
         /*if(meshArray.size()==4)
@@ -337,11 +367,13 @@ public class Controller implements Initializable {
            System.out.println(meshArray.get(1));
             meshArray.remove(1);
         }*/
+
         updateSelectedObj();
         gc.clearRect(0,0, width, height);
         ddgui.drawMesh(grid, 0f, gc);
         if(meshArray.size()>0)
             ddgui.onUserUpdate(0f, gc, meshArray);
+
 
 
     }
@@ -356,9 +388,9 @@ public class Controller implements Initializable {
 
     public void loadAllTableItems()
     {
-        scaleX.setText(""+meshArray.get(selectedObject).xScale); rotX.setText(""+meshArray.get(selectedObject).xTheta); transX.setText(""+meshArray.get(selectedObject).xTranslation);
-        scaleY.setText(""+meshArray.get(selectedObject).yScale); rotY.setText(""+meshArray.get(selectedObject).yTheta); transY.setText(""+meshArray.get(selectedObject).yTranslation);
-        scaleZ.setText(""+meshArray.get(selectedObject).zScale); rotZ.setText(""+meshArray.get(selectedObject).zTheta); transZ.setText(""+meshArray.get(selectedObject).zTranslation);
+        scaleX.setText(""+ meshArray.get(selectedObject).getxScale()); rotX.setText(""+ meshArray.get(selectedObject).getxTheta()); transX.setText(""+ meshArray.get(selectedObject).getxTranslation());
+        scaleY.setText(""+ meshArray.get(selectedObject).getyScale()); rotY.setText(""+ meshArray.get(selectedObject).getyTheta()); transY.setText(""+ meshArray.get(selectedObject).getyTranslation());
+        scaleZ.setText(""+ meshArray.get(selectedObject).getzScale()); rotZ.setText(""+ meshArray.get(selectedObject).getzTheta()); transZ.setText(""+ meshArray.get(selectedObject).getzTranslation());
     }
 
     public void clearAllTableItems()
@@ -375,7 +407,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).xScale=Float.parseFloat(scaleX.getText());
+                    meshArray.get(selectedObject).setxScale(Float.parseFloat(scaleX.getText()));
                     update();
                 }
             }
@@ -388,7 +420,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).yScale=Float.parseFloat(scaleY.getText());
+                    meshArray.get(selectedObject).setyScale(Float.parseFloat(scaleY.getText()));
                     update();
                 }
             }
@@ -399,7 +431,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).zScale=Float.parseFloat(scaleZ.getText());
+                    meshArray.get(selectedObject).setzScale(Float.parseFloat(scaleZ.getText()));
                     update();
                 }
             }
@@ -410,7 +442,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).xTranslation=Float.parseFloat(transX.getText());
+                    meshArray.get(selectedObject).setxTranslation(Float.parseFloat(transX.getText()));
                     update();
                 }
             }
@@ -421,7 +453,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).yTranslation=Float.parseFloat(transY.getText());
+                    meshArray.get(selectedObject).setyTranslation(Float.parseFloat(transY.getText()));
                     update();
                 }
             }
@@ -432,7 +464,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).zTranslation=Float.parseFloat(transZ.getText());
+                    meshArray.get(selectedObject).setzTranslation(Float.parseFloat(transZ.getText()));
                     update();
                 }
             }
@@ -443,7 +475,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).xTheta=Float.parseFloat(rotX.getText())*-3.14159f/180f;
+                    meshArray.get(selectedObject).setxTheta(Float.parseFloat(rotX.getText())*-3.14159f/180f);
                     update();
                 }
             }
@@ -454,7 +486,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).yTheta=Float.parseFloat(rotY.getText())*-3.14159f/180f;
+                    meshArray.get(selectedObject).setyTheta(Float.parseFloat(rotY.getText())*-3.14159f/180f);
                     update();
                 }
             }
@@ -465,7 +497,7 @@ public class Controller implements Initializable {
             public void handle(KeyEvent event) {
                 if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
                 {
-                    meshArray.get(selectedObject).zTheta=Float.parseFloat(rotZ.getText())*-3.14159f/180f;
+                    meshArray.get(selectedObject).setzTheta(Float.parseFloat(rotZ.getText())*-3.14159f/180f);
                     update();
                 }
             }
@@ -476,6 +508,101 @@ public class Controller implements Initializable {
     {
         initializeViewMenu();
         initializeEditMenu();
+    }
+
+    @FXML
+    public void saveMenuItemAction()
+    {
+        if(saveFile==null)
+            saveAsMenuItemAction();
+        else
+        {
+            deleteFolder(saveFile);
+            publish.publishNoGames(ml.fileNameVector, meshArray, saveFile.getAbsolutePath()+"\\");
+        }
+
+    }
+
+    @FXML
+    public void saveAsMenuItemAction()
+    {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setInitialDirectory(new File("D:\\ideaIntellij\\olcge\\saveProjects"));
+        File selectedDir = directoryChooser.showDialog(split.getScene().getWindow());
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Enter file name");
+        dialog.setHeaderText("Project will be saved in folders. \nPlease enter name to save project by:");
+        dialog.setContentText("Name:");
+        dialog.showAndWait();
+        String name = dialog.getEditor().getText();
+        saveFile = new  File(selectedDir.getAbsolutePath()+"\\"+name);
+        boolean makeDir = true;
+        if(saveFile.exists())
+            makeDir = showAlert(Alert.AlertType.CONFIRMATION, "Save file exists", "Save file exists. Overwrite?", "");
+
+        if(makeDir)
+        {
+            if(saveFile.exists())
+            {
+                System.out.println("deleting");
+                deleteFolder(saveFile);
+            }
+
+            saveFile.mkdir();
+            System.out.println("save file name after make dir: " + saveFile.getAbsolutePath());
+            publish.publishNoGames(ml.fileNameVector, meshArray, saveFile.getAbsolutePath()+"\\");
+        }
+
+    }
+
+    public void deleteFolder(File dir)
+    {
+        File arr[] = dir.listFiles();
+        for(File f: arr)
+        {
+            if(f.isDirectory())
+                deleteFolder(f);
+            f.delete();
+        }
+        dir.delete();
+    }
+
+    @FXML
+    public void loadMenuItemAction(ActionEvent event)
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("D:\\ideaIntellij\\olcge\\saveProjects"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.hma")
+        );
+        File file = fileChooser.showOpenDialog(split.getScene().getWindow());
+        if(file!=null && file.getName().endsWith(".hma"))
+        {
+            meshArray.clear();
+            meshArray.addAll(new ModelLoader().loadAll(file));
+        }
+        else
+            showAlert(Alert.AlertType.ERROR, "Wrong file extension", "File extension must have \".hma\" extension", "");
+
+        update();
+        updateLabelList();
+    }
+
+    public boolean showAlert(Alert.AlertType alertType, String title, String headerText, String contents)
+    {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(headerText);
+        alert.setContentText(contents);
+        alert.showAndWait();
+        if(alertType.equals(Alert.AlertType.CONFIRMATION))
+        {
+            if (alert.getResult() == ButtonType.OK)
+                return true;
+            else
+                return false;
+        }
+        return true;
     }
 
     public void initializeEditMenu()
@@ -639,7 +766,7 @@ public class Controller implements Initializable {
                         "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
                             "\t\tSystem.out.println(++i);\n" +
                             "\t\t//meshMap.get(0).zTheta+=0.01f;\n" +
-                            "\t\tmeshMap.get(0).xTranslation+=0.01f;\n" +
+                            "\t\tmeshMap.get(0).setxTranslation(meshMap.get(0).getxTranslation()+0.01f);\n" +
                         "\t}\n" +
                     "}";
             try {

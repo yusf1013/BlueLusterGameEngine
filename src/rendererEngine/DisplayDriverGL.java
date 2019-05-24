@@ -37,6 +37,7 @@ public class DisplayDriverGL extends VectorGeometry {
     private GLFWKeyCallback keyCallback;
     double cursorX, cursorY, mouseSensitivity=0.5f;
     MasterScript ms;
+    Object arr[];
     Collider collider = new Collider();
 
     public DisplayDriverGL(long window)
@@ -72,11 +73,24 @@ public class DisplayDriverGL extends VectorGeometry {
     boolean onUserUpdate(float fElapsedTime)
     {
 
-        Mesh m1= null, m2=null;
+        //Mesh m1= null, m2=null;
 
-        for(Map.Entry e:ItemBag.getEntrySet())
+        Mesh mesh, colMesh;
+        int size;
+        if(ItemBag.modified)
         {
-            if(m1==null)
+            ItemBag.modified = false;
+            arr = ItemBag.getMeshMap().values().toArray();
+            System.out.println("Devil size: "+ItemBag.getMeshMap().size());
+        }
+        /*if(arr==null)
+            size=0;
+        else*/
+            size=arr.length;
+
+        for(int i=0; i<size; i++)
+        {
+            /*if(m1==null)
             {
                 //ystem.out.println("m1 filled");
                 m1=((Mesh) e.getValue());
@@ -85,17 +99,31 @@ public class DisplayDriverGL extends VectorGeometry {
             {
                 //ystem.out.println("m2 filled");
                 m2=((Mesh) e.getValue());
+            }*/
+            mesh=(Mesh)arr[i];
+            if(mesh.isRigidBody) {
+                mesh.obb.getMesh(mesh);
             }
 
-            drawMesh((Mesh)e.getValue(), fElapsedTime);
-            if(((Mesh) e.getValue()).isRigidBody) {
-                ((Mesh) e.getValue()).obb.getMesh(((Mesh) e.getValue()));
-                //drawMesh(temp, fElapsedTime);
-                /*for(ObbMesh m: ((Mesh) e.getValue()).obbList)
+            if(!mesh.flagNew) {
+                System.out.println("Col testing " + i);
+                for(int j=0; j<size; j++)
                 {
-                    drawMesh(m, fElapsedTime);
-                }*/
+                    if(i==j)
+                        continue;
+
+                    colMesh = (Mesh)arr[j];
+                    /*if(colMesh.isFixed)
+                        collider.detectCollision(colMesh, mesh);
+                    else
+                        collider.detectCollision(mesh, colMesh);*/
+                    collider.detectCollision(colMesh, mesh);
+
+                }
             }
+            mesh.flagNew=true;
+
+            drawMesh(mesh, fElapsedTime);
 
         }
 
@@ -103,7 +131,7 @@ public class DisplayDriverGL extends VectorGeometry {
         {
            System.out.println(tri);
         }*/
-        collider.detectCollision(m1, m2);
+        //collider.detectCollision(m1, m2);
         draw();
         handleUserInputs(fElapsedTime);
 
@@ -209,7 +237,6 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public boolean drawMesh(Mesh meshCube, float fElapsedTime)
     {
-        //ystem.out.println("In draw mesh " + meshCube.getStats());
         Matrix4by4 matWorld = meshCube.getWorldMat();
         Matrix4by4 matView = camera.createViewMat();
         for (int i=0; i<meshCube.tris.size(); i++)
@@ -246,18 +273,6 @@ public class DisplayDriverGL extends VectorGeometry {
                 //ystem.out.println("fixie");
             }
         }
-        //triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
-
-        /*for(int i=0; i<triToRaster.size(); i++)
-        {
-            *//*fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y,
-                    triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y,
-                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y,  triToRaster.get(i).getColor());*//*
-            fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y, triToRaster.get(i).p[0].z,
-                    triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y, triToRaster.get(i).p[1].z,
-                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y, triToRaster.get(i).p[2].z, triToRaster.get(i).getColor());
-        }
-        triToRaster.clear();*/
         return true;
     }
 

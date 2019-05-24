@@ -41,15 +41,15 @@ public class ObbMesh extends Mesh{
     public Matrix4by4 getWorldMat()
     {
         Matrix4by4 matRotZ, matRotX, matRotY;
-        matRotZ = VectorGeometry.makeZRotationMatrix(zTheta);
-        matRotX = VectorGeometry.makeXRotationMatrix(xTheta);
-        matRotY = VectorGeometry.makeYRotationMatrix(yTheta);
+        matRotZ = VectorGeometry.makeZRotationMatrix(getzTheta());
+        matRotX = VectorGeometry.makeXRotationMatrix(getxTheta());
+        matRotY = VectorGeometry.makeYRotationMatrix(getyTheta());
 
         Matrix4by4 matTrans, scale, initTrans, initScale;
-        matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
+        matTrans = VectorGeometry.makeTranslation(getxTranslation(), getyTranslation(), getzTranslation());
         initTrans=VectorGeometry.makeTranslation(initTransX, initTransY, initTransZ);
         initScale = VectorGeometry.scale(initScaleX, initScaleY, initScaleZ);
-        scale = VectorGeometry.scale(xScale, yScale, zScale);
+        scale = VectorGeometry.scale(getxScale(), getyScale(), getzScale());
 
 
         Matrix4by4 matWorld;
@@ -70,10 +70,10 @@ public class ObbMesh extends Mesh{
     public Matrix4by4 getWorldMatWithoutRotation()
     {
         Matrix4by4 matTrans, scale, initTrans, initScale;
-        matTrans = VectorGeometry.makeTranslation(xTranslation, yTranslation, zTranslation);
+        matTrans = VectorGeometry.makeTranslation(getxTranslation(), getyTranslation(), getzTranslation());
         initTrans=VectorGeometry.makeTranslation(initTransX, initTransY, initTransZ);
         initScale = VectorGeometry.scale(initScaleX, initScaleY, initScaleZ);
-        scale = VectorGeometry.scale(xScale, yScale, zScale);
+        scale = VectorGeometry.scale(getxScale(), getyScale(), getzScale());
 
 
         Matrix4by4 matWorld;

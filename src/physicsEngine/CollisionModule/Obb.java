@@ -7,7 +7,6 @@ import threeDItems.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class Obb extends BoundingVolume{
     public Vec3d min= new Vec3d();
@@ -145,21 +144,21 @@ public class Obb extends BoundingVolume{
 
         //new piece of shit
         initialFit(max, min);
-        cube.xTranslation = mesh.xTranslation;
-        cube.yTranslation = mesh.yTranslation;
-        cube.zTranslation = mesh.zTranslation;
+        cube.setxTranslation(mesh.getxTranslation());
+        cube.setyTranslation(mesh.getyTranslation());
+        cube.setzTranslation(mesh.getzTranslation());
 
-        cube.xTheta=mesh.xTheta;
-        cube.yTheta=mesh.yTheta;
-        cube.zTheta=mesh.zTheta;
+        cube.setxTheta(mesh.getxTheta());
+        cube.setyTheta(mesh.getyTheta());
+        cube.setzTheta(mesh.getzTheta());
 
-        cube.xScale=mesh.xScale;
-        cube.yScale=mesh.yScale;
-        cube.zScale=mesh.zScale;
+        cube.setxScale(mesh.getxScale());
+        cube.setyScale(mesh.getyScale());
+        cube.setzScale(mesh.getzScale());
 
-        cube.xTheta=mesh.xTheta;
-        cube.yTheta=mesh.yTheta;
-        cube.zTheta=mesh.zTheta;
+        cube.setxTheta(mesh.getxTheta());
+        cube.setyTheta(mesh.getyTheta());
+        cube.setzTheta(mesh.getzTheta());
         cube.setColor(Color.TRANSPARENT);
         cube.min=min;
         cube.max=max;
