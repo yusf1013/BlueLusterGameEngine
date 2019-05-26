@@ -72,6 +72,33 @@ public class Mesh {
         }
     }
 
+    public ArrayList<Triangle> pointTris(ArrayList<Triangle> list)
+    {
+        min=new Vec3d(1000000, 1000000,1000000);
+        max=new Vec3d(-1000000, -1000000,-1000000);
+
+        for(Triangle tri: list)
+        {
+            Vec3d tMin = new Vec3d(), tMax = new Vec3d();
+            tMin.x=findMin(tri.p[0].x, tri.p[1].x, tri.p[2].x);
+            tMin.y=findMin(tri.p[0].y, tri.p[1].y, tri.p[2].y);
+            tMin.z=findMin(tri.p[0].z, tri.p[1].z, tri.p[2].z);
+
+            tMax.x=findMax(tri.p[0].x, tri.p[1].x, tri.p[2].x);
+            tMax.y=findMax(tri.p[0].y, tri.p[1].y, tri.p[2].y);
+            tMax.z=findMax(tri.p[0].z, tri.p[1].z, tri.p[2].z);
+
+            min.x=Math.min(min.x, tMin.x);
+            min.y=Math.min(min.y, tMin.y);
+            min.z=Math.min(min.z, tMin.z);
+
+            max.x=Math.max(max.x, tMax.x);
+            max.y=Math.max(max.y, tMax.y);
+            max.z=Math.max(max.z, tMax.z);
+        }
+        return list;
+    }
+
     public Matrix4by4 getWorldMat()
     {
         updateObbList();
@@ -105,7 +132,7 @@ public class Mesh {
         {
             m.setxTheta(getxTheta());
             m.setyTheta(getyTheta());
-            m.setzTheta(getxTheta());
+            m.setzTheta(getzTheta());
             m.setxTranslation(getxTranslation());
             m.setyTranslation(getyTranslation());
             m.setzTranslation(getzTranslation());

@@ -20,22 +20,44 @@ public class ObbMesh extends Mesh{
     {
         super();
         vecXY= new Vector<>();
-        vecXY.add(new Vec3d(-0.5f, -0.5f, 0.0f));
-        vecXY.add(new Vec3d(-0.5f, 0.5f, 0.0f));
-        vecXY.add(new Vec3d(0.5f, 0.5f, 0.0f));
-        vecXY.add(new Vec3d(0.5f, -0.5f, 0.0f));
+        vecXY.add(new Vec3d(-0.5f, -0.5f, 0.5f));
+        vecXY.add(new Vec3d(-0.5f, 0.5f, 0.5f));
+        vecXY.add(new Vec3d(0.5f, 0.5f, 0.5f));
+        vecXY.add(new Vec3d(0.5f, -0.5f, 0.5f));
+        //new shit
+        vecXY.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecXY.add(new Vec3d(-0.5f, 0.5f, -0.5f));
+        vecXY.add(new Vec3d(0.5f, 0.5f, -0.5f));
+        vecXY.add(new Vec3d(0.5f, -0.5f, -0.5f));
+        vecXY.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecXY.add(new Vec3d(-0.5f, 0.5f, -0.5f));
 
         vecXZ= new Vector<>();
-        vecXZ.add(new Vec3d(-0.5f, 0.0f, -0.5f));
-        vecXZ.add(new Vec3d(-0.5f, 0.0f, 0.5f));
-        vecXZ.add(new Vec3d(0.5f, 0.0f, 0.5f));
-        vecXZ.add(new Vec3d(0.5f, 0.0f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, 0.5f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, 0.5f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, 0.5f, -0.5f));
+        //new shit
+        vecXZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, -0.5f, 0.5f));
+        vecXZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
 
         vecYZ= new Vector<>();
-        vecYZ.add(new Vec3d(0.0f, -0.5f, -0.5f));
-        vecYZ.add(new Vec3d(0.0f, -0.5f, 0.5f));
-        vecYZ.add(new Vec3d(0.0f, 0.5f, 0.5f));
-        vecYZ.add(new Vec3d(0.0f, 0.5f, -0.5f));
+        vecYZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
+        vecYZ.add(new Vec3d(0.5f, -0.5f, 0.5f));
+        vecYZ.add(new Vec3d(0.5f, 0.5f, 0.5f));
+        vecYZ.add(new Vec3d(0.5f, 0.5f, -0.5f));
+        //new shit
+        vecYZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
+        vecYZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecYZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
+        vecYZ.add(new Vec3d(-0.5f, 0.5f, 0.5f));
+        vecYZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
+        vecYZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+
     }
 
     public Matrix4by4 getWorldMat()

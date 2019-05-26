@@ -28,6 +28,7 @@ import threeDItems.Mesh;
 import threeDItems.Vec3d;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
@@ -76,12 +77,19 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //anchor.setOnMouseClicked(e->System.out.println("dies"));
+        setUpStage();
+    }
+
+    public void setUpStage()
+    {
         VBox vbox = new VBox();
         vbox.setSpacing(10);
+        fileListPane.getChildren().clear();
         fileListPane.getChildren().add(vbox);
 
+        vbox2.getChildren().clear();
         vbox2.setSpacing(10);
+        addedFileListPane.getChildren().clear();
         addedFileListPane.getChildren().add(vbox2);
 
         File file = new File("src\\resources");
@@ -114,10 +122,7 @@ public class Controller implements Initializable {
             j++;
         }
 
-        /*gc.setFill(Color.BLUE);
-        gc.fillRoundRect(100, 10, 50, 50, 10, 10);*/
-
-
+        gameStage.getChildren().clear();
         gameStage.getChildren().add(canvas);
 
         initializeTableItems();
@@ -148,58 +153,53 @@ public class Controller implements Initializable {
                 meshArray.get(selectedObject).obb =null;
                 createColliderButton.setDisable(true);
             }
-           System.out.println(meshArray.get(selectedObject).isRigidBody);
-            //createColliderButton.setDisable(false);
+            System.out.println(meshArray.get(selectedObject).isRigidBody);
         });
-        //ystem.out.println("fixie");
-        //rhsPane.getChildren().clear();
-        //initializeControls();
     }
 
-    public void tro()
+    public void resetStage()
     {
-       System.out.println("dsfdss");
-        int i=0;
+        ml = new ModelLoader();
+        width=550;
+        height=600;
+        canvas = new Canvas( width, height );
+        gc = canvas.getGraphicsContext2D();
+        meshArray= new ArrayList<Mesh>();
+        vbox2 = new VBox();
+        counter=0;
+        selectedObject=-1;
+        tableEnabled=false;
+        isObjectSelected=false;
+        labelVec = new Vector();
+        publish = new Publisher();
+        scan = new Scanner(System.in);
+        hash = new Vector<>();
+        saveFile=null;
+        setUpStage();
     }
 
     public void addMeshToList(String name)
     {
-        //ystem.out.println("Loading first shit: " + ml.id);
-        //ArrayList<Mesh> al=null, al2=new ArrayList<>();
         try {
-                Mesh toAdd = ml.meshLoader("src\\resources\\",name, true);
-           System.out.println("TOADD stats:  " + toAdd.getStats());
-           System.out.println("After loading: " + toAdd.max);
-            /*ObjectSliceAndMerge obj = new ObjectSliceAndMerge(toAdd, 4, 0.01f);
-            obj.createTree();
-            al=new ArrayList<>();
-            al.addAll(obj.clusterize());
-            //al = obj.getObbList();
-            meshArray.addAll(al);
-            meshArray.add(toAdd);*/
-
-            //meshArray.add(toAdd);
-            /*ystem.out.println("S ing out: " + al.get(0));
-           System.out.println("S ing out again: " + al.get(1));*/
-            //ystem.out.println("Big moment: " + al.size());
-
-            meshArray.add(toAdd);
-
-            //obj.divideWRTX(meshArray.get(meshArray.size()-1), 0.1f);
-            //ystem.out.println("After division: " + meshArray.get(meshArray.size()-1));
+            addMeshToList(ml.meshLoader("src\\resources\\",name, true), name);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    public void addMeshToList(Mesh toAdd, String name)
+    {
+
+        System.out.println("TOADD stats:  " + toAdd.getStats());
+        System.out.println("After loading: " + toAdd.max);
+        meshArray.add(toAdd);
 
         for(int i=0; i<1; i++) {
-            //to restore to previous version, take this shit out of the loop.
             if (hash.size() > 0)
                 hash.add(hash.lastElement() + 1);
             else
                 hash.add(0);
             counter++;
             addLabel(counter, name);
-            //vbox2.getChildren().add(label);
         }
     }
 
@@ -210,7 +210,9 @@ public class Controller implements Initializable {
         label.setPadding(new Insets(3, 5, 3, 5));
         label.setText("  " + (counter) + ". " + name + "  ");
         //label.setText(name + "  ");
+        System.out.println("add label: " + label.getText());
         int temp = Integer.parseInt(label.getText().substring(2, 3)) - 1;
+        System.out.println("added label: " + label.getText() + " " + temp);
         label.setOnMouseClicked(e -> {
             if (isObjectSelected) {
                 int earlierSelection = selectedObject;
@@ -224,7 +226,7 @@ public class Controller implements Initializable {
             } else {
                 //selectObject(label.getText().substring(2,3));
                 System.out.println("Before special op: " + splitString(label.getText(), ".", true));
-                selectObject(splitString(label.getText(), ".", true));
+                selectObject(splitString(label.getText(),".", true));
 
                 label.setStyle("-fx-border-color: red;");
                 System.out.println("else: " + selectedObject);
@@ -405,11 +407,12 @@ public class Controller implements Initializable {
         scaleX.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setxScale(Float.parseFloat(scaleX.getText()));
                     update();
                 }
+                arrowKeysAction(event);
             }
         });
 
@@ -418,7 +421,7 @@ public class Controller implements Initializable {
         scaleY.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setyScale(Float.parseFloat(scaleY.getText()));
                     update();
@@ -429,19 +432,22 @@ public class Controller implements Initializable {
         scaleZ.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setzScale(Float.parseFloat(scaleZ.getText()));
                     update();
                 }
+
             }
         });
 
         transX.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                //arrowKeysAction(event);
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
+                    System.out.println("goind in");
                     meshArray.get(selectedObject).setxTranslation(Float.parseFloat(transX.getText()));
                     update();
                 }
@@ -451,7 +457,7 @@ public class Controller implements Initializable {
         transY.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setyTranslation(Float.parseFloat(transY.getText()));
                     update();
@@ -459,10 +465,11 @@ public class Controller implements Initializable {
             }
         });
 
+
         transZ.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setzTranslation(Float.parseFloat(transZ.getText()));
                     update();
@@ -473,7 +480,7 @@ public class Controller implements Initializable {
         rotX.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setxTheta(Float.parseFloat(rotX.getText())*-3.14159f/180f);
                     update();
@@ -484,7 +491,7 @@ public class Controller implements Initializable {
         rotY.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setyTheta(Float.parseFloat(rotY.getText())*-3.14159f/180f);
                     update();
@@ -495,7 +502,7 @@ public class Controller implements Initializable {
         rotZ.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode().equals(KeyCode.ENTER) && selectedObject!=-1)
+                if(arrowKeysAction(event) && selectedObject!=-1)
                 {
                     meshArray.get(selectedObject).setzTheta(Float.parseFloat(rotZ.getText())*-3.14159f/180f);
                     update();
@@ -518,7 +525,13 @@ public class Controller implements Initializable {
         else
         {
             deleteFolder(saveFile);
+            /*saveFile.mkdir();
             publish.publishNoGames(ml.fileNameVector, meshArray, saveFile.getAbsolutePath()+"\\");
+            File arr[] = new File("src\\Games").listFiles();
+            for(File f: arr)
+                if(f.getName().endsWith(".java"))
+                    publish.copyFile(f, new File(saveFile.getAbsolutePath()+"\\"+f.getName()));*/
+            save();
         }
 
     }
@@ -548,16 +561,34 @@ public class Controller implements Initializable {
                 deleteFolder(saveFile);
             }
 
-            saveFile.mkdir();
-            System.out.println("save file name after make dir: " + saveFile.getAbsolutePath());
+            /*saveFile.mkdir();
+            System.out.println("save file name after make dir: " + saveFile.getAbsolutePath() +  ": " + saveFile.exists());
             publish.publishNoGames(ml.fileNameVector, meshArray, saveFile.getAbsolutePath()+"\\");
+            File arr[] = new File("src\\Games").listFiles();
+            for(File f: arr)
+                if(f.getName().endsWith(".java"))
+                    publish.copyFile(f, new File(saveFile.getAbsolutePath()+"\\"+f.getName()));*/
+            save();
         }
 
+    }
+
+    public void save()
+    {
+        saveFile.mkdir();
+        System.out.println("save file name after make dir: " + saveFile.getAbsolutePath() +  ": " + saveFile.exists());
+        publish.publishNoGames(ml.fileNameVector, meshArray, saveFile.getAbsolutePath()+"\\");
+        File arr[] = new File("src\\Games").listFiles();
+        for(File f: arr)
+            if(f.getName().endsWith(".java"))
+                publish.copyFile(f, new File(saveFile.getAbsolutePath()+"\\"+f.getName()));
     }
 
     public void deleteFolder(File dir)
     {
         File arr[] = dir.listFiles();
+        if(arr==null)
+            return;
         for(File f: arr)
         {
             if(f.isDirectory())
@@ -570,7 +601,7 @@ public class Controller implements Initializable {
     @FXML
     public void loadMenuItemAction(ActionEvent event)
     {
-        FileChooser fileChooser = new FileChooser();
+        /*FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("D:\\ideaIntellij\\olcge\\saveProjects"));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Text Files", "*.hma")
@@ -579,13 +610,52 @@ public class Controller implements Initializable {
         if(file!=null && file.getName().endsWith(".hma"))
         {
             meshArray.clear();
-            meshArray.addAll(new ModelLoader().loadAll(file));
+            ml.fileNameVector.clear();
+            System.out.println("in controller before  loading: " + ml.fileNameVector.size());
+            meshArray.addAll(ml.loadAll(file, false));
+            System.out.println("in controller after  loading: " + ml.fileNameVector.size());
+            saveFile=file.getParentFile();
+            System.out.println("In loading: "+saveFile.getAbsolutePath());
         }
-        else
+        else if(file!=null)
             showAlert(Alert.AlertType.ERROR, "Wrong file extension", "File extension must have \".hma\" extension", "");
 
         update();
         updateLabelList();
+        File arr[] = saveFile.listFiles();
+            for(File f: arr)
+                if(f.getName().endsWith(".java"))
+                    publish.copyFile(f, new File("src\\Games\\"+f.getName()));
+*/
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("D:\\ideaIntellij\\olcge\\saveProjects"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.hma")
+        );
+        File file = fileChooser.showOpenDialog(split.getScene().getWindow());
+        if(file!=null && file.getName().endsWith(".hma"))
+        {
+            resetStage();
+            Vector<Mesh> velco = ml.loadAll(file, false);
+            for(Mesh m: velco){
+                addMeshToList(m, m.name);
+                update();
+            }
+
+            saveFile=file.getParentFile();
+            System.out.println("In loading: "+saveFile.getAbsolutePath());
+            File arr[] = saveFile.listFiles();
+            for(File f: arr)
+                if(f.getName().endsWith(".java"))
+                    publish.copyFile(f, new File("src\\Games\\"+f.getName()));
+        }
+        else if(file!=null)
+            showAlert(Alert.AlertType.ERROR, "Wrong file extension", "File extension must have \".hma\" extension", "");
+
+        update();
+        System.out.println("Mesh arr size: " + meshArray.size());
+
+
     }
 
     public boolean showAlert(Alert.AlertType alertType, String title, String headerText, String contents)
@@ -722,30 +792,8 @@ public class Controller implements Initializable {
         editScript.setDisable(true);
 
         delButton.setOnAction(e ->{
-            if(isObjectSelected)
-            {
-                int temp=selectedObject;
-                deSelectObject();
-                for(int i=meshArray.get(temp).id; i<hash.size(); i++)
-                {
-                    if(i==meshArray.get(temp).id)
-                        hash.set(i, -1);
-                    else
-                        hash.set(i, hash.get(i)-1);
-                }
-                if(meshArray.get(temp).isScripted)
-                {
-                    File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(temp).id+".java");
-                    file.delete();
-                }
-                meshArray.remove(temp);
-                labelVec.remove(temp);
-                ml.fileNameVector.remove(temp);
-                counter--;
-                update();
-
-
-            }
+            deleteMesh();
+            update();
             if(selectedObject==-1)
                 delButton.setDisable(true);
         });
@@ -765,7 +813,7 @@ public class Controller implements Initializable {
                         "\t@Override\n" +
                         "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
                             "\t\tSystem.out.println(++i);\n" +
-                            "\t\t//meshMap.get(0).zTheta+=0.01f;\n" +
+                            "\t\t//meshMap.get(0).setzTheta(meshMap.get(0).getzTheta()+0.01f);\n" +
                             "\t\tmeshMap.get(0).setxTranslation(meshMap.get(0).getxTranslation()+0.01f);\n" +
                         "\t}\n" +
                     "}";
@@ -825,38 +873,86 @@ public class Controller implements Initializable {
 
     }
 
+    public void deleteMesh()
+    {
+        if(isObjectSelected)
+        {
+            int temp=selectedObject;
+            deSelectObject();
+            for(int i=meshArray.get(temp).id; i<hash.size(); i++)
+            {
+                if(i==meshArray.get(temp).id)
+                    hash.set(i, -1);
+                else
+                    hash.set(i, hash.get(i)-1);
+            }
+            if(meshArray.get(temp).isScripted)
+            {
+                File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(temp).id+".java");
+                file.delete();
+            }
+            meshArray.remove(temp);
+            labelVec.remove(temp);
+            ml.fileNameVector.remove(temp);
+            counter--;
+            update();
+
+
+        }
+
+    }
+
+    public boolean arrowKeysAction(KeyEvent e)
+    {
+        Double f=0d;
+        KeyCode code = e.getCode();
+        System.out.println("CODE: " + code);
+        if(!(code==KeyCode.UP || code==KeyCode.DOWN || code==KeyCode.LEFT || code==KeyCode.RIGHT || code==KeyCode.ENTER))
+            return false;
+
+        System.out.println("Here: ");
+
+        TextField tf = ((TextField)e.getSource());
+        try{
+             f = Double.parseDouble(tf.getText());
+            if((code.equals(KeyCode.UP)))
+            {
+                f+=0.01;
+            }
+            else if((code.equals(KeyCode.DOWN)))
+                f-=0.01;
+            else if((code.equals(KeyCode.PAGE_UP)))
+                f+=0.1;
+            else if((code.equals(KeyCode.PAGE_DOWN)))
+                f-=0.1;
+            else
+            {
+                System.out.println("no accept: " + code + " " + KeyCode.PAGE_DOWN + " " + KeyCode.PAGE_UP);
+                if(code==KeyCode.ENTER)
+                    return true;
+                else
+                    return false;
+            }
+
+            System.out.println("Kill them: " + Double.toString(f).substring(0,Math.min(5, Double.toString(f).length())));
+
+            tf.setText(Double.toString(f).substring(0,Math.min(5, Double.toString(f).length())));
+
+        } catch (NumberFormatException exception)
+        {
+            showAlert(Alert.AlertType.ERROR, "Invalid input" , "Please enter only numbers", "");
+        }
+
+        return true;
+
+    }
+
     public int indexFinder(int id)
     {
         return hash.get(id);
     }
 
-    public void copyFile(File source,File dest) {
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        File oFile = new File(dest.getPath()+"\\"+source.getName());
-       System.out.println("OFILE: " + dest.getPath()+"\\"+source.getName());
-       System.out.println(oFile.getPath());
-
-        try {
-            inputStream = new FileInputStream(source);
-            outputStream = new FileOutputStream(oFile);
-
-            byte[] buffer = new byte[1024];
-            int length;
-
-            while ((length = inputStream.read(buffer)) > 0) {
-
-                outputStream.write(buffer, 0, length);
-            }
-
-            inputStream.close();
-            outputStream.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     public void handleInputs(KeyEvent event)

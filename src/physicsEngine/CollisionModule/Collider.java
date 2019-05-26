@@ -14,6 +14,7 @@ public class Collider {
 
     public boolean detectCollision(Mesh m1, Mesh m2)
     {
+
         if(m1==null || m2==null)
         {
             if(m1==null)
@@ -35,22 +36,37 @@ public class Collider {
 
         if(!collidesWith(m1.obb.cube, m2.obb.cube))
         {
+            System.out.println("Early return");
             return false;
         }
         /*else if(collidesWith(m1.obb.cube, m2.obb.cube))
             return true;*/
 
+       /* System.out.println("before  update stats: ");
+        System.out.println(m1.obb.cube.getStats());
+        System.out.println(m1.obbList.get(0).getStats()+"\n");
+        System.out.println(m2.obb.cube.getStats());
+        System.out.println(m2.obbList.get(0).getStats()+"\n\n");*/
+
 
         m1.updateObbList();
         m2.updateObbList();
 
+        /*System.out.println("after  update stats: ");
+        System.out.println(m1.obb.cube.getStats());
+        System.out.println(m1.obbList.get(0).getStats()+"\n");
+        System.out.println(m2.obb.cube.getStats());
+        System.out.println(m2.obbList.get(0).getStats());*/
 
         ArrayList<ObbMesh> al1 = new ArrayList<>(), al2 = new ArrayList<>();
+        System.out.println("sizes of obb lists: " + m1.obbList.size() + ", " + m2.obbList.size());
         collidesWith(m1.obb.cube, m2.obbList, al2);
         collidesWith(m2.obb.cube, m1.obbList, al1);
+        System.out.println("sizes of als: " + al1.size() + ", " + al2.size());
 
         //return collidesWith(al1, al2);
 
+        System.out.println("Final testing starts");
         if(collidesWith_Static(al1, al2))
         {
 
@@ -58,21 +74,22 @@ public class Collider {
             VectorGeometry vg = new VectorGeometry();
             d=vg.vectorSub(c1, c2);
 
-            //new not working shit
+            /*//new not working shit
             float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
             //d.x=1; d.y=1; d.z=1;
-            m2.setxTranslation(m2.getxTranslation() - Math.min(xyOverlap, xzOverlap) * d.x / s);
-            m2.setyTranslation(m2.getyTranslation() - Math.min(xyOverlap, yzOverlap) * d.y / s);
-            m2.setzTranslation(m2.getzTranslation() - Math.min(yzOverlap, xzOverlap) * d.z / s);
+            m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
+            m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
+            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);
+            System.out.println("resolved shit: " + overlap + ", " + d);*/
 
 
-
-            /*
             //old working shit
             float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
             m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
             m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
-            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);*/
+            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);
+            System.out.println("resolved shit: " + overlap + ", " + d);
+            System.out.println(xyOverlap + ", " + xzOverlap + ", " + yzOverlap);
 
         }
         return false;
@@ -227,11 +244,13 @@ public class Collider {
 
                 if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
                 {
+                    System.out.println(axes + ": " + "false");
                     return false;
                 }
             }
         }
 
+        System.out.println(axes + ": " + "true");
         return true;
     }
 
@@ -314,10 +333,14 @@ public class Collider {
                     max_r2 = Math.max(max_r2, q);
                 }
 
+                System.out.println("overlap before: " + overlap);
                 overlap = Math.min(Math.min(max_r1, max_r2) - Math.max(min_r1, min_r2), overlap);
+                System.out.println(min_r1 + ", " + max_r1 + ", " + min_r2 + ", " + max_r2);
+                System.out.println("calculated overlap: " + overlap);
 
                 if (!(max_r2 >= min_r1 && max_r1 >= min_r2))
                 {
+                    System.out.println("overlap zero and return false");
                     return false;
                 }
             }
@@ -337,6 +360,7 @@ public class Collider {
         else if(axes.equals("xz") && xzOverlap<overlap)
             xzOverlap=overlap;
 
+        System.out.println("legit overlap and return true");
         return true;
     }
 

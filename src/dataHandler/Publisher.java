@@ -25,7 +25,7 @@ public class Publisher {
         if(fileVec.size()==0)
             return;
 
-        System.out.println("File name as received in publish no games: " + saveFolderAbsolutePath);
+        System.out.println("File name as received in publish no games: " + saveFolderAbsolutePath + ": " + new File(saveFolderAbsolutePath).exists());
 
         for(int i=0; i<fileVec.size(); i++)
         {
@@ -98,19 +98,21 @@ public class Publisher {
         File testFile = new File("out\\production\\olcge\\Games");
 
         if(testFile.exists())
-            cmd.runCommand("echo lieee && pushd src && cd && " + "javac Games\\*.java && exit");
+            cmd.runCommand("echo CompilingScripts && pushd src && cd && " + "javac Games\\*.java && exit");
         else
-            cmd.runCommand("echo \"First thing\" && javac src\\Games\\*.java && echo \"Test File DNE\"");
+            cmd.runCommand("echo \"First thing\" && javac Games\\*.java && echo \"Test File DNE\"");
 
         cmd.runCommand("echo \"Moving class\" && pushd src\\Games &&" +
                 "move *.class D:\\ideaIntellij\\olcge\\out\\production\\olcge\\Games && exit");
-        cmd.runCommand("pushd src\\Games && copy .\\info.hma ..\\..\\olcge\\Games && exit");
+        cmd.runCommand("pushd src\\Games && copy .\\*.* ..\\..\\olcge\\Games && exit");
     }
 
     public void deleteAllFilesFromGames()
     {
         File dir = new File("src\\Games");
         File arr[] = dir.listFiles();
+        if(arr==null)
+            return;
         for(File f: arr)
         {
             if(f.getName().endsWith(".obj"))

@@ -103,25 +103,23 @@ public class DisplayDriverGL extends VectorGeometry {
             mesh=(Mesh)arr[i];
             if(mesh.isRigidBody) {
                 mesh.obb.getMesh(mesh);
-            }
+                if(!mesh.flagNew) {
+                    System.out.println("Col testing " + i);
+                    for(int j=0; j<size; j++)
+                    {
+                        if(i==j)
+                            continue;
 
-            if(!mesh.flagNew) {
-                System.out.println("Col testing " + i);
-                for(int j=0; j<size; j++)
-                {
-                    if(i==j)
-                        continue;
-
-                    colMesh = (Mesh)arr[j];
-                    /*if(colMesh.isFixed)
+                        colMesh = (Mesh)arr[j];
+                        System.out.println("before  detect col: " + i + ", " + j);
                         collider.detectCollision(colMesh, mesh);
-                    else
-                        collider.detectCollision(mesh, colMesh);*/
-                    collider.detectCollision(colMesh, mesh);
 
+                    }
                 }
+                mesh.flagNew=true;
             }
-            mesh.flagNew=true;
+
+
 
             drawMesh(mesh, fElapsedTime);
 

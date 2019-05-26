@@ -20,7 +20,7 @@ public class ModelLoader {
     {
         //ystem.out.println("fixie");
         try {
-            return ((List)(new ObjectInputStream(new FileInputStream("Games/gameInfo.hlit"))));
+            return ((List)(new ObjectInputStream(new FileInputStream("src\\Games/gameInfo.hlit"))));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,6 +33,11 @@ public class ModelLoader {
     }
 
     public Vector<Mesh> loadAll(File file)
+    {
+        return loadAll(file, true);
+    }
+
+    public Vector<Mesh> loadAll(File file, boolean toLoadScript)
     {
         Vector<Mesh> vec = new Vector<>();
         try {
@@ -47,8 +52,8 @@ public class ModelLoader {
             {
                 String meshName = in.next();
                System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
-                //vec.add(meshLoader("Games\\", meshName, false));
-                vec.add(meshLoader(file.getParentFile().getAbsolutePath(), meshName, false));
+                //vec.add(meshLoader("src\\Games\\", meshName, false));
+                vec.add(meshLoader(file.getParentFile().getAbsolutePath(), meshName, true));
                System.out.println("Load done");
                 vec.lastElement().setxTheta(in.nextFloat()); vec.lastElement().setyTheta(in.nextFloat()); vec.lastElement().setzTheta(in.nextFloat());
                 vec.lastElement().setxTranslation(in.nextFloat()); vec.lastElement().setyTranslation(in.nextFloat()); vec.lastElement().setzTranslation(in.nextFloat());
@@ -60,7 +65,8 @@ public class ModelLoader {
                 if(scripted.equals("true")) {
                    System.out.println("Is scripted and THE ID IS: " + vec.lastElement().id);
                     vec.lastElement().isScripted=true;
-                    loadScript(vec.lastElement().id);
+                    if(toLoadScript)
+                        loadScript(vec.lastElement().id);
 
                 }
                 else
@@ -117,6 +123,8 @@ public class ModelLoader {
             e.printStackTrace();
         }
 
+        System.out.println("end load all: " + fileNameVector.size());
+
         return  vec;
     }
 
@@ -126,13 +134,17 @@ public class ModelLoader {
         if(isGameObj)
             mesh.id=id++;
         if(isGameObj)
+        {
+            System.out.println("ADDEEEEEEEEEEEEEEEEEEDDDDDDDDDDDD!!!!!!!!!!!!!!!!: " + fileName);
             fileNameVector.add(fileName);
+        }
 
         ArrayList<Triangle> al = MeshData.getDataPointReference(fileName);
         //Vector<Vec3d> vec = MeshData.getPointMapReference(fileName);
         if(al!=null)
         {
-            mesh.tris=al;
+            //mesh.tris=al;
+            mesh.tris=mesh.pointTris(al);
             //mesh.p=vec;
             return mesh;
         }
@@ -191,7 +203,8 @@ public class ModelLoader {
         //Vector<Vec3d> vec = MeshData.getPointMapReference(fileName);
         if(al!=null && !al.isEmpty())
         {
-            mesh.tris=al;
+            //mesh.tris=al;
+            mesh.tris=mesh.pointTris(al);
             //mesh.p=vec;
             return mesh;
         }
@@ -240,7 +253,7 @@ public class ModelLoader {
     {
         try {
             ItemBag.addScript(id, (Inheritable) Class.forName( "Games.scriptOfMesh"+id).newInstance());
-            /*Class cl = Class.forName("Games.scriptOfMesh"+id);
+            /*Class cl = Class.forName("src\\Games.scriptOfMesh"+id);
             Constructor ctor = cl.getDeclaredConstructor(ItemBag.getMeshMap().getClass());
             //ctor.setAccessible(true);
             //EmailAliases email = (EmailAliases)ctor.newInstance(defaultAliases);
