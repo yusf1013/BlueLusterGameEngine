@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -23,14 +22,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
+import mathHandler.VectorGeometry;
+import rendererEngine.Camera;
 import rendererEngine.Cmd;
+import rendererEngine.itemBag.ItemBag;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 
 public class Controller implements Initializable {
@@ -46,7 +46,7 @@ public class Controller implements Initializable {
     @FXML
     MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView, runInReleaseMode;
     @FXML
-    MenuItem transMenuItem, save, load;
+    MenuItem transMenuItem, save, load, addCam;
     @FXML
     Button delButton, editScript, createScript, createColliderButton;
     @FXML
@@ -55,6 +55,8 @@ public class Controller implements Initializable {
     CheckBox rigidBodyCB;
     @FXML
     Label isColliderSet, meshId;
+    @FXML
+    VBox mainVBox;
 
 
     ModelLoader ml = new ModelLoader();
@@ -155,6 +157,17 @@ public class Controller implements Initializable {
             }
             System.out.println(meshArray.get(selectedObject).isRigidBody);
         });
+
+        mainVBox.requestFocus();
+        System.out.println("focus requested!");
+        mainVBox.setOnKeyPressed(e -> {
+            handleUserInputs(e);
+        });
+    }
+
+    public void test()
+    {
+        System.out.println("TEST");
     }
 
     public void resetStage()
@@ -294,10 +307,8 @@ public class Controller implements Initializable {
         vbox2.getChildren().clear();
         for(Label label: labelVec)
         {
-            System.out.println("Label name: "+label.getText());
             String temp = splitString(label.getText(), ".", false);
             label.setText("  " + i + ". " + temp);
-           System.out.println(temp);
             vbox2.getChildren().add(label);
             i++;
         }
@@ -515,6 +526,28 @@ public class Controller implements Initializable {
     {
         initializeViewMenu();
         initializeEditMenu();
+        addCam.setOnAction(e ->{
+            try {
+                addCam();
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        } );
+    }
+
+    public void addCam() throws FileNotFoundException {
+        Mesh cam = ml.meshLoader("src\\resources\\","camera.obj", true);
+        ItemBag.camMesh=cam;
+        cam.isCam=true;
+        addMeshToList(cam, "camera");
+        update();
+    }
+
+    public void addCam(Mesh cam) {
+        ItemBag.camMesh=cam;
+        cam.isCam=true;
+        addMeshToList(cam, "camera");
+        update();
     }
 
     @FXML
@@ -637,6 +670,10 @@ public class Controller implements Initializable {
         {
             resetStage();
             Vector<Mesh> velco = ml.loadAll(file, false);
+            if(ItemBag.camMesh!=null) {
+                addCam(ItemBag.camMesh);
+            }
+
             for(Mesh m: velco){
                 addMeshToList(m, m.name);
                 update();
@@ -687,54 +724,54 @@ public class Controller implements Initializable {
     {
         topView.setOnAction(e -> {
             ddgui.camera.position=new Vec3d(0,5,0);
-            ddgui.camera.pitch=3.14159f/2.0f;
-            ddgui.camera.yaw=0;
+            ddgui.camera.setPitch(3.14159f/2.0f);
+            ddgui.camera.setYaw(0);
            System.out.println("View");
             update();
         });
 
         bottomView.setOnAction(e -> {
             ddgui.camera.position=new Vec3d(0,-5,0);
-            ddgui.camera.pitch=-3.14159f/2.0f;
-            ddgui.camera.yaw=0;
+            ddgui.camera.setPitch(-3.14159f/2.0f);
+            ddgui.camera.setYaw(0);
            System.out.println("View");
             update();
         });
 
         frontView.setOnAction(e -> {
             ddgui.camera.position=new Vec3d(0,1,-3);
-            ddgui.camera.pitch=0;
-            ddgui.camera.yaw=0;
+            ddgui.camera.setPitch(0);
+            ddgui.camera.setYaw(0);
             update();
         });
 
         backView.setOnAction(e -> {
             ddgui.camera.position=new Vec3d(0,1,3);
-            ddgui.camera.pitch=0;
-            ddgui.camera.yaw=3.14159f;
+            ddgui.camera.setPitch(0);
+            ddgui.camera.setYaw(3.14159f);
             update();
         });
 
         rightView.setOnAction(e -> {
-            ddgui.camera.position=new Vec3d(5,0,0);
-            ddgui.camera.pitch=0;
-            ddgui.camera.yaw=-3.14159f/2.0f;
+            ddgui.camera.position=new Vec3d(5,0.4f,0);
+            ddgui.camera.setPitch(0);
+            ddgui.camera.setYaw(-3.14159f/2.0f);
            System.out.println("View");
             update();
         });
 
         leftView.setOnAction(e -> {
-            ddgui.camera.position=new Vec3d(-5,0,0);
-            ddgui.camera.pitch=0;
-            ddgui.camera.yaw=3.14159f/2.0f;
+            ddgui.camera.position=new Vec3d(-5,0.4f,0);
+            ddgui.camera.setPitch(0);
+            ddgui.camera.setYaw(3.14159f/2.0f);
            System.out.println("leftView");
             update();
         });
 
         freeView.setOnAction(e -> {
             ddgui.camera.position=new Vec3d(-3,5,-5);
-            ddgui.camera.yaw=30*3.14159f/180f;
-            ddgui.camera.pitch=30*3.14159f/180f;
+            ddgui.camera.setYaw(30*3.14159f/180f);
+            ddgui.camera.setPitch(30*3.14159f/180f);
            System.out.println("View");
             update();
         });
@@ -806,15 +843,21 @@ public class Controller implements Initializable {
                     "package Games;\n" +
                     "import rendererEngine.scriptManager.Inheritable;\n" +
                     "import threeDItems.Mesh; \n" +
+                    "import rendererEngine.scriptManager.Control;\n" +
                     "import java.util.*; \n" +
+                    "import threeDItems.Vec3d;\n" +
+                    "import rendererEngine.itemBag.ItemBag;\n" +
                     "public class scriptOfMesh"+meshArray.get(selectedObject).id+" extends Inheritable {\n" +
                         "\t//Mesh mesh = getMesh(0);\n" +
-                        "\tint i=0;" +
+                        "\tint i=0;\n" +
                         "\t@Override\n" +
                         "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
                             "\t\tSystem.out.println(++i);\n" +
-                            "\t\t//meshMap.get(0).setzTheta(meshMap.get(0).getzTheta()+0.01f);\n" +
-                            "\t\tmeshMap.get(0).setxTranslation(meshMap.get(0).getxTranslation()+0.01f);\n" +
+                            "\t\tMesh thisMesh=meshMap.get(0);\n" +
+                            "\t\t//thisMesh.setzTheta(thisMesh.getzTheta()+0.01f);\n" +
+                            "\t\t//thisMesh.setxTranslation(thisMesh.getxTranslation()+0.01f);\n" +
+                            "\t\t//Control.bindCamera(thisMesh);\n" +
+                            "\t\tControl.walkControlScheme(thisMesh, 0.01f, 0.01f);\n" +
                         "\t}\n" +
                     "}";
             try {
@@ -952,7 +995,59 @@ public class Controller implements Initializable {
         return hash.get(id);
     }
 
+    public void handleUserInputs(KeyEvent event) {
 
+        VectorGeometry v = new VectorGeometry();
+        float speed=2f;
+        Camera camera = ddgui.camera;
+        Vec3d left = (v.crossProduct(camera.vUp, camera.vLookDir));
+        Vec3d vForward = v.vectorMul(camera.vLookDir, speed);
+
+
+        KeyCode code  = event.getCode();
+        if(code==KeyCode.A)
+            camera.position = v.vectorAdd(camera.position, v.vectorMul(v.normaliseVector(v.crossProduct(camera.vLookDir, camera.vUp)), speed));
+        if(code==KeyCode.D)
+            camera.position = v.vectorSub(camera.position, v.vectorMul(v.normaliseVector(v.crossProduct(camera.vLookDir, camera.vUp)), speed));
+        if(code==KeyCode.W)
+            camera.position = v.vectorAdd(camera.position, v.vectorMul(v.normaliseVector(v.crossProduct(camera.vLookDir, left)), speed));
+        if(code==KeyCode.S)
+            camera.position = v.vectorSub(camera.position, v.vectorMul(v.normaliseVector(v.crossProduct(camera.vLookDir, left)), speed));
+        if(code==KeyCode.UP)
+            camera.position = v.vectorAdd(camera.position, vForward);
+        if(code==KeyCode.DOWN)
+            camera.position = v.vectorSub(camera.position, vForward);
+        if(code==KeyCode.R)
+            camera.position = v.vectorAdd(camera.position, vForward);
+        if(code==KeyCode.F)
+            camera.position = v.vectorSub(camera.position, vForward);
+
+        update();
+
+
+        /*if (KeyboardHandler.isKeyDown(GLFW_KEY_UP))
+            camera.position.y += walkSpeed * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_DOWN))
+            camera.position.y -= walkSpeed * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_A))
+            camera.position = vectorAdd(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_D))
+            camera.position = vectorSub(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
+        Vec3d vForward = vectorMul(camera.vLookDir, walkSpeed * fElapsedTime);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_W))
+            camera.position = vectorAdd(camera.position, vForward);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_S))
+            camera.position = vectorSub(camera.position, vForward);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
+            camera.yaw -= walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_RIGHT))
+            camera.yaw += walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_R))
+            camera.pitch -= walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_F))
+            camera.pitch += walkSpeed / 4f * fElapsedTime;*/
+
+    }
 
     @FXML
     public void handleInputs(KeyEvent event)

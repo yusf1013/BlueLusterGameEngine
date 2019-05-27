@@ -40,11 +40,14 @@ public class DisplayDriverGL extends VectorGeometry {
     Object arr[];
     Collider collider = new Collider();
 
+
     public DisplayDriverGL(long window)
     {
         ModelLoader modelLoader = new ModelLoader();
         //meshVector=modelLoader.loadAll();
         ItemBag.addMesh(modelLoader.loadAll());
+        //ItemBag.camera = new Camera();
+        camera=ItemBag.camera;
 
        System.out.println("Null test\n\n\n");
         for(Map.Entry e: ItemBag.getEntrySet()) {
@@ -52,7 +55,9 @@ public class DisplayDriverGL extends VectorGeometry {
                System.out.println("Is null after loadingn\n\n\n");
         }
 
-        ms=new MasterScript();
+
+
+        ms=new MasterScript(this);
         //ms=(MasterScript)Class.forName("rendererEngine.scriptManager.MasterScript").newInstance();
 
         //meshCube=modelLoader.meshLoader("toNotDisplay\\axis.obj", true);
@@ -67,14 +72,24 @@ public class DisplayDriverGL extends VectorGeometry {
         glfwGetCursorPos(window, xBuffer, yBuffer);
         cursorX = xBuffer.get(0);
         cursorY = yBuffer.get(0);
+        ms.run();
+        System.out.println("GLFW: " + GLFW_KEY_W);
     }
 
 
     boolean onUserUpdate(float fElapsedTime)
     {
+        calcMesh(fElapsedTime);
+        draw();
+        handleUserInputs(fElapsedTime);
+        System.out.println("Camera Pos in ddgl: " + camera.position);
+        //System.out.println(ItemBag.camMesh.position);
+        ms.run();
+        return true;
+    }
 
-        //Mesh m1= null, m2=null;
-
+    public void calcMesh(float fElapsedTime)
+    {
         Mesh mesh, colMesh;
         int size;
         if(ItemBag.modified)
@@ -83,23 +98,10 @@ public class DisplayDriverGL extends VectorGeometry {
             arr = ItemBag.getMeshMap().values().toArray();
             System.out.println("Devil size: "+ItemBag.getMeshMap().size());
         }
-        /*if(arr==null)
-            size=0;
-        else*/
-            size=arr.length;
+        size=arr.length;
 
         for(int i=0; i<size; i++)
         {
-            /*if(m1==null)
-            {
-                //ystem.out.println("m1 filled");
-                m1=((Mesh) e.getValue());
-            }
-            else if(m2==null)
-            {
-                //ystem.out.println("m2 filled");
-                m2=((Mesh) e.getValue());
-            }*/
             mesh=(Mesh)arr[i];
             if(mesh.isRigidBody) {
                 mesh.obb.getMesh(mesh);
@@ -118,38 +120,14 @@ public class DisplayDriverGL extends VectorGeometry {
                 }
                 mesh.flagNew=true;
             }
-
-
-
+            mesh.updateOldValaues();
             drawMesh(mesh, fElapsedTime);
-
         }
-
-        /*for(Triangle tri: triToRaster)
-        {
-           System.out.println(tri);
-        }*/
-        //collider.detectCollision(m1, m2);
-        draw();
-        handleUserInputs(fElapsedTime);
-
-        /*for(Vec3d v: m1.obb.cube.vec)
-           System.out.println(v);
-       System.out.println("THe other mesh");
-        for(Vec3d v: m1.obb.cube.vec)
-           System.out.println(v);*/
-
-        /*if(collider.detectCollision(m1, m2))
-        {
-            //ystem.out.println("Collision detected");
-            return false;
-        }
-        else*/
-            //ystem.out.println("No collision");
-
-        ms.run();
-        return true;
     }
+
+
+
+
 
     public void draw()
     {
@@ -157,7 +135,11 @@ public class DisplayDriverGL extends VectorGeometry {
         {
             /*fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y,
                     triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y,
-                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y,  triToRaster.get(i).getColor());*/
+                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y,  triToRaster.get(i).getColor());
+            fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y, triToRaster.get(i).p[0].z,
+                    triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y, triToRaster.get(i).p[1].z,
+                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y, triToRaster.get(i).p[2].z, triToRaster.get(i).getColor());
+        */
             fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y, triToRaster.get(i).p[0].z,
                     triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y, triToRaster.get(i).p[1].z,
                     triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y, triToRaster.get(i).p[2].z, triToRaster.get(i).getColor());
@@ -179,12 +161,16 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public void handleUserInputs(float fElapsedTime)
     {
-
         if(KeyboardHandler.isKeyDown(GLFW_KEY_ESCAPE))
         {
             glfwSetWindowShouldClose(window, true);
             KeyboardHandler.keys[GLFW_KEY_ESCAPE]=false;
+            //ItemBag.keys[GLFW_KEY_ESCAPE]=false;
         }
+    }
+
+    public void cameraControls(float fElapsedTime)
+    {
         if(KeyboardHandler.isKeyDown(GLFW_KEY_UP))
             camera.position.y+=walkSpeed*fElapsedTime;
         if(KeyboardHandler.isKeyDown(GLFW_KEY_DOWN))
@@ -199,21 +185,21 @@ public class DisplayDriverGL extends VectorGeometry {
         if(KeyboardHandler.isKeyDown(GLFW_KEY_S))
             camera.position=vectorSub(camera.position, vForward);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
-            camera.yaw-=walkSpeed/4f*fElapsedTime;
+            camera.setYaw(camera.getYaw() - walkSpeed/4f*fElapsedTime);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_RIGHT))
-            camera.yaw+=walkSpeed/4f*fElapsedTime;
+            camera.setYaw(camera.getYaw() + walkSpeed/4f*fElapsedTime);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_R))
-            camera.pitch-=walkSpeed/4f*fElapsedTime;
+            camera.setPitch(camera.getPitch() - walkSpeed/4f*fElapsedTime);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_F))
-            camera.pitch+=walkSpeed/4f*fElapsedTime;
+            camera.setPitch(camera.getPitch() + walkSpeed/4f*fElapsedTime);
 
         double newCursorY=getCursorPosY(window), newCursorX=getCursorPosX(window);
         if(cursorY != newCursorY || cursorX!= newCursorX ) {
             double yDifference = (cursorY - newCursorY) / (double) MainGL.HEIGHT;
             double xDifference = (cursorX - newCursorX) / 400d;
-            if((camera.pitch - mouseSensitivity * yDifference) <3.14/2f && (camera.pitch - mouseSensitivity * yDifference) >-3.14/2f)
-                camera.pitch -= mouseSensitivity * yDifference;
-            camera.yaw -= mouseSensitivity * xDifference;
+            if((camera.getPitch() - mouseSensitivity * yDifference) <3.14/2f && (camera.getPitch() - mouseSensitivity * yDifference) >-3.14/2f)
+                camera.setPitch(camera.getPitch() - (float)mouseSensitivity * (float)yDifference);
+            camera.setYaw(camera.getYaw() - (float)mouseSensitivity * (float)xDifference);
 
         }
         if(!(newCursorY >0 && newCursorY<MainGL.HEIGHT && newCursorX>1 && newCursorX<MainGL.WIDTH)) {
@@ -281,8 +267,12 @@ public class DisplayDriverGL extends VectorGeometry {
         triProjected.p[1] = vectorDiv(triProjected.p[1], triProjected.p[1].w);
         triProjected.p[2] = vectorDiv(triProjected.p[2], triProjected.p[2].w);
         Color color = triProjected.getColor();
+        light_direction=new Vec3d(3.0f, 3.40f, 3.72f);
+        //light_direction= new Vec3d(14.97f, 11.51f, -5.09f);
         light_direction = normaliseVector(light_direction);
         float dp = Math.max(0.1f, (float) Math.abs((double) dotProduct(light_direction, normal)));
+        //float dp2 = Math.max(0.1f, (float) Math.abs((double) dotProduct(normaliseVector(camera.vLookDir), normal)));
+        //dp=Math.max(dp, dp2);
         //float dp=1.0f;
         triProjected.setColor(new Color(color.getRed() * dp, color.getGreen() * dp, color.getBlue() * dp, color.getOpacity() * 1));
         return triProjected;
@@ -379,9 +369,9 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public static void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color fill)
     {
-        fill=Color.BLACK;
+        //fill=Color.GRAY;
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex2f(x1, y1);
         glVertex2f(x2, y2);
@@ -395,7 +385,7 @@ public class DisplayDriverGL extends VectorGeometry {
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
         //if(fill==Color.TRANSPARENT)
         //glColor3d(Color.BLACK.getRed(), Color.BLACK.getGreen(), Color.BLACK.getBlue());
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex3f(x1, y1, z1);
         glVertex3f(x2, y2, z2);

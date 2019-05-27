@@ -1,4 +1,5 @@
 package rendererEngine.itemBag;
+import rendererEngine.Camera;
 import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh;
 import threeDItems.Vec3d;
@@ -9,7 +10,10 @@ public class ItemBag {
     private static Integer currentID=0;
     private static Map <Integer, Mesh> meshCollection = new TreeMap<>();
     private static Map <Integer, Inheritable> scriptCollection = new TreeMap<>();
-    public static boolean modified = true;
+    public static boolean modified = true, isCameraBound=false;
+    public static Camera camera= new Camera();
+    public static Mesh camMesh;
+    public  static boolean[] keys = new boolean[65536];
 
     public static void addMesh(Mesh m)
     {

@@ -60,7 +60,9 @@ public class ModelLoader {
                 vec.lastElement().setxScale(in.nextFloat()); vec.lastElement().setyScale(in.nextFloat()); vec.lastElement().setzScale(in.nextFloat());
                 String scripted = in.next();
                 vec.lastElement().id=in.nextInt();
+                System.out.println("ID AFTER LOADING: " + meshName + ", " + vec.lastElement().id );
                 String rb = in.next();
+                String isCam = in.next();
 
                 if(scripted.equals("true")) {
                    System.out.println("Is scripted and THE ID IS: " + vec.lastElement().id);
@@ -116,6 +118,18 @@ public class ModelLoader {
                 else
                     vec.lastElement().isRigidBody=false;
 
+                if(isCam.equals("true")) {
+                    vec.lastElement().isCam=true;
+                    ItemBag.camMesh=vec.lastElement();
+                    System.out.println("cam position: " + ItemBag.camMesh.position);
+                    ItemBag.camera.position=ItemBag.camMesh.position;
+                    System.out.println("AFTER LOADING: " + ItemBag.camera.position);
+                    ItemBag.camera.setYaw(ItemBag.camMesh.getyTheta());
+                    ItemBag.camera.setPitch(ItemBag.camMesh.getxTheta());
+                    vec.remove(vec.size()-1);
+                    //fileNameVector.remove(meshName);
+                }
+
                System.out.println("Here, vecSize is: " + vec.size());
             }
 
@@ -125,6 +139,13 @@ public class ModelLoader {
 
         System.out.println("end load all: " + fileNameVector.size());
 
+       /* if(ItemBag.camMesh==null) {
+            try {
+                ItemBag.camMesh=meshLoader("src\\resources\\", "camera.obj", false);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }*/
         return  vec;
     }
 
@@ -146,6 +167,7 @@ public class ModelLoader {
             //mesh.tris=al;
             mesh.tris=mesh.pointTris(al);
             //mesh.p=vec;
+            System.out.println(fileName + " tris size: " + mesh.tris.size());
             return mesh;
         }
         mesh.tris=new ArrayList<Triangle>();
@@ -193,7 +215,8 @@ public class ModelLoader {
             }
 
             //mesh.p=pointBuffer;
-            return mesh;
+        System.out.println(fileName + " tris size: " + mesh.tris.size());
+        return mesh;
     }
 
     public ObbMesh obbMeshLoader(String directory, String fileName) throws FileNotFoundException {

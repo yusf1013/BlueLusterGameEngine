@@ -25,6 +25,8 @@ public class Publisher {
         if(fileVec.size()==0)
             return;
 
+        System.out.println("IN GOD DAMN PUBLISHER: " + fileVec.size() + ", " + meshList.size());
+
         System.out.println("File name as received in publish no games: " + saveFolderAbsolutePath + ": " + new File(saveFolderAbsolutePath).exists());
 
         for(int i=0; i<fileVec.size(); i++)
@@ -54,7 +56,7 @@ public class Publisher {
                 write.write(meshList.get(i).getxTheta() +" "+ meshList.get(i).getyTheta() + " " + meshList.get(i).getzTheta() + " ");
                 write.write(meshList.get(i).getxTranslation() +" "+ meshList.get(i).getyTranslation() + " " + meshList.get(i).getzTranslation() + " ");
                 write.write(meshList.get(i).getxScale() +" "+ meshList.get(i).getyScale() + " " + meshList.get(i).getzScale() + " ");
-                write.write(meshList.get(i).isScripted + " " + meshList.get(i).id + " " + meshList.get(i).isRigidBody + " ");
+                write.write(meshList.get(i).isScripted + " " + meshList.get(i).id + " " + meshList.get(i).isRigidBody + " "+ meshList.get(i).isCam + " ");
                 if(meshList.get(i).isRigidBody)
                 {
                     write.write(meshList.get(i).obb.min.x + " " + meshList.get(i).obb.min.y + " " + meshList.get(i).obb.min.z + " ");

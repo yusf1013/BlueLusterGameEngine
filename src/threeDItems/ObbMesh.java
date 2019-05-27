@@ -38,12 +38,14 @@ public class ObbMesh extends Mesh{
         vecXZ.add(new Vec3d(0.5f, 0.5f, 0.5f));
         vecXZ.add(new Vec3d(0.5f, 0.5f, -0.5f));
         //new shit
-        vecXZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
+        //vecXZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
         vecXZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
         vecXZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
         vecXZ.add(new Vec3d(0.5f, -0.5f, 0.5f));
         vecXZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
         vecXZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecXZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
+        //vecXZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
 
         vecYZ= new Vector<>();
         vecYZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
@@ -51,12 +53,14 @@ public class ObbMesh extends Mesh{
         vecYZ.add(new Vec3d(0.5f, 0.5f, 0.5f));
         vecYZ.add(new Vec3d(0.5f, 0.5f, -0.5f));
         //new shit
-        vecYZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
+        //vecYZ.add(new Vec3d(0.5f, -0.5f, -0.5f));
         vecYZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
         vecYZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
         vecYZ.add(new Vec3d(-0.5f, 0.5f, 0.5f));
         vecYZ.add(new Vec3d(-0.5f, 0.5f, -0.5f));
         vecYZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
+        vecYZ.add(new Vec3d(-0.5f, -0.5f, 0.5f));
+        //vecYZ.add(new Vec3d(-0.5f, -0.5f, -0.5f));
 
     }
 

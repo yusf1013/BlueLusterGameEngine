@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Vector;
 
 
-
 public class DisplayDriverGUI extends VectorGeometry {
 
     Matrix4by4 matProj, matRotZ=new Matrix4by4(), matRotX=new Matrix4by4();
@@ -28,8 +27,8 @@ public class DisplayDriverGUI extends VectorGeometry {
 
     public DisplayDriverGUI()
     {
-        camera.yaw=30*3.14159f/180f;
-        camera.pitch=30*3.14159f/180f;
+        camera.setYaw(30*3.14159f/180f);
+        camera.setPitch(30*3.14159f/180f);
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
        System.out.println("Object has been loaded successfullyyyy");
         //camera.cameraLookingAtVector=new Vec3d(0,-1,0);
@@ -52,12 +51,43 @@ public class DisplayDriverGUI extends VectorGeometry {
 
         }
         drawQueuedTriangles(gc);
+
         /*handleUserInputs(fElapsedTime);
         meshCube.runScript();*/
         return true;
     }
 
-    public boolean addMeshForDrawing(Mesh meshCube, float fElapsedTime)
+    /*public void handleUserInputs(float fElapsedTime) {
+
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_ESCAPE)) {
+            glfwSetWindowShouldClose(window, true);
+            KeyboardHandler.keys[GLFW_KEY_ESCAPE] = false;
+        }
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_UP))
+            camera.position.y += walkSpeed * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_DOWN))
+            camera.position.y -= walkSpeed * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_A))
+            camera.position = vectorAdd(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_D))
+            camera.position = vectorSub(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
+        Vec3d vForward = vectorMul(camera.vLookDir, walkSpeed * fElapsedTime);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_W))
+            camera.position = vectorAdd(camera.position, vForward);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_S))
+            camera.position = vectorSub(camera.position, vForward);
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
+            camera.yaw -= walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_RIGHT))
+            camera.yaw += walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_R))
+            camera.pitch -= walkSpeed / 4f * fElapsedTime;
+        if (KeyboardHandler.isKeyDown(GLFW_KEY_F))
+            camera.pitch += walkSpeed / 4f * fElapsedTime;
+
+    }*/
+
+        public boolean addMeshForDrawing(Mesh meshCube, float fElapsedTime)
     {
         Matrix4by4 matWorld = meshCube.getWorldMat();
         Matrix4by4 matView = camera.createViewMat();

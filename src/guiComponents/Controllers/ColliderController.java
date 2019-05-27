@@ -116,8 +116,8 @@ public class ColliderController implements Initializable {
         }*/
         //grid.zTranslation=4f;
         ddcol.camera.position=new Vec3d(-3,5,-5);
-        ddcol.camera.yaw=30*3.14159f/180f;
-        ddcol.camera.pitch=30*3.14159f/180f;
+        ddcol.camera.setYaw(30*3.14159f/180f);
+        ddcol.camera.setPitch(30*3.14159f/180f);
         //ddcol.drawMesh(grid, 0f, gc);
         gameStage.getChildren().add(canvas);
         initializeViewMenu();
@@ -210,50 +210,50 @@ public class ColliderController implements Initializable {
     {
         topView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(0,5,0);
-            ddcol.camera.pitch=3.14159f/2.0f;
-            ddcol.camera.yaw=0;
+            ddcol.camera.setPitch(3.14159f/2.0f);
+            ddcol.camera.setYaw(0);
             update(false);
         });
 
         bottomView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(0,-5,0);
-            ddcol.camera.pitch=-3.14159f/2.0f;
-            ddcol.camera.yaw=0;
+            ddcol.camera.setPitch(-3.14159f/2.0f);
+            ddcol.camera.setYaw(0);
             update(false);
         });
 
         frontView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(0,1,-3);
-            ddcol.camera.pitch=0;
-            ddcol.camera.yaw=0;
+            ddcol.camera.setPitch(0);
+            ddcol.camera.setYaw(0);
             update(false);
         });
 
         backView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(0,1,3);
-            ddcol.camera.pitch=0;
-            ddcol.camera.yaw=3.14159f;
+            ddcol.camera.setPitch(0);
+            ddcol.camera.setYaw(3.14159f);
             update(false);
         });
 
         rightView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(5,0,0);
-            ddcol.camera.pitch=0;
-            ddcol.camera.yaw=-3.14159f/2.0f;
+            ddcol.camera.setPitch(0);
+            ddcol.camera.setYaw(-3.14159f/2.0f);
             update(false);
         });
 
         leftView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(-5,0,0);
-            ddcol.camera.pitch=0;
-            ddcol.camera.yaw=3.14159f/2.0f;
+            ddcol.camera.setPitch(0);
+            ddcol.camera.setYaw(3.14159f/2.0f);
             update(false);
         });
 
         freeView.setOnAction(e -> {
             ddcol.camera.position=new Vec3d(-3,5,-5);
-            ddcol.camera.yaw=30*3.14159f/180f;
-            ddcol.camera.pitch=30*3.14159f/180f;
+            ddcol.camera.setYaw(30*3.14159f/180f);
+            ddcol.camera.setPitch(30*3.14159f/180f);
             update(false);
         });
 

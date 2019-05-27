@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox prefHeight="658.0" prefWidth="1001.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
+<VBox fx:id="mainVBox" prefHeight="658.0" prefWidth="1001.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Controller">
    <children>
       <MenuBar VBox.vgrow="NEVER">
          <menus>
@@ -18,9 +18,9 @@
                <items>
                   <MenuItem mnemonicParsing="false" text="New" />
                   <MenuItem mnemonicParsing="false" text="Open…" />
-                  <Menu mnemonicParsing="false" text="Open Recent" />
+                  <Menu mnemonicParsing="false" text="Open recent" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" text="Close" />
+                  <MenuItem fx:id="addCam" mnemonicParsing="false" text="Add Camera" />
                   <MenuItem fx:id="save" mnemonicParsing="false" onAction="#saveMenuItemAction" text="Save" />
                   <MenuItem mnemonicParsing="false" onAction="#saveAsMenuItemAction" text="Save As…" />
                   <MenuItem fx:id="load" mnemonicParsing="false" onAction="#loadMenuItemAction" text="Load" />

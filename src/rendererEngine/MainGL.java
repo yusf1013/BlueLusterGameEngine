@@ -124,11 +124,12 @@ public class MainGL {
             timedif +=elapsedTime;
 
             ddgl.onUserUpdate((float) elapsedTime);
+
             frameCount++;
             if(timedif>frameRatePrintRate)
             {
                 timedif=0;
-                //ystem.out.println(frameCount*1/frameRatePrintRate);
+                System.out.println(frameCount*1/frameRatePrintRate);
                 frameCount=0;
             }
 

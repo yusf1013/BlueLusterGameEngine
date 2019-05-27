@@ -12,19 +12,22 @@ public class Mesh {
     protected float yTheta=0;
     protected float zTheta=0;
     protected float xTranslation=0;
+    public float oxt=0;
     protected float yTranslation=0;
+    public float oyt=0;
     protected float zTranslation=0;
+    public float ozt=0;
     protected float xScale=1;
     protected float yScale=1;
     protected float zScale=1;
     public boolean isFixed=false, flagNew=false;
-    public boolean isScripted=false, isRigidBody=false;
+    public boolean isScripted=false, isRigidBody=false, isCam=false;
     public int id;
     public Obb obb;
     public String name;
     //public ObjectSliceAndMerge obj=null;
     public ArrayList<ObbMesh> obbList = new ArrayList<>();
-    public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000);
+    public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000), position=new Vec3d();
 
     public Mesh()
     {
@@ -237,7 +240,9 @@ public class Mesh {
 
     public void setxTranslation(float xTranslation) {
         flagNew=false;
+        oxt=this.xTranslation;
         this.xTranslation = xTranslation;
+        position.x=xTranslation;
     }
 
     public float getyTranslation() {
@@ -246,7 +251,9 @@ public class Mesh {
 
     public void setyTranslation(float yTranslation) {
         flagNew=false;
+        oyt=this.yTranslation;
         this.yTranslation = yTranslation;
+        position.y=yTranslation;
     }
 
     public float getzTranslation() {
@@ -255,7 +262,9 @@ public class Mesh {
 
     public void setzTranslation(float zTranslation) {
         flagNew=false;
+        ozt=this.zTranslation;
         this.zTranslation = zTranslation;
+        position.z=zTranslation;
     }
 
     public float getxScale() {
@@ -283,5 +292,26 @@ public class Mesh {
     public void setzScale(float zScale) {
         flagNew=false;
         this.zScale = zScale;
+    }
+
+    public void updateOldValaues()
+    {
+        oxt=xTranslation;
+        oyt=yTranslation;
+        ozt=zTranslation;
+    }
+
+    public void teleportTo(float x, float y, float z)
+    {
+        setxTranslation(x);
+        setyTranslation(y);
+        setzTranslation(z);
+    }
+
+    public void move(float x, float y, float z)
+    {
+        setxTranslation(getxTranslation()+x);
+        setyTranslation(getyTranslation()+y);
+        setzTranslation(getzTranslation()+z);
     }
 }

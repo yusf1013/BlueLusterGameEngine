@@ -8,8 +8,8 @@ public class Camera {
     public Vec3d position;
     public Vec3d vLookDir = new Vec3d(0,0,1);
     public Vec3d vUp=new Vec3d(0,1,0);
-    public float  yaw=0;
-    public float pitch=0;
+    private float  yaw=0;
+    private float pitch=0;
     VectorGeometry calculator = new VectorGeometry();
     Vec3d vTarget= new Vec3d(0,0.0f,1.0f);
 
@@ -28,7 +28,7 @@ public class Camera {
         //ystem.out.println("fixie");
         Vec3d vTarget= new Vec3d(0,0.0f,1.0f);
         //vLookDir=calculator.multiplyMatrixAndVector(calculator.makeYRotationMatrix(yaw), vTarget);
-        Matrix4by4 mat = calculator.multiplyMatrix(calculator.makeXRotationMatrix(pitch), calculator.makeYRotationMatrix(yaw));
+        Matrix4by4 mat = calculator.multiplyMatrix(calculator.makeXRotationMatrix(getPitch()), calculator.makeYRotationMatrix(getYaw()));
         vLookDir=calculator.multiplyMatrixAndVector(mat, vTarget);
         vTarget=calculator.vectorAdd(vLookDir, position);
         Matrix4by4 matCamera = calculator.pointAtMatrix(position, vTarget, vUp);
@@ -38,4 +38,30 @@ public class Camera {
 
     }
 
+    public float getYaw() {
+        return yaw;
+    }
+
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public boolean setPitch(float pitch) {
+        if(pitch <3.14/2f && pitch>-3.14/2f)
+        {
+            this.pitch = pitch;
+            System.out.println("Setting pitch: " + pitch);
+            return true;
+        }
+        else
+        {
+            System.out.println("NOT setting pitch: " + pitch);
+            this.pitch=pitch-0.01f;
+            return false;
+        }
+    }
 }
