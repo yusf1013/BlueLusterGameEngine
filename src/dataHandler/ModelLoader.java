@@ -51,6 +51,11 @@ public class ModelLoader {
             while(in.hasNext())
             {
                 String meshName = in.next();
+                if(meshName.equals("0181lightMode"))
+                {
+                    ItemBag.lightMode=Integer.parseInt(in.next());
+                    continue;
+                }
                System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
                 //vec.add(meshLoader("src\\Games\\", meshName, false));
                 vec.add(meshLoader(file.getParentFile().getAbsolutePath(), meshName, true));
@@ -87,10 +92,10 @@ public class ModelLoader {
                         ObbMesh om=null;
 
                         try{
-                            om = obbMeshLoader("src\\resources\\","cube.obj");
+                            om = obbMeshLoader("src\\resources\\toNotDisplay\\","obbCube.obj");
                         } catch (FileNotFoundException e) {
                             try {
-                                om = obbMeshLoader("resources\\","cube.obj");
+                                om = obbMeshLoader("resources\\toNotDisplay\\","obbCube.obj");
                             } catch (FileNotFoundException e1) {
                                 e1.printStackTrace();
                             }

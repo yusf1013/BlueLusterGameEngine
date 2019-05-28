@@ -1,6 +1,7 @@
 package dataHandler;
 
 import rendererEngine.Cmd;
+import rendererEngine.itemBag.ItemBag;
 import threeDItems.Mesh;
 import threeDItems.ObbMesh;
 
@@ -77,6 +78,7 @@ public class Publisher {
                 Scanner scan = new Scanner(System.in);
                 //scan.nextLine();
             }
+            write.write("0181lightMode " + ItemBag.lightMode);
             write.close();
            System.out.println("writer closed");
             //System.exit(0);

@@ -314,4 +314,25 @@ public class Mesh {
         setyTranslation(getyTranslation()+y);
         setzTranslation(getzTranslation()+z);
     }
+
+    public void rotate(float x, float y, float z)
+    {
+        xTheta+=x;
+        yTheta+=y;
+        zTheta+=z;
+    }
+
+    public void scale(float x, float y, float z)
+    {
+        xScale=x;
+        yScale=y;
+        zScale=z;
+    }
+
+    public void growInSize(float x, float y, float z)
+    {
+        xScale*=x;
+        yScale*=y;
+        zScale*=z;
+    }
 }

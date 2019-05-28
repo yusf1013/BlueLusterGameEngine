@@ -37,6 +37,13 @@
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="transMenuItem" mnemonicParsing="false" text="Transformation" />
                   <MenuItem mnemonicParsing="false" text="Copy" />
+                  <Menu mnemonicParsing="false" text="Lighting">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#setLightModeWell" text="Well-lit" />
+                        <MenuItem mnemonicParsing="false" onAction="#setLightModeTorch" text="Torch" />
+                        <MenuItem mnemonicParsing="false" onAction="#setLightModeBoth" text="Well-lit with torch" />
+                    </items>
+                  </Menu>
                   <MenuItem mnemonicParsing="false" text="Paste" />
                   <MenuItem mnemonicParsing="false" text="Delete" />
                   <SeparatorMenuItem mnemonicParsing="false" />
@@ -60,9 +67,10 @@
                   <MenuItem fx:id="freeView" mnemonicParsing="false" text="Free View" />
                </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Run">
+            <Menu mnemonicParsing="false" text="Publisher">
                <items>
                   <MenuItem fx:id="runInReleaseMode" mnemonicParsing="false" text="Run in release mode" />
+                  <MenuItem fx:id="publishGame" mnemonicParsing="false" text="Publish game" />
                </items>
             </Menu>
          </menus>

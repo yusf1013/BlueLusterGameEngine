@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import physicsEngine.CollisionModule.Collider;
 import rendererEngine.itemBag.ItemBag;
+import rendererEngine.scriptManager.Control;
 import rendererEngine.scriptManager.MasterScript;
 import threeDItems.*;
 
@@ -29,7 +30,7 @@ public class DisplayDriverGL extends VectorGeometry {
     //Vector<Mesh> meshVector;
     Matrix4by4 matProj;
     float screenHeight=600, screenWidth=600, walkSpeed=20f;
-    Camera camera = new Camera();
+    Camera camera;
     ThreeDObjectTransformations trans = new ThreeDObjectTransformations();
     Vec3d light_direction = new Vec3d(0,0,-1);
     long window;
@@ -267,12 +268,22 @@ public class DisplayDriverGL extends VectorGeometry {
         triProjected.p[1] = vectorDiv(triProjected.p[1], triProjected.p[1].w);
         triProjected.p[2] = vectorDiv(triProjected.p[2], triProjected.p[2].w);
         Color color = triProjected.getColor();
-        light_direction=new Vec3d(3.0f, 3.40f, 3.72f);
-        //light_direction= new Vec3d(14.97f, 11.51f, -5.09f);
+
+        if(ItemBag.lightMode==1)
+            light_direction=new Vec3d(3.0f, 3.40f, 3.72f);
+
         light_direction = normaliseVector(light_direction);
-        float dp = Math.max(0.1f, (float) Math.abs((double) dotProduct(light_direction, normal)));
-        //float dp2 = Math.max(0.1f, (float) Math.abs((double) dotProduct(normaliseVector(camera.vLookDir), normal)));
-        //dp=Math.max(dp, dp2);
+        float dp2, dp = Math.max(0.1f, (float) Math.abs((double) dotProduct(light_direction, normal)));
+
+        if(ItemBag.lightMode==2)
+        {
+            dp = Math.max(0.1f, (float) Math.abs((double) dotProduct(normaliseVector(camera.vLookDir), normal)));
+        }
+        else if(ItemBag.lightMode==3)
+        {
+            dp2 = Math.max(0.1f, (float) Math.abs((double) dotProduct(normaliseVector(camera.vLookDir), normal)));
+            dp=Math.max(dp, dp2);
+        }
         //float dp=1.0f;
         triProjected.setColor(new Color(color.getRed() * dp, color.getGreen() * dp, color.getBlue() * dp, color.getOpacity() * 1));
         return triProjected;
@@ -392,6 +403,8 @@ public class DisplayDriverGL extends VectorGeometry {
         glVertex3f(x3, y3, z3);
         glEnd();
     }
+
+
 
 /*    public Triangle[] clip(Triangle [] tri)
     {

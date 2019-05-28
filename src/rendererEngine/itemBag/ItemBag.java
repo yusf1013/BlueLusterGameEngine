@@ -14,6 +14,7 @@ public class ItemBag {
     public static Camera camera= new Camera();
     public static Mesh camMesh;
     public  static boolean[] keys = new boolean[65536];
+    public static int lightMode;
 
     public static void addMesh(Mesh m)
     {

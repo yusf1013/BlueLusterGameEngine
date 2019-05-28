@@ -20,10 +20,10 @@ public class Obb extends BoundingVolume{
         this.max=max;
         this.id=id;
         try{
-            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj");
+            cube = new ModelLoader().obbMeshLoader("src\\resources\\toNotDisplay\\","obbCube.obj");
         } catch (FileNotFoundException e) {
             try {
-                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj");
+                cube = new ModelLoader().obbMeshLoader("resources\\toNotDisplay\\","obbCube.obj");
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             }
@@ -58,10 +58,10 @@ public class Obb extends BoundingVolume{
         this.id = mesh.id;
 
         try{
-            cube = new ModelLoader().obbMeshLoader("src\\resources\\","cube.obj");
+            cube = new ModelLoader().obbMeshLoader("src\\resources\\toNotDisplay\\","obbCube.obj");
         } catch (FileNotFoundException e) {
             try {
-                cube = new ModelLoader().obbMeshLoader("resources\\","cube.obj");
+                cube = new ModelLoader().obbMeshLoader("resources\\toNotDisplay\\","obbCube.obj");
             } catch (FileNotFoundException e1) {
                 e1.printStackTrace();
             }

@@ -44,7 +44,7 @@ public class Controller implements Initializable {
     @FXML
     TextField scaleX, scaleY, scaleZ, rotX, rotY, rotZ, transX, transY, transZ;
     @FXML
-    MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView, runInReleaseMode;
+    MenuItem topView, bottomView, rightView, leftView, frontView, backView, freeView, runInReleaseMode, publishGame;
     @FXML
     MenuItem transMenuItem, save, load, addCam;
     @FXML
@@ -780,7 +780,19 @@ public class Controller implements Initializable {
 
     public void initializePublisherMenuItems()
     {
-       System.out.println("");
+        publishGame.setOnAction(e -> {
+            publish.publish(ml.fileNameVector, meshArray);
+            File file = new File("");
+            System.out.println(file.getAbsolutePath());
+            String command = "pushd " + file.getAbsolutePath() + "&& " +
+                    "jar cvfm game.jar ./olcge/META-INF/MANIFEST.MF -C ./olcge/ ." +
+                    " && exit"
+                    ;
+            Cmd.runCommand(command);
+            Cmd.runCommand("xcopy /s olcge\\Games\\*.* .\\Games\\ /Y && exit");
+            showAlert(Alert.AlertType.INFORMATION, "Published successfully!", "You game has now been published!", "");
+        });
+
         runInReleaseMode.setOnAction(e->{
             for(Mesh m: meshArray)
             {
@@ -839,7 +851,7 @@ public class Controller implements Initializable {
            System.out.println("Selected obj is: " + selectedObject);
            System.out.println("ID is: " + meshArray.get(selectedObject).id);
             File file = new File("src\\Games\\scriptOfMesh"+meshArray.get(selectedObject).id+".java");
-            String scriptBody=
+            /*String scriptBody=
                     "package Games;\n" +
                     "import rendererEngine.scriptManager.Inheritable;\n" +
                     "import threeDItems.Mesh; \n" +
@@ -859,7 +871,31 @@ public class Controller implements Initializable {
                             "\t\t//Control.bindCamera(thisMesh);\n" +
                             "\t\tControl.walkControlScheme(thisMesh, 0.01f, 0.01f);\n" +
                         "\t}\n" +
+                    "}";*/
+
+            String scriptBody = "package Games;\n" +
+                    "import rendererEngine.scriptManager.Inheritable;\n" +
+                    "import threeDItems.Mesh; \n" +
+                    "import rendererEngine.scriptManager.Control;\n" +
+                    "import java.util.*; \n" +
+                    "\n" +
+                    "public class scriptOfMesh"+meshArray.get(selectedObject).id+" extends Inheritable {\n" +
+                    "\n" +
+                    "\t@Override\n" +
+                    "\tpublic void run(Map<Integer, Mesh> meshMap) {\n" +
+                    "\t\tMesh thisMesh=meshMap.get("+meshArray.get(selectedObject).id+");\n" +
+                    "\t\t\n" +
+                    "\t\t//write your script here. Some sample lines are written.\n" +
+                    "\t\t//thisMesh.move(0.1f, 0.1f, 0.1f);\n" +
+                    "\t\t//thisMesh.teleportTo(1,1,1);\n" +
+                    "\t\t//thisMesh.rotate(0.1f, 0.1f, 0.1f);\n" +
+                    "\t\t//thisMesh.scale(0.1f, 0.1f, 0.1f);\n" +
+                    "\t\t//thisMesh.growInSize(0.1f, 0.1f, 0.1f);\n" +
+                    "\t\t//Control.walkControlScheme(thisMesh, 0.1f, 0.1f);\n" +
+                    "\t\t//Control.bindCamera(thisMesh);\n" +
+                    "\t}\n" +
                     "}";
+
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
                 writer.write(scriptBody);
@@ -998,7 +1034,7 @@ public class Controller implements Initializable {
     public void handleUserInputs(KeyEvent event) {
 
         VectorGeometry v = new VectorGeometry();
-        float speed=2f;
+        float speed=0.5f;
         Camera camera = ddgui.camera;
         Vec3d left = (v.crossProduct(camera.vUp, camera.vLookDir));
         Vec3d vForward = v.vectorMul(camera.vLookDir, speed);
@@ -1055,10 +1091,19 @@ public class Controller implements Initializable {
        System.out.println("dsds");
     }
 
-    public void useless()
+    public void setLightModeWell()
     {
-        int i=0;
-        i++;
+        ItemBag.lightMode=1;
+    }
+
+    public void setLightModeTorch()
+    {
+        ItemBag.lightMode=2;
+    }
+
+    public void setLightModeBoth()
+    {
+        ItemBag.lightMode=3;
     }
 
 }
