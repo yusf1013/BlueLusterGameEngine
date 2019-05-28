@@ -3,20 +3,16 @@ import rendererEngine.scriptManager.Inheritable;
 import threeDItems.Mesh; 
 import rendererEngine.scriptManager.Control;
 import java.util.*; 
-
+import threeDItems.Vec3d;
+import rendererEngine.itemBag.ItemBag;
 public class scriptOfMesh0 extends Inheritable {
-
+	//Mesh mesh = getMesh(0);
+	int i=0;
 	@Override
 	public void run(Map<Integer, Mesh> meshMap) {
+		System.out.println(++i);
 		Mesh thisMesh=meshMap.get(0);
-		
-		//write your script here. Some sample lines are written.
-		thisMesh.move(0.1f, 0.1f, 0.1f);
-		//thisMesh.teleportTo(1,1,1);
-		//thisMesh.rotate(0.1f, 0.1f, 0.1f);
-		//thisMesh.scale(0.1f, 0.1f, 0.1f);
-		//thisMesh.growInSize(0.1f, 0.1f, 0.1f);
-		//Control.walkControlScheme(thisMesh, 0.1f, 0.1f);
-		//Control.bindCamera(thisMesh);
-	}
+		//thisMesh.setzTheta(thisMesh.getzTheta()+0.01f);
+		thisMesh.setxTranslation(thisMesh.getxTranslation()+0.01f);
+		Control.bindCamera(thisMesh);	}
 }

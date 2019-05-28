@@ -82,6 +82,7 @@ public class Collider {
                 m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
                 m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
                 m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);
+                //m2.setzTranslation(m2.ozt);
             }
             else
             {
@@ -96,8 +97,9 @@ public class Collider {
                     c=0;
                 m2.setxTranslation(m2.getxTranslation() - (overlap * d.x / s * a));
                 m2.setyTranslation(m2.getyTranslation() - (overlap * d.y / s * b));
-                m2.setzTranslation(m2.getzTranslation() - (overlap * d.z / s * c));
-                System.out.println(a + ", " + b + ",  " +c);
+                //m2.setzTranslation(m2.getzTranslation() - (overlap * d.z / s * c));
+                System.out.println(a + ", " + b + ",  " +c + ": " + overlap);
+                m2.setzTranslation(m2.ozt);
             }
 
             /*//new not working shit
