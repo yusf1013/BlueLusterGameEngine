@@ -893,6 +893,7 @@ public class Controller implements Initializable {
                     "\t\t//thisMesh.growInSize(0.1f, 0.1f, 0.1f);\n" +
                     "\t\t//Control.walkControlScheme(thisMesh, 0.1f, 0.1f);\n" +
                     "\t\t//Control.bindCamera(thisMesh);\n" +
+                    "\t\t//Control.setColor(thisMesh, 1.0f, 0f, 0f);\n" +
                     "\t}\n" +
                     "}";
 

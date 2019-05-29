@@ -50,22 +50,10 @@ public class DisplayDriverGL extends VectorGeometry {
         //ItemBag.camera = new Camera();
         camera=ItemBag.camera;
 
-       System.out.println("Null test\n\n\n");
-        for(Map.Entry e: ItemBag.getEntrySet()) {
-            if(((Mesh)e.getValue()).obb==null)
-               System.out.println("Is null after loadingn\n\n\n");
-        }
-
-
-
         ms=new MasterScript(this);
-        //ms=(MasterScript)Class.forName("rendererEngine.scriptManager.MasterScript").newInstance();
-
-        //meshCube=modelLoader.meshLoader("toNotDisplay\\axis.obj", true);
 
         matProj = makeProjectionMatrix(90.0f, (float)screenHeight / (float)screenWidth, 0.1f, 1000.0f);
         glfwSetKeyCallback(window, keyCallback = new KeyboardHandler(window));
-       System.out.println("Object has been loaded successfully");
         this.window=window;
 
         DoubleBuffer xBuffer = BufferUtils.createDoubleBuffer(1);
@@ -74,7 +62,6 @@ public class DisplayDriverGL extends VectorGeometry {
         cursorX = xBuffer.get(0);
         cursorY = yBuffer.get(0);
         ms.run();
-        System.out.println("GLFW: " + GLFW_KEY_W);
     }
 
 
@@ -83,8 +70,6 @@ public class DisplayDriverGL extends VectorGeometry {
         calcMesh(fElapsedTime);
         draw();
         handleUserInputs(fElapsedTime);
-        System.out.println("Camera Pos in ddgl: " + camera.position);
-        //System.out.println(ItemBag.camMesh.position);
         ms.run();
         return true;
     }
@@ -97,7 +82,6 @@ public class DisplayDriverGL extends VectorGeometry {
         {
             ItemBag.modified = false;
             arr = ItemBag.getMeshMap().values().toArray();
-            System.out.println("Devil size: "+ItemBag.getMeshMap().size());
         }
         size=arr.length;
 
@@ -107,14 +91,12 @@ public class DisplayDriverGL extends VectorGeometry {
             if(mesh.isRigidBody) {
                 mesh.obb.getMesh(mesh);
                 if(!mesh.flagNew) {
-                    System.out.println("Col testing " + i);
                     for(int j=0; j<size; j++)
                     {
                         if(i==j)
                             continue;
 
                         colMesh = (Mesh)arr[j];
-                        System.out.println("before  detect col: " + i + ", " + j);
                         collider.detectCollision(colMesh, mesh);
 
                     }
@@ -185,10 +167,10 @@ public class DisplayDriverGL extends VectorGeometry {
             camera.position=vectorAdd(camera.position, vForward);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_S))
             camera.position=vectorSub(camera.position, vForward);
-        if(KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
+       /* if(KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
             camera.setYaw(camera.getYaw() - walkSpeed/4f*fElapsedTime);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_RIGHT))
-            camera.setYaw(camera.getYaw() + walkSpeed/4f*fElapsedTime);
+            camera.setYaw(camera.getYaw() + walkSpeed/4f*fElapsedTime);*/
         if(KeyboardHandler.isKeyDown(GLFW_KEY_R))
             camera.setPitch(camera.getPitch() - walkSpeed/4f*fElapsedTime);
         if(KeyboardHandler.isKeyDown(GLFW_KEY_F))
@@ -380,13 +362,17 @@ public class DisplayDriverGL extends VectorGeometry {
 
     public static void fillTriangle(float x1, float y1, float x2, float y2, float x3, float y3, Color fill)
     {
-        //fill=Color.GRAY;
+
         glColor3d(fill.getRed(), fill.getGreen(), fill.getBlue());
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glBegin(GL_TRIANGLE_STRIP);
         glVertex2f(x1, y1);
         glVertex2f(x2, y2);
         glVertex2f(x3, y3);
+
+        glTexCoord2f(0, 0);
+        glTexCoord2f(0.5f, 0);
+        glTexCoord2f(0.5f, 0.5f);
+
         glEnd();
     }
 
@@ -401,6 +387,10 @@ public class DisplayDriverGL extends VectorGeometry {
         glVertex3f(x1, y1, z1);
         glVertex3f(x2, y2, z2);
         glVertex3f(x3, y3, z3);
+
+        glTexCoord2f(x1, y1);
+        glTexCoord2f(x2, y2);
+        glTexCoord2f(x3, y3);
         glEnd();
     }
 

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="lwjgl">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/lwjgl.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/jorbis-0.0.15.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/ibxm.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/slick-util.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/jogg-0.0.7.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/Compressed/slick-util3/slick-util/disruptor.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

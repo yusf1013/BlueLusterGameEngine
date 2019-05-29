@@ -4,10 +4,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -41,24 +38,6 @@ public class MainGL {
     }
 
     private void init() {
-
-        /*File f = new File("src\\Games\\deatto.txt");
-       System.out.println(f.getAbsolutePath());
-        if(f.exists())
-           System.out.println("EXISTS");
-        else
-        {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(f));
-                writer.write("Yo");
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-           System.out.println("Written");
-        }*/
-
 
         GLFWErrorCallback.createPrint(System.err).set();
 
@@ -107,8 +86,6 @@ public class MainGL {
         int frameCount=0;
         DisplayDriverGL ddgl = new DisplayDriverGL(window);
         glEnable(GL_DEPTH_TEST);
-        //ystem.out.println("fixie");
-
 
         float f=0;
         while (!glfwWindowShouldClose(window)) {
@@ -117,7 +94,10 @@ public class MainGL {
             /*glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             ddgl.onUserUpdate(0);*/
 
+
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
             currentTime=System.nanoTime();
             elapsedTime=(currentTime -prevTime)/10000f/100000f;
             prevTime= currentTime;

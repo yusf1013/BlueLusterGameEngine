@@ -10,63 +10,33 @@ import java.util.Vector;
 
 public class Collider {
 
-    float xyOverlap=-1f, yzOverlap=-1f, xzOverlap=-1f;
+    float xyOverlap=-1f, yzOverlap=-1f, xzOverlap=-1f, xy=0, yz=0, xz=0;
 
     public boolean detectCollision(Mesh m1, Mesh m2)
     {
 
         if(m1==null || m2==null)
         {
-            if(m1==null)
-               System.out.println("m1 os null");
-            if(m2==null)
-               System.out.println("m2 is null");
             return false;
         }
 
         if(m1.obb==null || m2.obb==null)
         {
-            if(m1.obb==null)
-               System.out.println("Mesh 1 obb null");
-            if(m2.obb==null)
-               System.out.println("Mesh 2 obb null");
-
             return false;
         }
 
         if(!collidesWith(m1.obb.cube, m2.obb.cube))
         {
-            //System.out.println("Early return");
             return false;
         }
-        /*else if(collidesWith(m1.obb.cube, m2.obb.cube))
-            return true;*/
-
-       /* System.out.println("before  update stats: ");
-        System.out.println(m1.obb.cube.getStats());
-        System.out.println(m1.obbList.get(0).getStats()+"\n");
-        System.out.println(m2.obb.cube.getStats());
-        System.out.println(m2.obbList.get(0).getStats()+"\n\n");*/
-
 
         m1.updateObbList();
         m2.updateObbList();
 
-        /*System.out.println("after  update stats: ");
-        System.out.println(m1.obb.cube.getStats());
-        System.out.println(m1.obbList.get(0).getStats()+"\n");
-        System.out.println(m2.obb.cube.getStats());
-        System.out.println(m2.obbList.get(0).getStats());*/
-
         ArrayList<ObbMesh> al1 = new ArrayList<>(), al2 = new ArrayList<>();
-        //System.out.println("sizes of obb lists: " + m1.obbList.size() + ", " + m2.obbList.size());
         collidesWith(m1.obb.cube, m2.obbList, al2);
         collidesWith(m2.obb.cube, m1.obbList, al1);
-        //System.out.println("sizes of als: " + al1.size() + ", " + al2.size());
 
-        //return collidesWith(al1, al2);
-
-        //System.out.println("Final testing starts");
         if(collidesWith_Static(al1, al2))
         {
 
@@ -75,10 +45,10 @@ public class Collider {
             d=vg.vectorSub(c1, c2);
 
             //more jao shit
-            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
+            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.max(Math.max(xyOverlap, xzOverlap), yzOverlap);
+            //float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.max(Math.max(xy, xz), yz);
             if((m2.getxTranslation()-m2.oxt)==0 && (m2.getyTranslation()-m2.oyt)==0 && (m2.getzTranslation()-m2.ozt)==0)
             {
-                System.out.println("IIN IFFFFFFFFFFFFFFFFFFFFFFF");
                 m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
                 m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
                 m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);
@@ -86,8 +56,6 @@ public class Collider {
             }
             else
             {
-                System.out.println("IN ELSEEEEEEEEEEEEEEEEEEEEEEEEE");
-                System.out.println(m2.getyTranslation() + ", " + m2.oyt);
                 float a=1,b=1,c=1;
                 if((m2.getxTranslation()==m2.oxt))
                     a=0;
@@ -95,30 +63,13 @@ public class Collider {
                     b=0;
                 if((m2.getzTranslation()==m2.ozt))
                     c=0;
-                m2.setxTranslation(m2.getxTranslation() - (overlap * d.x / s * a));
-                m2.setyTranslation(m2.getyTranslation() - (overlap * d.y / s * b));
+                //m2.setxTranslation(m2.getxTranslation() - (overlap * d.x / s * a));
+                //m2.setyTranslation(m2.getyTranslation() - (overlap * d.y / s * b));
                 //m2.setzTranslation(m2.getzTranslation() - (overlap * d.z / s * c));
-                System.out.println(a + ", " + b + ",  " +c + ": " + overlap);
+                m2.setyTranslation(m2.oyt);
+                m2.setxTranslation(m2.oxt);
                 m2.setzTranslation(m2.ozt);
             }
-
-            /*//new not working shit
-            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
-            //d.x=1; d.y=1; d.z=1;
-            m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
-            m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
-            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);
-            System.out.println("resolved shit: " + overlap + ", " + d);*/
-
-/*
-            //old working shit
-            float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.min(Math.min(xyOverlap, xzOverlap), yzOverlap);
-            m2.setxTranslation(m2.getxTranslation() - overlap * d.x / s);
-            m2.setyTranslation(m2.getyTranslation() - overlap * d.y / s);
-            m2.setzTranslation(m2.getzTranslation() - overlap * d.z / s);*/
-            /*System.out.println("resolved shit: " + overlap + ", " + d);
-            System.out.println(xyOverlap + ", " + xzOverlap + ", " + yzOverlap);*/
-
         }
         return false;
     }
@@ -178,7 +129,7 @@ public class Collider {
 
     public boolean collidesWith_Static(ObbMesh m1, ObbMesh m2)
     {
-        float xy=xyOverlap, xz=xzOverlap, yz=yzOverlap;
+        float xy=xyOverlap, xz=xzOverlap, yz=yzOverlap, a=xy, b=yz, c=xz;
         if(shapeOverlapSAT_Static(m1, m2, "xy") && shapeOverlapSAT_Static(m1, m2, "yz") && shapeOverlapSAT_Static(m1, m2, "xz"))
         {
             return true;
@@ -188,6 +139,9 @@ public class Collider {
             xyOverlap=xy;
             xzOverlap=xz;
             yzOverlap=yz;
+            xy=a;
+            yz=b;
+            xz=c;
             return false;
         }
     }
@@ -372,19 +326,19 @@ public class Collider {
             }
         }
 
-        // If we got here, the objects have collided, we will displace r1
-        // by overlap along the vector between the two object centers
-        /*vec2d d = { r2.pos.x - r1.pos.x, r2.pos.y - r1.pos.y };
-        float s = sqrtf(d.x*d.x + d.y*d.y);
-        r1.pos.x -= overlap * d.x / s;
-        r1.pos.y -= overlap * d.y / s;*/
-
         if(axes.equals("xy") && xyOverlap<overlap)
             xyOverlap=overlap;
         else if(axes.equals("yz") && yzOverlap<overlap)
             yzOverlap=overlap;
         else if(axes.equals("xz") && xzOverlap<overlap)
             xzOverlap=overlap;
+
+        if(axes.equals("xy") && xyOverlap<overlap)
+            xy+=overlap;
+        else if(axes.equals("yz") && yzOverlap<overlap)
+            yz+=overlap;
+        else if(axes.equals("xz") && xzOverlap<overlap)
+            xz+=overlap;
 
         //System.out.println("legit overlap and return true");
         return true;

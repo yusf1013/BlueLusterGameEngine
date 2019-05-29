@@ -1,8 +1,10 @@
 package rendererEngine.scriptManager;
+import javafx.scene.paint.Color;
 import mathHandler.VectorGeometry;
 import rendererEngine.Camera;
 import rendererEngine.itemBag.ItemBag;
 import threeDItems.Mesh;
+import threeDItems.Triangle;
 import threeDItems.Vec3d;
 
 import java.util.HashMap;
@@ -21,11 +23,9 @@ public class Control {
     {
         if(ItemBag.isCameraBound)
         {
-            System.out.println("BIND CAMERA RETURNING ");
             return;
         }
 
-        System.out.println("BIND CAMERA PROCEEDING");
         ItemBag.isCameraBound=true;
         x=mesh.getxTranslation();
         y=mesh.getyTranslation();
@@ -34,28 +34,14 @@ public class Control {
         yt=mesh.getyTheta();
         zt=mesh.getzTheta();
         bMesh=mesh;
-        /*if(ItemBag.camMesh!=null)
-        {
-            camera.position=ItemBag.camMesh.position;
-            System.out.println("CAM RESULT: " + camera.position);
-        }*/
-
         position=camera.position;
         pitch= camera.getPitch();
         yaw= camera.getYaw();
-        System.out.println("END OF BIND CAMERA: " + ItemBag.camera.position);
     }
-
-   /* public static void populateMap()
-    {
-        keyMap.put("w", 87);
-        keyMap.put("W", 87);
-    }*/
 
     protected static void boundedCameraControls()
     {
         tx=bMesh.getxTranslation();
-        //System.out.println("Bounded cam controls: " + ItemBag.camera.position + ", " + ItemBag.camMesh.position);
         ty=bMesh.getyTranslation();
         tz=bMesh.getzTranslation();
         txt=bMesh.getxTheta();
@@ -98,10 +84,18 @@ public class Control {
             mesh.move(-vForward.x, -vForward.y, -vForward.z);
 
         if(isKeyPressed(263))
-            bMesh.setyTheta(bMesh.getyTheta() - mouseSensitivity);
+            mesh.setyTheta(mesh.getyTheta() - mouseSensitivity);
         if(isKeyPressed(262))
-            bMesh.setyTheta(bMesh.getyTheta() + mouseSensitivity);
+            mesh.setyTheta(mesh.getyTheta() + mouseSensitivity);
 
+    }
+
+    public static void setColor(Mesh mesh, float red, float green, float blue)
+    {
+        for(Triangle tri: mesh.tris)
+        {
+            tri.setColor(new Color(red, green, blue, 1));
+        }
     }
 
 }

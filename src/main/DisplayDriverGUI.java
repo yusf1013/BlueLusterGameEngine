@@ -52,40 +52,8 @@ public class DisplayDriverGUI extends VectorGeometry {
         }
         drawQueuedTriangles(gc);
 
-        /*handleUserInputs(fElapsedTime);
-        meshCube.runScript();*/
         return true;
     }
-
-    /*public void handleUserInputs(float fElapsedTime) {
-
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_ESCAPE)) {
-            glfwSetWindowShouldClose(window, true);
-            KeyboardHandler.keys[GLFW_KEY_ESCAPE] = false;
-        }
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_UP))
-            camera.position.y += walkSpeed * fElapsedTime;
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_DOWN))
-            camera.position.y -= walkSpeed * fElapsedTime;
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_A))
-            camera.position = vectorAdd(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_D))
-            camera.position = vectorSub(camera.position, vectorMul(normaliseVector(crossProduct(camera.vLookDir, camera.vUp)), fElapsedTime * walkSpeed));
-        Vec3d vForward = vectorMul(camera.vLookDir, walkSpeed * fElapsedTime);
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_W))
-            camera.position = vectorAdd(camera.position, vForward);
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_S))
-            camera.position = vectorSub(camera.position, vForward);
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_LEFT))
-            camera.yaw -= walkSpeed / 4f * fElapsedTime;
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_RIGHT))
-            camera.yaw += walkSpeed / 4f * fElapsedTime;
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_R))
-            camera.pitch -= walkSpeed / 4f * fElapsedTime;
-        if (KeyboardHandler.isKeyDown(GLFW_KEY_F))
-            camera.pitch += walkSpeed / 4f * fElapsedTime;
-
-    }*/
 
         public boolean addMeshForDrawing(Mesh meshCube, float fElapsedTime)
     {
@@ -128,9 +96,6 @@ public class DisplayDriverGUI extends VectorGeometry {
         triToRaster.sort(Comparator.comparing(Triangle::getMidPointz).reversed());
         for(int i=0; i<triToRaster.size(); i++)
         {
-            /*fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y,
-                    triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y,
-                    triToRaster.get(i).p[2].x, triToRaster.get(i).p[2].y,  triToRaster.get(i).getColor());*/
             Triangle triProjected = triToRaster.get(i);
             triProjected.p[0].y*=-1; triProjected.p[1].y*=-1; triProjected.p[2].y*=-1;
             triProjected.p[0].x += 1.0f; triProjected.p[0].y += 1.0f;
@@ -142,11 +107,7 @@ public class DisplayDriverGUI extends VectorGeometry {
             triProjected.p[1].y *= 0.5f * (float)screenHeight;
             triProjected.p[2].x *= 0.5f * (float)screenWidth;
             triProjected.p[2].y *= 0.5f * (float)screenHeight;
-            //triProjected.p[0].y*=-1; triProjected.p[1].y*=-1; triProjected.p[2].y*=-1;
             triToRaster.set(i, triProjected);
-
-            /*if(i==0)
-               System.out.println("For i: "+ i + "\n" + triToRaster.get(i));*/
 
             fillTriangle(triToRaster.get(i).p[0].x, triToRaster.get(i).p[0].y, triToRaster.get(i).p[0].z,
                     triToRaster.get(i).p[1].x, triToRaster.get(i).p[1].y, triToRaster.get(i).p[1].z,
@@ -279,36 +240,8 @@ public class DisplayDriverGUI extends VectorGeometry {
             gc.strokePolygon(new double[]{x1, x2, x3},
                     new double[]{y1,y2,y3}, 3);
         }
-        /*if(i==0 && Math.abs(x1-244.0)<5) {
-           System.out.println("Death");
-            gc.setFill(Color.RED);
-           System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
-                    y1 + " " + y2 + " " + y3);
-            gc.fillPolygon(new double[]{x1, x2, x3},
-                new double[]{y1,y2,y3}, 3);
-            gc.setFill(Color.BLUE);
-           System.out.println("In blue");
-            *//*gc.fillPolygon(new double[]{244.65868, 316.7638, 321.57477},
-                    new double[]{327.4041, 301.16647, 249.31152}, 3);*//*
-           System.out.println(x1 + " " + x2 + " " + x3 + "\n" +
-                    y1 + " " + y2 + " " + y3);
-        }*/
-        //ystem.out.println(x1 + " " + x2 + " " + x3 + "\n" + y1 + " " + y2 + " " + y3 + " " + "\n");
+
     }
 
-    /*public static void drawTriangle(float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, Color fill, GraphicsContext gc)
-    {
-        gc.setStroke(Color.BLACK);
-        gc.setFill(Color.TRANSPARENT);
-        gc.setLineWidth(1);
-        gc.fillPolygon(new double[]{x1, x2, x3},
-                new double[]{y1,y2,y3}, 3);
-    }*/
-
-    public void useless()
-    {
-        int i=0;
-        i++;
-    }
 
 }

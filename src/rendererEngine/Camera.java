@@ -54,12 +54,10 @@ public class Camera {
         if(pitch <3.14/2f && pitch>-3.14/2f)
         {
             this.pitch = pitch;
-            System.out.println("Setting pitch: " + pitch);
             return true;
         }
         else
         {
-            System.out.println("NOT setting pitch: " + pitch);
             this.pitch=pitch-0.01f;
             return false;
         }

@@ -18,7 +18,6 @@ public class MainGUI extends Application {
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-       System.out.println("done");
         //ystem.out.println("fixie");
     }
 
