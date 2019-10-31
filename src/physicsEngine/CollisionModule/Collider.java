@@ -39,12 +39,13 @@ public class Collider {
 
         if(collidesWith_Static(al1, al2))
         {
-
+            m1.collidedWith=m2;
+            m2.collidedWith=m1;
             Vec3d c1=m1.obb.cube.getCenter(), c2=m2.obb.cube.getCenter(), d;
             VectorGeometry vg = new VectorGeometry();
             d=vg.vectorSub(c1, c2);
 
-            //more jao shit
+            //more ja
             float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.max(Math.max(xyOverlap, xzOverlap), yzOverlap);
             //float s = (float)Math.sqrt(vg.dotProduct(d, d)), overlap = Math.max(Math.max(xy, xz), yz);
             if((m2.getxTranslation()-m2.oxt)==0 && (m2.getyTranslation()-m2.oyt)==0 && (m2.getzTranslation()-m2.ozt)==0)
@@ -70,6 +71,11 @@ public class Collider {
                 m2.setxTranslation(m2.oxt);
                 m2.setzTranslation(m2.ozt);
             }
+        }
+        else
+        {
+            m2.collidedWith=null;
+            m1.collidedWith=null;
         }
         return false;
     }

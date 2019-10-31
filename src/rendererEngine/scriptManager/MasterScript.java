@@ -23,9 +23,13 @@ public class MasterScript{
 			}
 		}
 		if(!ItemBag.isCameraBound)
+		{
 			ddgl.cameraControls(0.02f);
+		}
 		else
+		{
 			Control.boundedCameraControls();
+		}
 	}
 
 }

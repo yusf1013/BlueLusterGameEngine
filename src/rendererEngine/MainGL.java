@@ -18,6 +18,7 @@ public class MainGL {
     private long window;
     static int WIDTH = 600;
     static int HEIGHT = 600;
+    public static DisplayDriverGL ddgl;
 
 
     public void run() {
@@ -84,7 +85,7 @@ public class MainGL {
         System.nanoTime();
         double prevTime=System.nanoTime(), elapsedTime=0, currentTime, timedif=0, frameRatePrintRate=0.5;
         int frameCount=0;
-        DisplayDriverGL ddgl = new DisplayDriverGL(window);
+        ddgl = new DisplayDriverGL(window);
         glEnable(GL_DEPTH_TEST);
 
         float f=0;

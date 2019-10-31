@@ -7,12 +7,15 @@ import mathHandler.ThreeDObjectTransformations;
 import mathHandler.VectorGeometry;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.newdawn.slick.TrueTypeFont;
 import physicsEngine.CollisionModule.Collider;
 import rendererEngine.itemBag.ItemBag;
 import rendererEngine.scriptManager.Control;
 import rendererEngine.scriptManager.MasterScript;
 import threeDItems.*;
+import org.lwjgl.stb.STBEasyFont.*;
 
+import java.awt.*;
 import java.nio.DoubleBuffer;
 import java.util.List;
 import java.util.Map;
@@ -62,17 +65,26 @@ public class DisplayDriverGL extends VectorGeometry {
         cursorX = xBuffer.get(0);
         cursorY = yBuffer.get(0);
         ms.run();
+
     }
 
 
     boolean onUserUpdate(float fElapsedTime)
     {
+        /*if(ItemBag.gameOver)
+        {
+            handleUserInputs(fElapsedTime);
+            return false;
+        }*/
+        //ms.run();
         calcMesh(fElapsedTime);
         draw();
         handleUserInputs(fElapsedTime);
-        ms.run();
+        if(!ItemBag.gameOver)
+            ms.run();
         return true;
     }
+
 
     public void calcMesh(float fElapsedTime)
     {

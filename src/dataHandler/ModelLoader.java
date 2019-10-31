@@ -56,7 +56,7 @@ public class ModelLoader {
                     ItemBag.lightMode=Integer.parseInt(in.next());
                     continue;
                 }
-               System.out.println("Mesh name is: " + meshName + " HO HO HO HI HI HI");
+               System.out.println("Mesh name is: " + meshName);
                 //vec.add(meshLoader("src\\Games\\", meshName, false));
                 vec.add(meshLoader(file.getParentFile().getAbsolutePath(), meshName, true));
                System.out.println("Load done");
@@ -65,7 +65,6 @@ public class ModelLoader {
                 vec.lastElement().setxScale(in.nextFloat()); vec.lastElement().setyScale(in.nextFloat()); vec.lastElement().setzScale(in.nextFloat());
                 String scripted = in.next();
                 vec.lastElement().id=in.nextInt();
-                System.out.println("ID AFTER LOADING: " + meshName + ", " + vec.lastElement().id );
                 String rb = in.next();
                 String isCam = in.next();
 
@@ -128,7 +127,6 @@ public class ModelLoader {
                     ItemBag.camMesh=vec.lastElement();
                     System.out.println("cam position: " + ItemBag.camMesh.position);
                     ItemBag.camera.position=ItemBag.camMesh.position;
-                    System.out.println("AFTER LOADING: " + ItemBag.camera.position);
                     ItemBag.camera.setYaw(ItemBag.camMesh.getyTheta());
                     ItemBag.camera.setPitch(ItemBag.camMesh.getxTheta());
                     vec.remove(vec.size()-1);
@@ -161,7 +159,7 @@ public class ModelLoader {
             mesh.id=id++;
         if(isGameObj)
         {
-            System.out.println("ADDEEEEEEEEEEEEEEEEEEDDDDDDDDDDDD!!!!!!!!!!!!!!!!: " + fileName);
+            //System.out.println("ADDEEEEEEEEEEEEEEEEEEDDDDDDDDDDDD!!!!!!!!!!!!!!!!: " + fileName);
             fileNameVector.add(fileName);
         }
 

@@ -537,6 +537,7 @@ public class Controller implements Initializable {
 
     public void addCam() throws FileNotFoundException {
         Mesh cam = ml.meshLoader("src\\resources\\","camera.obj", true);
+        cam.growInSize(.1f, .1f, .1f);
         ItemBag.camMesh=cam;
         cam.isCam=true;
         addMeshToList(cam, "camera");

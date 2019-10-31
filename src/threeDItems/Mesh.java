@@ -25,6 +25,7 @@ public class Mesh {
     public int id;
     public Obb obb;
     public String name;
+    public Mesh collidedWith=null;
     //public ObjectSliceAndMerge obj=null;
     public ArrayList<ObbMesh> obbList = new ArrayList<>();
     public Vec3d min=new Vec3d(1000000, 1000000,1000000), max=new Vec3d(-1000000, -1000000,-1000000), position=new Vec3d();

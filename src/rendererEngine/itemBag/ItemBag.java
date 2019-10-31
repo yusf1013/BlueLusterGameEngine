@@ -13,7 +13,7 @@ public class ItemBag {
     public static boolean modified = true, isCameraBound=false;
     public static Camera camera= new Camera();
     public static Mesh camMesh;
-    public  static boolean[] keys = new boolean[65536];
+    public  static boolean keys[] = new boolean[65536], gameOver=false;
     public static int lightMode;
 
     public static void addMesh(Mesh m)
@@ -21,6 +21,19 @@ public class ItemBag {
         modified=true;
         meshCollection.put(currentID, m);
         currentID++;
+    }
+
+    public static void addMesh(Mesh m, int id)
+    {
+        modified=true;
+        meshCollection.put(id, m);
+        //currentID++;
+    }
+
+    public static void removeMesh(int id)
+    {
+        modified=true;
+        meshCollection.remove(id);
     }
 
     public static Map<Integer, Mesh> getMeshMap()
